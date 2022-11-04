@@ -6,8 +6,6 @@ import { OpenGateResponseDto } from "src/dtos/open-gate-response.dto";
 export class GateController {
     @Post()
     async openGate(@Body() request: OpenGateRequestDto): Promise<OpenGateResponseDto> {
-        return {
-            success: true
-        }
+        return request;
     }
 }

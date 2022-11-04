@@ -1,17 +1,7 @@
-import { IsString, IsNotEmpty, IsInt } from "class-validator";
-import { Expose } from 'class-transformer';
+import { IsInt } from "class-validator";
+import { OpenGateDto } from "./open-gate.dto";
 
-export class OpenGateRequestDto {
-    @IsString()
-    @IsNotEmpty()
-    @Expose({ name: "gate_id" })
-    gateId: string;
-
-    @IsString()
-    @IsNotEmpty()
-    @Expose({ name: "device_id" })
-    deviceId: string;
-
+export class OpenGateRequestDto extends OpenGateDto {
     @IsInt()
     timestamp: number;
 }
