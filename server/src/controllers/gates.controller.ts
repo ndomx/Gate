@@ -9,6 +9,7 @@ export class GatesController {
 
     @Post()
     async openGate(@Body() request: OpenGateRequestDto): Promise<OpenGateResponseDto> {
-        return request;
+        const success = await this.gatesService.requestAccess(request);
+        return { ...request, success };
     }
 }
