@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { OpenGateRequestDto } from "src/dtos/open-gate-request.dto";
+import { OperationResult } from "src/dtos/open-gate-response.dto";
 
 const gates = [
     {
@@ -12,15 +13,14 @@ const gates = [
 
 @Injectable()
 export class GatesService {
-    async requestAccess(request: OpenGateRequestDto): Promise<boolean> {
-        console.log(request)
+    async requestAccess(request: OpenGateRequestDto): Promise<OperationResult> {
         if (!this.#isAllowed(request.gateId, request.deviceId)) {
-            return false;
+            return 'access-denied';
         }
 
         this.#grantAccess(request.gateId);
 
-        return true;
+        return 'access-granted';
     }
 
     #isAllowed(gateId: string, deviceId: string): boolean {
