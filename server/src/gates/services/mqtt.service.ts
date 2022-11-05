@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { connect } from 'mqtt';
 
-const MQTT_SERVER_URL = 'mqtt://broker.emqx.io'
 const devices = {
     home1: [
         {
@@ -11,7 +10,7 @@ const devices = {
     ]
 }
 
-const client = connect(MQTT_SERVER_URL);
+const client = connect(process.env.MQTT_SERVER_URL);
 client.on('connect', () => {
     console.log('connected to mqtt server')
     client.subscribe('home1/device1', (err) => {
