@@ -10,7 +10,8 @@ export class GatesService {
   constructor(@InjectModel(Gate.name) private gateModel: Model<GateDocument>) {}
 
   async requestAccess(request: OpenGateRequestDto): Promise<OperationResult> {
-    if (!this.#isAllowed(request.gateId, request.deviceId)) {
+    const isAllowed = await this.#isAllowed(request.gateId, request.deviceId);
+    if (!isAllowed) {
       return 'access-denied';
     }
 
@@ -20,7 +21,7 @@ export class GatesService {
   }
 
   async #isAllowed(gateId: string, deviceId: string): Promise<boolean> {
-    const gate = await this.gateModel.findOne({ gateId }).exec();
+    const gate = await this.gateModel.findOne({ gateId });
     if (!gate) {
       return false;
     }
