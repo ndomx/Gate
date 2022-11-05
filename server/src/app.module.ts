@@ -1,11 +1,15 @@
 import { Module } from '@nestjs/common';
-import { GatesController } from './controllers/gates.controller';
-import { GatesService } from './services/gates.service';
-import { MqttService } from './services/mqtt.service';
+import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { GatesModule } from './gates/gates.module';
 
 @Module({
-  imports: [],
-  controllers: [GatesController],
-  providers: [GatesService, MqttService],
+  imports: [
+    ConfigModule.forRoot(),
+    MongooseModule.forRoot(process.env.MONGO_DB_URI),
+    GatesModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

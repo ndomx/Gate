@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { OpenGateRequestDto } from "src/dtos/open-gate-request.dto";
-import { OpenGateResponseDto } from "src/dtos/open-gate-response.dto";
-import { GatesService } from "src/services/gates.service";
+import { OpenGateRequestDto } from "../dtos/open-gate-request.dto";
+import { OpenGateResponseDto } from "../dtos/open-gate-response.dto";
+import { GatesService } from "../services/gates.service";
 
 @Controller("gates")
 export class GatesController {
