@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { connect} from 'mqtt';
+import { connect } from 'mqtt';
 
 const MQTT_SERVER_URL = 'mqtt://broker.emqx.io'
 const devices = {
