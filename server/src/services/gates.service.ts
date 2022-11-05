@@ -17,7 +17,7 @@ export class GatesService {
     constructor(private readonly mqttService: MqttService) {}
 
     async requestAccess(request: OpenGateRequestDto): Promise<OperationResult> {
-        if (!this.#isAllowed(request.gateId, request.deviceId)) {
+        if (!this.#isAllowed(request.gateId, request.deviceKey)) {
             return 'access-denied';
         }
 

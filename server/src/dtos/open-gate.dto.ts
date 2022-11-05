@@ -9,6 +9,6 @@ export class OpenGateDto {
 
     @IsString()
     @IsNotEmpty()
-    @Expose({ name: "device_id" })
-    deviceId: string;
+    @Expose({ name: "device_key" })
+    deviceKey: string;
 }
