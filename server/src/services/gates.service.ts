@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { OpenGateRequestDto } from "src/dtos/open-gate-request.dto";
 import { OperationResult } from "src/dtos/open-gate-response.dto";
+import { MqttService } from "./mqtt.service";
 
 const gates = [
     {
@@ -13,6 +14,8 @@ const gates = [
 
 @Injectable()
 export class GatesService {
+    constructor(private readonly mqttService: MqttService) {}
+
     async requestAccess(request: OpenGateRequestDto): Promise<OperationResult> {
         if (!this.#isAllowed(request.gateId, request.deviceId)) {
             return 'access-denied';
@@ -33,6 +36,6 @@ export class GatesService {
     }
 
     #grantAccess(gateId: string) {
-
+        this.mqttService.open(gateId);
     }
 }
