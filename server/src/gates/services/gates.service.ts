@@ -14,7 +14,10 @@ export class GatesService {
   ) {}
 
   async requestAccess(request: OpenGateRequestDto): Promise<OperationResult> {
-    const gate = await this.#getGateIfAllowed(request.gateId, request.deviceKey);
+    const gate = await this.#getGateIfAllowed(
+      request.gateId,
+      request.deviceKey,
+    );
     if (!gate) {
       return 'access-denied';
     }
