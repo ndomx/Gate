@@ -28,7 +28,6 @@ client.on('message', (topic, message) => {
 
 @Injectable()
 export class MqttService {
-
     open(gateId: string) {
         Object.keys(devices).forEach((key) => {
             const home: Array<any> = devices[key]
@@ -38,16 +37,5 @@ export class MqttService {
                 client.publish(topic, 'open')
             }
         })
-    }
-
-    #getTopicList(): string[] {
-        let topics: string[] = []
-        Object.entries(devices).forEach((entry) => {
-            const key = entry[0];
-            const devices = entry[1];
-            topics = topics.concat(devices.map((deviceId) => `${key}/${deviceId}`))
-        })
-
-        return topics
     }
 }
