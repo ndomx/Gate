@@ -13,6 +13,9 @@ export class Gate {
 
   @Prop([String])
   allowedDevices: string[];
+
+  @Prop()
+  topic: string;
 }
 
 export const GateSchema = SchemaFactory.createForClass(Gate);

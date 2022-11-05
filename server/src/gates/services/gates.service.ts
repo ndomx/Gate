@@ -14,24 +14,28 @@ export class GatesService {
   ) {}
 
   async requestAccess(request: OpenGateRequestDto): Promise<OperationResult> {
-    const isAllowed = await this.#isAllowed(request.gateId, request.deviceKey);
-    if (!isAllowed) {
+    const gate = await this.#getGateIfAllowed(request.gateId, request.deviceKey);
+    if (!gate) {
       return 'access-denied';
     }
 
-    this.#grantAccess(request.gateId);
+    this.#grantAccess(gate);
 
     return 'access-granted';
   }
 
-  async #isAllowed(gateId: string, deviceKey: string): Promise<boolean> {
+  async #getGateIfAllowed(gateId: string, deviceKey: string): Promise<Gate> {
     const gate = await this.gateModel.findOne({ gateId });
     if (!gate) {
-      return false;
+      return null;
     }
 
-    return gate.allowedDevices.includes(deviceKey);
+    if (gate.allowedDevices.includes(deviceKey)) {
+      return gate;
+    }
   }
 
-  #grantAccess(gateId: string) {}
+  #grantAccess(gate: Gate) {
+    this.mqttService.open(gate.topic);
+  }
 }
