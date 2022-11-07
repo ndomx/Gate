@@ -3,8 +3,8 @@ package com.ndomx.gate.http.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GateRequest(
-    val deviceKey: String,
+data class GateResponse(
     val gateId: String,
-    val timestamp: Long
+    val deviceKey: String,
+    val result: String,
 )
