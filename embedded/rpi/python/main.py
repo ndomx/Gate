@@ -1,5 +1,5 @@
 # test program
-from MqttClient import MqttClient
+from mqtt_client import MqttClient
 from gpiozero import DigitalOutputDevice as digital_output
 import time
 
@@ -58,7 +58,7 @@ def callback(message):
 if __name__ == '__main__':
     mqttClient = MqttClient()
     mqttClient.connect('home/main', callback)
-    
+
     set_state_idle()
     while True:
         run_statemachine()
