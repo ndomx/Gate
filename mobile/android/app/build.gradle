@@ -3,6 +3,10 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+def secretsFile = rootProject.file("secrets.properties")
+def secrets = new Properties()
+secrets.load(new FileInputStream(secretsFile))
+
 android {
     compileSdk 32
 
@@ -14,6 +18,10 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "SERVER_URL", secrets["SERVER_URL"])
+        buildConfigField("String", "DEVICE_KEY", secrets["DEVICE_KEY"])
+        buildConfigField("String", "GATE_ID", secrets["GATE_ID"])
     }
 
     buildTypes {
