@@ -8,6 +8,10 @@ Open a terminal in your device and run the following commands
 git clone https://github.com/ndomx/Gate.git
 cd Gate/embedded/rpi/python
 
+# Create secrets file. Check secrets.example.json for more info
+# on how to fill it
+nano secrets.json
+
 # Install the dependencies
 sudo pip3 install -r requirements.txt
 
