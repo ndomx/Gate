@@ -17,7 +17,7 @@ import java.util.*
 import javax.net.ssl.HttpsURLConnection
 import kotlin.concurrent.thread
 
-class GateClient private constructor(context: Context) {
+class GateClient private constructor() {
     companion object {
         const val LOG_TAG = "GateClient"
 
@@ -26,9 +26,9 @@ class GateClient private constructor(context: Context) {
             arrayOf(HttpsURLConnection.HTTP_OK, HttpsURLConnection.HTTP_CREATED)
 
         private var INSTANCE: GateClient? = null
-        fun getInstance(context: Context): GateClient {
+        fun getInstance(): GateClient {
             return INSTANCE ?: synchronized(this) {
-                INSTANCE = GateClient(context)
+                INSTANCE = GateClient()
                 return INSTANCE!!
             }
         }
