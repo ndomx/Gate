@@ -1,6 +1,5 @@
 package com.ndomx.gate.http
 
-import android.content.Context
 import android.util.Log
 import com.ndomx.gate.BuildConfig
 import com.ndomx.gate.http.models.GateRequest

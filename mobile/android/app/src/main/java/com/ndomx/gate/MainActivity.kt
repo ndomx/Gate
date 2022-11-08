@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         val button = findViewById<Button>(R.id.button_open_gate)
         button.setOnClickListener {
-            val client = GateClient.getInstance(this)
+            val client = GateClient.getInstance()
             client.requestAccess {
                 onServerResponse(it)
             }
@@ -20,7 +20,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     private fun onServerResponse(result: Boolean) = runOnUiThread {
-        // Snackbar.make(this, "Server says $result", Snackbar.LENGTH_SHORT).show()
         Toast.makeText(this, "Server says $result", Toast.LENGTH_SHORT).show()
     }
 }
