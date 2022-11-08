@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/lock_icon_background">
+    <item>
         <shape android:shape="oval">
             <solid android:color="@color/design_default_color_primary" />
         </shape>
     </item>
     <item
-        android:id="@+id/lock_icon"
         android:bottom="10dp"
         android:left="10dp"
         android:right="10dp"
         android:top="10dp">
         <level-list>
-            <item android:drawable="@drawable/ic_baseline_lock_24" />
-            <item android:drawable="@drawable/ic_baseline_lock_open_24" />
+            <item android:maxLevel="0" android:drawable="@drawable/ic_baseline_lock_24" />
+            <item android:maxLevel="1" android:drawable="@drawable/ic_baseline_lock_open_24" />
         </level-list>
     </item>
 </layer-list>

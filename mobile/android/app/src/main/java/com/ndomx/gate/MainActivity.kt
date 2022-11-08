@@ -2,6 +2,9 @@ package com.ndomx.gate
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.LevelListDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -30,13 +33,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
             requestAccess()
         }
 
-        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                onAuthSuccess()
-            } else {
-                onAuthFailure()
+        resultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    onAuthSuccess()
+                } else {
+                    onAuthFailure()
+                }
             }
-        }
     }
 
     override fun onAuthSuccess() {
@@ -48,10 +52,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
 
     override fun onAuthFailure() = runOnUiThread {
         Toast.makeText(this, "Auth failed", Toast.LENGTH_SHORT).show()
+        setIconToIdle()
     }
 
     private fun requestAccess() {
-
+        setIconToWaiting()
 
         if (Build.VERSION.SDK_INT > 29) {
             Log.i(LOG_TAG, "Using BiometricPrompt API")
@@ -64,5 +69,35 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
 
     private fun onServerResponse(result: Boolean) = runOnUiThread {
         Toast.makeText(this, "Server says $result", Toast.LENGTH_SHORT).show()
+        if (result) {
+            setIconToSuccess()
+        }
+    }
+
+    private fun setIconToWaiting() {
+        val button = findViewById<ImageView>(R.id.button_open_gate)
+        val layerList = button.drawable as LayerDrawable
+        layerList.getDrawable(0).setTint(Color.BLUE)
+
+        val levelList = layerList.getDrawable(1) as LevelListDrawable
+        levelList.level = 0
+    }
+
+    private fun setIconToIdle() {
+        val button = findViewById<ImageView>(R.id.button_open_gate)
+        val layerList = button.drawable as LayerDrawable
+        layerList.getDrawable(0).setTint(Color.RED)
+
+        val levelList = layerList.getDrawable(1) as LevelListDrawable
+        levelList.level = 0
+    }
+
+    private fun setIconToSuccess() {
+        val button = findViewById<ImageView>(R.id.button_open_gate)
+        val layerList = button.drawable as LayerDrawable
+        layerList.getDrawable(0).setTint(Color.GREEN)
+
+        val levelList = layerList.getDrawable(1) as LevelListDrawable
+        levelList.level = 1
     }
 }
