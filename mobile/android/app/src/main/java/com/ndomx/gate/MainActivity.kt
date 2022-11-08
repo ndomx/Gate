@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val button = findViewById<Button>(R.id.button_open_gate)
+        val button = findViewById<ImageView>(R.id.button_open_gate)
         button.setOnClickListener {
             requestAccess()
         }
@@ -63,5 +63,4 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
     override fun onAuthFailure() = runOnUiThread {
         Toast.makeText(this, "Auth failed", Toast.LENGTH_SHORT).show()
     }
-
 }

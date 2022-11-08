@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Nicolas/Documents/Gate/mobile/android/app/src/main/res/drawable/ic_baseline_lock_24.xml" value="0.278" />
+        <entry key="..\:/Users/Nicolas/Documents/Gate/mobile/android/app/src/main/res/drawable/ic_baseline_lock_open_24.xml" value="0.278" />
+        <entry key="..\:/Users/Nicolas/Documents/Gate/mobile/android/app/src/main/res/drawable/lock_icon.xml" value="0.278" />
         <entry key="..\:/Users/Nicolas/Documents/Gate/mobile/android/app/src/main/res/layout/activity_main.xml" value="0.33469202898550726" />
       </map>
     </option>
