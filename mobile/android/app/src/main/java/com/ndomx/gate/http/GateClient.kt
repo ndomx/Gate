@@ -95,8 +95,10 @@ class GateClient private constructor() {
 
         val response = reader.readLines().joinToString("")
         return try {
-            Json.decodeFromString(response)
+            val builder = Json { ignoreUnknownKeys = true }
+            builder.decodeFromString(response)
         } catch (e: Exception) {
+            Log.e(LOG_TAG, e.message ?: "Cannot decode $response")
             null
         }
     }
