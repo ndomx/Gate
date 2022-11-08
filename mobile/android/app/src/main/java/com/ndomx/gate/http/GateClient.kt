@@ -41,7 +41,6 @@ class GateClient private constructor() {
         )
 
         val body = Json.encodeToString(request)
-        Log.d(LOG_TAG, body)
 
         var success = false
         var response: GateResponse? = null
