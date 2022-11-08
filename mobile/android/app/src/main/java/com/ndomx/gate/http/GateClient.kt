@@ -12,9 +12,9 @@ import java.io.BufferedOutputStream
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
-import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
+import javax.net.ssl.HttpsURLConnection
 import kotlin.concurrent.thread
 
 class GateClient private constructor(context: Context) {
@@ -22,6 +22,8 @@ class GateClient private constructor(context: Context) {
         const val LOG_TAG = "GateClient"
 
         private const val OPERATION_SUCCESS = "access-granted"
+        private val SUPPORTED_CODES =
+            arrayOf(HttpsURLConnection.HTTP_OK, HttpsURLConnection.HTTP_CREATED)
 
         private var INSTANCE: GateClient? = null
         fun getInstance(context: Context): GateClient {
@@ -36,23 +38,25 @@ class GateClient private constructor(context: Context) {
         val request = GateRequest(
             deviceKey = BuildConfig.DEVICE_KEY,
             gateId = BuildConfig.GATE_ID,
-            timestamp = Date().time
+            timestamp = Date().time,
         )
+
+        val body = Json.encodeToString(request)
+        Log.d(LOG_TAG, body)
 
         var success = false
         var response: GateResponse? = null
         thread {
             val url = URL(BuildConfig.SERVER_URL)
-            var client: HttpURLConnection? = null
+            var client: HttpsURLConnection? = null
 
             try {
-                client = (url.openConnection() as HttpURLConnection).apply {
+                client = (url.openConnection() as HttpsURLConnection).apply {
                     doOutput = true
                     requestMethod = "POST"
                     setChunkedStreamingMode(0)
+                    setRequestProperty("Content-Type", "application/json")
                 }
-
-                val body = Json.encodeToString(request)
 
                 sendPostRequest(client, body)
                 response = getResponse(client)
@@ -72,7 +76,7 @@ class GateClient private constructor(context: Context) {
         }
     }
 
-    private fun sendPostRequest(client: HttpURLConnection, body: String) {
+    private fun sendPostRequest(client: HttpsURLConnection, body: String) {
         val outputStream = BufferedOutputStream(client.outputStream)
         val writer = OutputStreamWriter(outputStream)
 
@@ -81,9 +85,10 @@ class GateClient private constructor(context: Context) {
         writer.close()
     }
 
-    private fun getResponse(client: HttpURLConnection): GateResponse? {
+    private fun getResponse(client: HttpsURLConnection): GateResponse? {
         val responseCode = client.responseCode
-        if (responseCode != HttpURLConnection.HTTP_OK) {
+        if (responseCode !in SUPPORTED_CODES) {
+            Log.e(LOG_TAG, "Received code $responseCode")
             return null
         }
 
@@ -91,7 +96,6 @@ class GateClient private constructor(context: Context) {
         val reader = BufferedReader(inputStream)
 
         val response = reader.readLines().joinToString("")
-        Log.d(LOG_TAG, response)
         return try {
             Json.decodeFromString(response)
         } catch (e: Exception) {
