@@ -39,7 +39,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
         }
     }
 
+    override fun onAuthSuccess() {
+        val client = GateClient.getInstance()
+        client.requestAccess {
+            onServerResponse(it)
+        }
+    }
+
+    override fun onAuthFailure() = runOnUiThread {
+        Toast.makeText(this, "Auth failed", Toast.LENGTH_SHORT).show()
+    }
+
     private fun requestAccess() {
+
+
         if (Build.VERSION.SDK_INT > 29) {
             Log.i(LOG_TAG, "Using BiometricPrompt API")
             authManager.showBiometricPrompt(this)
@@ -51,16 +64,5 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
 
     private fun onServerResponse(result: Boolean) = runOnUiThread {
         Toast.makeText(this, "Server says $result", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onAuthSuccess() {
-        val client = GateClient.getInstance()
-        client.requestAccess {
-            onServerResponse(it)
-        }
-    }
-
-    override fun onAuthFailure() = runOnUiThread {
-        Toast.makeText(this, "Auth failed", Toast.LENGTH_SHORT).show()
     }
 }
