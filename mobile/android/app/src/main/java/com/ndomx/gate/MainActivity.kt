@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +27,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
         private const val LOG_TAG = "MainActivity"
         private const val BACKGROUND_INDEX = 0
         private const val LOCK_INDEX = 1
+
+        private val STATE_CAPTION = mapOf(
+            GateState.IDLE to "Press the button to open",
+            GateState.WAITING to "Opening gate...",
+            GateState.SUCCESS to "Gate opened!",
+            GateState.FAILURE to "Failed to open gate",
+        )
     }
 
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
@@ -35,6 +43,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
     private lateinit var icon: LayerDrawable
     private val iconBackground by lazy { icon.getDrawable(BACKGROUND_INDEX) }
     private val lockIcon by lazy { icon.getDrawable(LOCK_INDEX) as LevelListDrawable }
+
+    private lateinit var caption: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +57,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
         }
 
         icon = button.drawable as LayerDrawable
+        caption = findViewById(R.id.button_state)
 
         resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -85,6 +96,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
     override fun onState(gateStateData: GateStateData) = runOnUiThread {
         iconBackground.setTint(gateStateData.background)
         lockIcon.level = gateStateData.foregroundLevel
+        caption.text = STATE_CAPTION[gateStateData.state]
     }
 
     private fun requestAccess() {
@@ -102,14 +114,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
     }
 
     private fun onServerResponse(result: Boolean) = runOnUiThread {
-        Toast.makeText(this, "Server says $result", Toast.LENGTH_SHORT).show()
-        runOnUiThread {
-            gateStateMachine.setState(
-                when (result) {
-                    true -> GateState.SUCCESS
-                    false -> GateState.FAILURE
-                }
-            )
-        }
+        gateStateMachine.setState(
+            when (result) {
+                true -> GateState.SUCCESS
+                false -> GateState.FAILURE
+            }
+        )
     }
 }

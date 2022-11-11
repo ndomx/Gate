@@ -20,7 +20,7 @@ class GateStateMachine(private val listener: GateStateListener) {
     private val idleBackground = ContextCompat.getColor(listener.getContext(), R.color.black)
     private val waitingBackground = ContextCompat.getColor(listener.getContext(), R.color.purple_700)
     private val failureBackground = ContextCompat.getColor(listener.getContext(), R.color.red_1)
-    private val successBackground = ContextCompat.getColor(listener.getContext(), R.color.teal_700)
+    private val successBackground = ContextCompat.getColor(listener.getContext(), R.color.green_1)
 
     fun setState(newState: GateState) {
         val stateData = when (newState) {
@@ -72,7 +72,7 @@ class GateStateMachine(private val listener: GateStateListener) {
         return GateStateData(
             background = failureBackground,
             foregroundLevel = LOCK_CLOSED_INDEX,
-            state = GateState.SUCCESS
+            state = GateState.FAILURE
         )
     }
 }
