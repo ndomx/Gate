@@ -7,6 +7,7 @@ export class MqttService {
     username: process.env.MQTT_USER,
     password: process.env.MQTT_PASS,
     port: +process.env.MQTT_PORT,
+    protocol: "tcp"
   });
 
   constructor() {
