@@ -3,7 +3,11 @@ import { connect } from 'mqtt';
 
 @Injectable()
 export class MqttService {
-  private client = connect(process.env.MQTT_SERVER_URL);
+  private client = connect(process.env.MQTT_SERVER_URL, {
+    username: process.env.MQTT_USER,
+    password: process.env.MQTT_PASS,
+    port: +process.env.MQTT_PORT,
+  });
 
   constructor() {
     this.client.on('connect', () => {

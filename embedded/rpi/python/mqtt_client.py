@@ -7,7 +7,7 @@ KEY_MQTT_BROKER_URL = 'MQTT_BROKER_URL'
 KEY_MQTT_BROKER_PORT = 'MQTT_BROKER_PORT'
 
 class MqttClient:
-    client = mqtt.Client(transport='websockets')
+    client = mqtt.Client()
 
     __broker_url = ''
     __broker_port = 0
