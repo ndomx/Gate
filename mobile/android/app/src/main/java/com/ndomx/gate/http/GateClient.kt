@@ -45,6 +45,8 @@ class GateClient private constructor() {
         var success = false
         var response: GateResponse? = null
         thread {
+            Thread.sleep(2000L)
+
             val url = URL(BuildConfig.SERVER_URL)
             var client: HttpsURLConnection? = null
 

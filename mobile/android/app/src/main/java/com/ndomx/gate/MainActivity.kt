@@ -1,8 +1,8 @@
 package com.ndomx.gate
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.LevelListDrawable
 import android.os.Build
@@ -16,22 +16,37 @@ import androidx.appcompat.app.AppCompatActivity
 import com.ndomx.gate.auth.AuthListener
 import com.ndomx.gate.auth.AuthManager
 import com.ndomx.gate.http.GateClient
+import com.ndomx.gate.machine.GateState
+import com.ndomx.gate.machine.GateStateData
+import com.ndomx.gate.machine.GateStateListener
+import com.ndomx.gate.machine.GateStateMachine
 
-class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
+class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, GateStateListener {
     companion object {
         private const val LOG_TAG = "MainActivity"
+        private const val BACKGROUND_INDEX = 0
+        private const val LOCK_INDEX = 1
     }
 
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     private val authManager = AuthManager(this)
+    private val gateStateMachine by lazy { GateStateMachine(this) }
+
+    private lateinit var icon: LayerDrawable
+    private val iconBackground by lazy { icon.getDrawable(BACKGROUND_INDEX) }
+    private val lockIcon by lazy { icon.getDrawable(LOCK_INDEX) as LevelListDrawable }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val button = findViewById<ImageView>(R.id.button_open_gate)
         button.setOnClickListener {
-            requestAccess()
+            if (gateStateMachine.isIdle) {
+                requestAccess()
+            }
         }
+
+        icon = button.drawable as LayerDrawable
 
         resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -43,6 +58,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
             }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        gateStateMachine.setState(GateState.IDLE)
+    }
+
     override fun onAuthSuccess() {
         val client = GateClient.getInstance()
         client.requestAccess {
@@ -52,11 +73,24 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
 
     override fun onAuthFailure() = runOnUiThread {
         Toast.makeText(this, "Auth failed", Toast.LENGTH_SHORT).show()
-        setIconToIdle()
+        runOnUiThread {
+            gateStateMachine.setState(GateState.FAILURE)
+        }
+    }
+
+    override fun getContext(): Context {
+        return this
+    }
+
+    override fun onState(gateStateData: GateStateData) = runOnUiThread {
+        iconBackground.setTint(gateStateData.background)
+        lockIcon.level = gateStateData.foregroundLevel
     }
 
     private fun requestAccess() {
-        setIconToWaiting()
+        runOnUiThread {
+            gateStateMachine.setState(GateState.WAITING)
+        }
 
         if (Build.VERSION.SDK_INT > 29) {
             Log.i(LOG_TAG, "Using BiometricPrompt API")
@@ -69,35 +103,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
 
     private fun onServerResponse(result: Boolean) = runOnUiThread {
         Toast.makeText(this, "Server says $result", Toast.LENGTH_SHORT).show()
-        if (result) {
-            setIconToSuccess()
+        runOnUiThread {
+            gateStateMachine.setState(
+                when (result) {
+                    true -> GateState.SUCCESS
+                    false -> GateState.FAILURE
+                }
+            )
         }
-    }
-
-    private fun setIconToWaiting() {
-        val button = findViewById<ImageView>(R.id.button_open_gate)
-        val layerList = button.drawable as LayerDrawable
-        layerList.getDrawable(0).setTint(Color.BLUE)
-
-        val levelList = layerList.getDrawable(1) as LevelListDrawable
-        levelList.level = 0
-    }
-
-    private fun setIconToIdle() {
-        val button = findViewById<ImageView>(R.id.button_open_gate)
-        val layerList = button.drawable as LayerDrawable
-        layerList.getDrawable(0).setTint(Color.RED)
-
-        val levelList = layerList.getDrawable(1) as LevelListDrawable
-        levelList.level = 0
-    }
-
-    private fun setIconToSuccess() {
-        val button = findViewById<ImageView>(R.id.button_open_gate)
-        val layerList = button.drawable as LayerDrawable
-        layerList.getDrawable(0).setTint(Color.GREEN)
-
-        val levelList = layerList.getDrawable(1) as LevelListDrawable
-        levelList.level = 1
     }
 }
