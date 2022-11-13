@@ -1,8 +1,8 @@
-# Gates Schema
+# Nodes Schema
 
-Gates are stored as a tree in MongoDB where each leaf only knows about its parent and doesn't who their children are. Every node that doesn't have a parent is called a _root node_.
+Gates are stored as a tree in MongoDB where each node only knows about its parent and doesn't who their children are. Every node that doesn't have a parent is called a _root node_.
 
-Additionally, in this representation, there'll be many nodes that don't control any physical device, called _abstract nodes_. Their function is to provide a cleaner tree representation. Because of that, every node has an `isDevice` field that indicates wether the node is connected to a physical device or is an _abstract node_.
+Additionally, in this representation, there'll be many nodes that don't control any physical device, called _abstract nodes_. Their function is to provide a cleaner tree representation. Because of that, every node has an `isDevice` field that indicates wether the node is connected to a physical device (_device node_) or is an _abstract node_.
 
 ```ts
 {
