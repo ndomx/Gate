@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GatesController } from './controllers/gates.controller';
-import { Gate, GateSchema } from './schemas/gate.schema';
+import { Node, NodeSchema } from './schemas/gate.schema';
 import { User, UserSchema } from './schemas/user.schema';
 import { GatesService } from './services/gates.service';
 import { MqttService } from './services/mqtt.service';
@@ -11,7 +11,7 @@ import { MqttService } from './services/mqtt.service';
   controllers: [GatesController],
   imports: [
     MongooseModule.forFeature([
-      { name: Gate.name, schema: GateSchema },
+      { name: Node.name, schema: NodeSchema },
       { name: User.name, schema: UserSchema },
     ]),
   ],

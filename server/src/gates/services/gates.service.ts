@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OpenGateRequestDto } from '../dtos/open-gate-request.dto';
 import { OpenGateResponseDto } from '../dtos/open-gate-response.dto';
-import { Gate, GateDocument } from '../schemas/gate.schema';
+import { Node, NodeDocument } from '../schemas/gate.schema';
 import { User, UserDocument } from '../schemas/user.schema';
 import { OpenGateRequestCodes } from '../values/error-codes';
 import { MqttService } from './mqtt.service';
@@ -11,7 +11,7 @@ import { MqttService } from './mqtt.service';
 @Injectable()
 export class GatesService {
   constructor(
-    @InjectModel(Gate.name) private gateModel: Model<GateDocument>,
+    @InjectModel(Node.name) private nodeModel: Model<NodeDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly mqttService: MqttService,
   ) {}
@@ -39,15 +39,15 @@ export class GatesService {
     }
 
     // verify if device exists
-    let device = await this.gateModel.findById(request.deviceId);
-    if (!device) {
+    let node = await this.nodeModel.findById(request.deviceId);
+    if (!node) {
       return {
         errorCode: OpenGateRequestCodes.DEVICE_NOT_FOUND,
         success: false,
       };
     }
 
-    if (!device.isDevice) {
+    if (!node.isDevice) {
       return {
         errorCode: OpenGateRequestCodes.NOT_DEVICE,
         success: false,
@@ -55,20 +55,20 @@ export class GatesService {
     }
 
     // verify if device is child of root
-    const leafs = [device.name];
-    while (device.parent) {
-      device = await this.gateModel.findById(device.parent);
-      if (!device) {
+    const nodes = [node.name];
+    while (node.parent) {
+      node = await this.nodeModel.findById(node.parent);
+      if (!node) {
         return {
           errorCode: OpenGateRequestCodes.DATABASE_ERROR,
           success: false,
         };
       }
 
-      leafs.push(device.name);
+      nodes.push(node.name);
     }
 
-    if (device._id.toHexString() !== request.rootId) {
+    if (node._id.toHexString() !== request.rootId) {
       return {
         errorCode: OpenGateRequestCodes.ROOT_NOT_FOUND,
         success: false,
@@ -76,7 +76,7 @@ export class GatesService {
     }
 
     // verify prefix
-    const topic = leafs.reverse().join('/');
+    const topic = nodes.reverse().join('/');
     if (!topic.startsWith(permission.prefix)) {
       return {
         message: 'user cannot activate the requested device',

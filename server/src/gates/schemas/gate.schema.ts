@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-export type GateDocument = HydratedDocument<Gate>;
+export type NodeDocument = HydratedDocument<Node>;
 
 @Schema()
-export class Gate {
+export class Node {
   @Prop()
   name: string;
 
@@ -15,4 +15,4 @@ export class Gate {
   isDevice: Boolean;
 }
 
-export const GateSchema = SchemaFactory.createForClass(Gate);
+export const NodeSchema = SchemaFactory.createForClass(Node);
