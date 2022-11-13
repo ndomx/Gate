@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GateResponse(
-    val gateId: String,
-    val deviceKey: String,
-    val result: String,
+    val errorCode: Int? = null,
+    val message: String? = null,
+    val topic: String? = null,
+    val success: Boolean
 )

@@ -18,9 +18,8 @@ import kotlin.concurrent.thread
 
 class GateClient private constructor() {
     companion object {
-        const val LOG_TAG = "GateClient"
+        private const val LOG_TAG = "GateClient"
 
-        private const val OPERATION_SUCCESS = "access-granted"
         private val SUPPORTED_CODES =
             arrayOf(HttpsURLConnection.HTTP_OK, HttpsURLConnection.HTTP_CREATED)
 
@@ -33,16 +32,16 @@ class GateClient private constructor() {
         }
     }
 
-    fun requestAccess(callback: (Boolean) -> Unit) {
+    fun requestAccess(callback: (GateResponse?) -> Unit) {
         val request = GateRequest(
-            deviceKey = BuildConfig.DEVICE_KEY,
-            gateId = BuildConfig.GATE_ID,
+            deviceId = BuildConfig.DEVICE_ID,
+            rootId = BuildConfig.ROOT_ID,
+            userId = BuildConfig.USER_ID,
             timestamp = Date().time,
         )
 
         val body = Json.encodeToString(request)
 
-        var success = false
         var response: GateResponse? = null
         thread {
             val url = URL(BuildConfig.SERVER_URL)
@@ -51,12 +50,12 @@ class GateClient private constructor() {
             try {
                 client = (url.openConnection() as HttpsURLConnection).apply {
                     doOutput = true
-                    requestMethod = "POST"
+                    requestMethod = "PUT"
                     setChunkedStreamingMode(0)
                     setRequestProperty("Content-Type", "application/json")
                 }
 
-                sendPostRequest(client, body)
+                sendRequest(client, body)
                 response = getResponse(client)
             } catch (e: Exception) {
                 Log.e(LOG_TAG, e.message ?: "Unknown error while sending request")
@@ -64,17 +63,11 @@ class GateClient private constructor() {
                 client?.disconnect()
             }
 
-            response?.let { res ->
-                if (res.result == OPERATION_SUCCESS) {
-                    success = true
-                }
-            }
-
-            callback(success)
+            callback(response)
         }
     }
 
-    private fun sendPostRequest(client: HttpsURLConnection, body: String) {
+    private fun sendRequest(client: HttpsURLConnection, body: String) {
         val outputStream = BufferedOutputStream(client.outputStream)
         val writer = OutputStreamWriter(outputStream)
 

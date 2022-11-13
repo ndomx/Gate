@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.ndomx.gate.auth.AuthListener
 import com.ndomx.gate.auth.AuthManager
 import com.ndomx.gate.http.GateClient
+import com.ndomx.gate.http.models.GateResponse
 import com.ndomx.gate.machine.GateState
 import com.ndomx.gate.machine.GateStateData
 import com.ndomx.gate.machine.GateStateListener
@@ -113,12 +114,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
         }
     }
 
-    private fun onServerResponse(result: Boolean) = runOnUiThread {
-        gateStateMachine.setState(
-            when (result) {
-                true -> GateState.SUCCESS
-                false -> GateState.FAILURE
+    private fun onServerResponse(response: GateResponse?) = runOnUiThread {
+        response?.let { res ->
+            if (res.success) {
+                Toast.makeText(this, "Successfully opened gate", Toast.LENGTH_SHORT).show()
+                gateStateMachine.setState(GateState.SUCCESS)
+            } else {
+                val message = res.message ?: "Failed with code ${res.errorCode}"
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                gateStateMachine.setState(GateState.FAILURE)
             }
-        )
+        }
     }
 }
