@@ -6,16 +6,13 @@ export type GateDocument = HydratedDocument<Gate>;
 @Schema()
 export class Gate {
   @Prop()
-  gateId: string;
-
-  @Prop()
   name: string;
 
-  @Prop([String])
-  allowedDevices: string[];
+  @Prop()
+  parent: string;
 
   @Prop()
-  topic: string;
+  isDevice: Boolean;
 }
 
 export const GateSchema = SchemaFactory.createForClass(Gate);
