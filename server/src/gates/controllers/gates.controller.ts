@@ -9,7 +9,7 @@ import { OpenGateRequestDto } from '../dtos/open-gate-request.dto';
 import { OpenGateResponseDto } from '../dtos/open-gate-response.dto';
 import { GatesService } from '../services/gates.service';
 
-@Controller('gates')
+@Controller()
 @UsePipes(new ValidationPipe({ transform: true }))
 export class GatesController {
   constructor(private readonly gatesService: GatesService) {}
