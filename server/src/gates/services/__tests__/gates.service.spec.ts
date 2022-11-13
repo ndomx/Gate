@@ -2,7 +2,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
 import { User } from '../../schemas/user.schema';
 import { Node } from '../../schemas/node.shema';
-import { OpenGateRequestDto } from '../../dtos/open-gate-request.dto';
+import { OpenGateRequestDto } from '../../dtos/request/open-gate-request.dto';
 import { OpenGateRequestCodes } from '../../values/error-codes';
 import { GatesService } from '../gates.service';
 import { MqttService } from '../mqtt.service';
