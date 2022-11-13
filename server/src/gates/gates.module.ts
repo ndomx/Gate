@@ -6,9 +6,10 @@ import { Node, NodeSchema } from './schemas/node.shema';
 import { User, UserSchema } from './schemas/user.schema';
 import { GatesService } from './services/gates.service';
 import { MqttService } from './services/mqtt.service';
+import { UsersService } from './services/users.service';
 
 @Module({
-  providers: [GatesService, MqttService],
+  providers: [GatesService, MqttService, UsersService],
   controllers: [GatesController, UsersController],
   imports: [
     MongooseModule.forFeature([
