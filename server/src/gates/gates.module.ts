@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GatesController } from './controllers/gates.controller';
-import { Node, NodeSchema } from './schemas/gate.schema';
+import { Node, NodeSchema } from './schemas/node.shema';
 import { User, UserSchema } from './schemas/user.schema';
 import { GatesService } from './services/gates.service';
 import { MqttService } from './services/mqtt.service';

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OpenGateRequestDto } from '../dtos/open-gate-request.dto';
 import { OpenGateResponseDto } from '../dtos/open-gate-response.dto';
-import { Node, NodeDocument } from '../schemas/gate.schema';
+import { Node, NodeDocument } from '../schemas/node.shema';
 import { User, UserDocument } from '../schemas/user.schema';
 import { OpenGateRequestCodes } from '../values/error-codes';
 import { MqttService } from './mqtt.service';
