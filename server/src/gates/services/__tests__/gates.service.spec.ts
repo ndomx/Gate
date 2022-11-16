@@ -6,7 +6,7 @@ import { OpenGateRequestDto } from '../../dtos/request/open-gate-request.dto';
 import { OpenGateRequestCodes } from '../../values/error-codes';
 import { GatesService } from '../gates.service';
 import { MqttService } from '../mqtt.service';
-import { Mongoose, Types } from 'mongoose';
+import { Types } from 'mongoose';
 
 const userMock: User = {
   name: 'user',
