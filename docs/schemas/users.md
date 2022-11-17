@@ -2,7 +2,7 @@
 
 Every user is composed of their personal information along with their permissions. The field `access` provides information about the user's access rights (i.e. which doors are available). The field `admin` provides information about the nodes this user can administrate. That is, add/remove users.
 
-Both fields `access` and `admin` work the same way: Every element consists of a `rootId` pointing to a _root node_ (see [gates](./gates.md)) and a prefix that must match with the request.
+Both fields `access` and `admin` work the same way: Every element consists of a `rootId` pointing to a _root node_ (see [nodes](./nodes.md)) and a prefix that must match with the request.
 
 ```ts
 {
