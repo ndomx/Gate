@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { NodeInfo } from './node-info.schema';
 
 export type NodeDocument = HydratedDocument<Node>;
 
@@ -12,7 +13,10 @@ export class Node {
   parent: string;
 
   @Prop()
-  isDevice: Boolean;
+  rootId: string;
+
+  @Prop()
+  nodeInfo: NodeInfo;
 }
 
 export const NodeSchema = SchemaFactory.createForClass(Node);

@@ -35,7 +35,6 @@ describe('GatesController', () => {
         timestamp: Date.now(),
         userId: '<user-id>',
         deviceId: '<device-id>',
-        rootId: '<root-id>',
       };
 
       mockGatesService.requestAccess.mockResolvedValueOnce(

@@ -28,18 +28,8 @@ export class GatesService {
       };
     }
 
-    // verify if user has access to root
-    const permission = user.access.find((p) => p.rootId === request.rootId);
-    if (!permission) {
-      return {
-        message: 'user cannot access to root',
-        errorCode: OpenGateRequestCodes.ACCESS_DENIED,
-        success: false,
-      };
-    }
-
-    // verify if device exists
-    let node = await this.nodeModel.findById(request.deviceId);
+    // verify that node exists
+    const node = await this.nodeModel.findById(request.deviceId);
     if (!node) {
       return {
         errorCode: OpenGateRequestCodes.DEVICE_NOT_FOUND,
@@ -47,28 +37,38 @@ export class GatesService {
       };
     }
 
-    if (!node.isDevice) {
+    // verify that node is device
+    if (!node.nodeInfo.isDevice) {
       return {
         errorCode: OpenGateRequestCodes.NOT_DEVICE,
         success: false,
       };
     }
 
-    // verify if device is child of root
+    // verify that user root is the same that node root
+    if (user.rootId !== node.rootId) {
+      return {
+        errorCode: OpenGateRequestCodes.ACCESS_DENIED,
+        success: false,
+      };
+    }
+
+    // verify tree
     const nodes = [node.name];
-    while (node.parent) {
-      node = await this.nodeModel.findById(node.parent);
-      if (!node) {
+    let tempNode = node;
+    while (tempNode.parent) {
+      tempNode = await this.nodeModel.findById(tempNode.parent);
+      if (!tempNode) {
         return {
           errorCode: OpenGateRequestCodes.DATABASE_ERROR,
           success: false,
         };
       }
 
-      nodes.push(node.name);
+      nodes.push(tempNode.name);
     }
 
-    if (node._id.toHexString() !== request.rootId) {
+    if (tempNode._id.toHexString() !== node.rootId) {
       return {
         errorCode: OpenGateRequestCodes.ROOT_NOT_FOUND,
         success: false,
@@ -77,9 +77,9 @@ export class GatesService {
 
     // verify prefix
     const topic = nodes.reverse().join('/');
-    if (!topic.startsWith(permission.prefix)) {
+    if (!user.access.find((prefix) => topic.startsWith(prefix))) {
       return {
-        message: 'user cannot activate the requested device',
+        message: 'user does not have access rights for the requested gate',
         errorCode: OpenGateRequestCodes.ACCESS_DENIED,
         success: false,
       };

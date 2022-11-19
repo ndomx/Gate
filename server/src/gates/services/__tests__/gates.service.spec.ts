@@ -9,17 +9,19 @@ import { MqttService } from '../mqtt.service';
 import { Mongoose, Types } from 'mongoose';
 
 const userMock: User = {
-  name: 'user',
-  last: 'user',
-  access: [{ rootId: '231789', prefix: '' }],
-  admin: [{ rootId: '231789', prefix: '' }],
+  personId: '12355',
+  rootId: '8722',
+  access: [''],
 };
 
 const nodeMock: Node & { _id: Types.ObjectId } = {
   name: 'node',
+  rootId: '8722',
   parent: '',
-  isDevice: true,
   _id: new Types.ObjectId(),
+  nodeInfo: {
+    isDevice: true,
+  },
 };
 
 const mqttServiceMock = {
@@ -66,7 +68,6 @@ describe('GatesService', () => {
   describe('requestAccess()', () => {
     const request: OpenGateRequestDto = {
       userId: '1',
-      rootId: '1',
       deviceId: '2',
       timestamp: Date.now(),
     };
@@ -85,28 +86,8 @@ describe('GatesService', () => {
       });
     });
 
-    describe('when user does not have access to root', () => {
-      it('returns ACCESS_DENIED error', async () => {
-        const result = await service.requestAccess(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(
-          OpenGateRequestCodes.ACCESS_DENIED,
-        );
-      });
-    });
-
     describe('when device is not found', () => {
       beforeEach(() => {
-        userModelMock.findById.mockResolvedValueOnce({
-          ...userMock,
-          access: [
-            {
-              rootId: '1',
-              prefix: '',
-            },
-          ],
-        });
-
         nodeModelMock.findById.mockResolvedValueOnce(null);
       });
 
@@ -121,19 +102,11 @@ describe('GatesService', () => {
 
     describe('when node is not a device', () => {
       beforeEach(() => {
-        userModelMock.findById.mockResolvedValueOnce({
-          ...userMock,
-          access: [
-            {
-              rootId: '1',
-              prefix: '',
-            },
-          ],
-        });
-
         nodeModelMock.findById.mockResolvedValueOnce({
           ...nodeMock,
-          isDevice: false,
+          nodeInfo: {
+            isDevice: false,
+          },
         });
       });
 
@@ -144,16 +117,33 @@ describe('GatesService', () => {
       });
     });
 
-    describe('when device is not child of root', () => {
+    describe('when user root is not the same as node root', () => {
       beforeEach(() => {
         userModelMock.findById.mockResolvedValueOnce({
           ...userMock,
-          access: [
-            {
-              rootId: '1',
-              prefix: '',
-            },
-          ],
+          rootId: '1',
+        });
+      });
+
+      it('returns ACCESS_DENIED error', async () => {
+        const result = await service.requestAccess(request);
+        expect(result.success).toBeFalsy();
+        expect(result.errorCode).toStrictEqual(
+          OpenGateRequestCodes.ACCESS_DENIED,
+        );
+      });
+    });
+
+    describe('when device is not child of root', () => {
+      beforeEach(() => {
+        nodeModelMock.findById.mockResolvedValueOnce({
+          ...nodeMock,
+          parent: '2',
+        });
+
+        nodeModelMock.findById.mockResolvedValueOnce({
+          ...nodeMock,
+          _id: new Types.ObjectId(),
         });
       });
 
@@ -169,37 +159,33 @@ describe('GatesService', () => {
     describe('when device does not match the prefix', () => {
       const rootId = new Types.ObjectId();
 
-      const newRequest = {
-        ...request,
-        rootId: rootId.toHexString(),
-      };
-
       beforeEach(() => {
         userModelMock.findById.mockResolvedValueOnce({
           ...userMock,
-          access: [
-            {
-              rootId: newRequest.rootId,
-              prefix: 'other/node',
-            },
-          ],
+          rootId: rootId.toHexString(),
+          access: ['parent/other-node']
         });
 
         nodeModelMock.findById.mockResolvedValueOnce({
           ...nodeMock,
-          parent: '1',
+          rootId: rootId.toHexString(),
+          parent: rootId.toHexString(),
+          name: 'node',
         });
 
         nodeModelMock.findById.mockResolvedValueOnce({
           name: 'parent',
+          rootId: rootId.toHexString(),
           parent: '',
-          isDevice: false,
           _id: rootId,
+          nodeInfo: {
+            isDevice: false,
+          },
         });
       });
 
       it('returns ACCESS_DENIED error', async () => {
-        const result = await service.requestAccess(newRequest);
+        const result = await service.requestAccess(request);
         expect(result.success).toBeFalsy();
         expect(result.errorCode).toStrictEqual(
           OpenGateRequestCodes.ACCESS_DENIED,
@@ -218,24 +204,25 @@ describe('GatesService', () => {
       beforeEach(() => {
         userModelMock.findById.mockResolvedValueOnce({
           ...userMock,
-          access: [
-            {
-              rootId: newRequest.rootId,
-              prefix: 'parent/node',
-            },
-          ],
+          rootId: rootId.toHexString(),
+          access: ['parent/node']
         });
 
         nodeModelMock.findById.mockResolvedValueOnce({
           ...nodeMock,
-          parent: '1',
+          rootId: rootId.toHexString(),
+          parent: rootId.toHexString(),
+          name: 'node',
         });
 
         nodeModelMock.findById.mockResolvedValueOnce({
           name: 'parent',
+          rootId: rootId.toHexString(),
           parent: '',
-          isDevice: false,
           _id: rootId,
+          nodeInfo: {
+            isDevice: false,
+          },
         });
       });
 
