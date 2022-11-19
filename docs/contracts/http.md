@@ -7,7 +7,6 @@
 |    field    |   type   | is optional | description               |
 | :---------: | :------: | :---------: | :------------------------ |
 | `device_id` | `string` |     ❌      | Device trying to open     |
-|  `root_id`  | `string` |     ❌      | Root node of device       |
 |  `user_id`  | `string` |     ❌      | User ID, must have acess  |
 | `timestamp` | `number` |     ❌      | Unix timestamp of request |
 
@@ -16,7 +15,6 @@
 ```json
 {
   "device_id": "63702e9d3c71cb704ab9aa4b",
-  "root_id": "636674f1e04c56ce4ff1949c",
   "user_id": "637025023e71cb704af9aa49",
   "timestamp": 1668356350
 }
