@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
-import { OpenGateRequestDto } from '../../dtos/open-gate-request.dto';
-import { OpenGateResponseDto } from '../../dtos/open-gate-response.dto';
+import { OpenGateRequestDto } from '../../dtos/request/open-gate-request.dto';
+import { OpenGateResponseDto } from '../../dtos/response/open-gate-response.dto';
 import { GatesService } from '../../services/gates.service';
 import { GatesController } from '../gates.controller';
 
