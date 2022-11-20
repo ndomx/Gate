@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { User } from '../../schemas/user.schema';
 import { Node } from '../../schemas/node.shema';
 import { OpenGateRequestDto } from '../../dtos/request/open-gate-request.dto';
-import { OpenGateRequestCodes } from '../../values/error-codes';
+import { ErrorCodes } from '../../values/error-codes';
 import { GatesService } from '../gates.service';
 import { MqttService } from '../mqtt.service';
 import { Mongoose, Types } from 'mongoose';
@@ -81,7 +81,7 @@ describe('GatesService', () => {
         const result = await service.requestAccess(request);
         expect(result.success).toBeFalsy();
         expect(result.errorCode).toStrictEqual(
-          OpenGateRequestCodes.USER_NOT_FOUND,
+          ErrorCodes.USER_NOT_FOUND,
         );
       });
     });
@@ -95,7 +95,7 @@ describe('GatesService', () => {
         const result = await service.requestAccess(request);
         expect(result.success).toBeFalsy();
         expect(result.errorCode).toStrictEqual(
-          OpenGateRequestCodes.DEVICE_NOT_FOUND,
+          ErrorCodes.DEVICE_NOT_FOUND,
         );
       });
     });
@@ -113,7 +113,7 @@ describe('GatesService', () => {
       it('returns NOT_DEVICE error', async () => {
         const result = await service.requestAccess(request);
         expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(OpenGateRequestCodes.NOT_DEVICE);
+        expect(result.errorCode).toStrictEqual(ErrorCodes.NOT_DEVICE);
       });
     });
 
@@ -129,7 +129,7 @@ describe('GatesService', () => {
         const result = await service.requestAccess(request);
         expect(result.success).toBeFalsy();
         expect(result.errorCode).toStrictEqual(
-          OpenGateRequestCodes.ACCESS_DENIED,
+          ErrorCodes.ACCESS_DENIED,
         );
       });
     });
@@ -151,7 +151,7 @@ describe('GatesService', () => {
         const result = await service.requestAccess(request);
         expect(result.success).toBeFalsy();
         expect(result.errorCode).toStrictEqual(
-          OpenGateRequestCodes.ROOT_NOT_FOUND,
+          ErrorCodes.ROOT_NOT_FOUND,
         );
       });
     });
@@ -188,7 +188,7 @@ describe('GatesService', () => {
         const result = await service.requestAccess(request);
         expect(result.success).toBeFalsy();
         expect(result.errorCode).toStrictEqual(
-          OpenGateRequestCodes.ACCESS_DENIED,
+          ErrorCodes.ACCESS_DENIED,
         );
       });
     });

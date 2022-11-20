@@ -9,6 +9,11 @@ export class DeleteNodeRequestDto {
 
   @IsMongoId()
   @IsDefined()
+  @Expose({ name: 'root_id' })
+  rootId: string;
+
+  @IsMongoId()
+  @IsDefined()
   @Expose({ name: 'node_id' })
   nodeId: string;
 }

@@ -3,12 +3,10 @@ import {
   IsDefined,
   IsMongoId,
   IsOptional,
-  IsString,
-  Matches,
   ValidateNested,
 } from 'class-validator';
 import { NodeOptionsDto } from '../common/node-options.dto';
-import { NodeInfoDto } from '../common/node-info.dto';
+import { NodeDto } from '../common/node.dto';
 
 export class UpdateNodeRequestDto {
   @IsMongoId()
@@ -18,21 +16,20 @@ export class UpdateNodeRequestDto {
 
   @IsMongoId()
   @IsDefined()
+  @Expose({ name: 'root_id' })
+  rootId: string;
+
+  @IsMongoId()
+  @IsDefined()
   @Expose({ name: 'node_id' })
   nodeId: string;
 
-  @IsString()
-  @IsOptional()
-  @Matches(/^([a-zA-Z0-9_-]+\/?)+$/)
-  path?: string;
+  @IsDefined()
+  @ValidateNested()
+  node: Partial<NodeDto>;
 
   @ValidateNested()
   @IsOptional()
   @Expose({ name: 'update_options' })
   updateOptions?: NodeOptionsDto;
-
-  @ValidateNested()
-  @IsOptional()
-  @Expose({ name: 'node_info' })
-  nodeInfo?: NodeInfoDto;
 }

@@ -5,7 +5,7 @@ import { OpenGateRequestDto } from '../dtos/request/open-gate-request.dto';
 import { OpenGateResponseDto } from '../dtos/response/open-gate-response.dto';
 import { Node, NodeDocument } from '../schemas/node.shema';
 import { User, UserDocument } from '../schemas/user.schema';
-import { OpenGateRequestCodes } from '../values/error-codes';
+import { ErrorCodes } from '../values/error-codes';
 import { MqttService } from './mqtt.service';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class GatesService {
     const user = await this.userModel.findById(request.userId);
     if (!user) {
       return {
-        errorCode: OpenGateRequestCodes.USER_NOT_FOUND,
+        errorCode: ErrorCodes.USER_NOT_FOUND,
         success: false,
       };
     }
@@ -32,7 +32,7 @@ export class GatesService {
     const node = await this.nodeModel.findById(request.deviceId);
     if (!node) {
       return {
-        errorCode: OpenGateRequestCodes.DEVICE_NOT_FOUND,
+        errorCode: ErrorCodes.DEVICE_NOT_FOUND,
         success: false,
       };
     }
@@ -40,7 +40,7 @@ export class GatesService {
     // verify that node is device
     if (!node.nodeInfo.isDevice) {
       return {
-        errorCode: OpenGateRequestCodes.NOT_DEVICE,
+        errorCode: ErrorCodes.NOT_DEVICE,
         success: false,
       };
     }
@@ -48,7 +48,7 @@ export class GatesService {
     // verify that user root is the same that node root
     if (user.rootId !== node.rootId) {
       return {
-        errorCode: OpenGateRequestCodes.ACCESS_DENIED,
+        errorCode: ErrorCodes.ACCESS_DENIED,
         success: false,
       };
     }
@@ -60,7 +60,7 @@ export class GatesService {
       tempNode = await this.nodeModel.findById(tempNode.parent);
       if (!tempNode) {
         return {
-          errorCode: OpenGateRequestCodes.DATABASE_ERROR,
+          errorCode: ErrorCodes.DATABASE_ERROR,
           success: false,
         };
       }
@@ -70,7 +70,7 @@ export class GatesService {
 
     if (tempNode._id.toHexString() !== node.rootId) {
       return {
-        errorCode: OpenGateRequestCodes.ROOT_NOT_FOUND,
+        errorCode: ErrorCodes.ROOT_NOT_FOUND,
         success: false,
       };
     }
@@ -80,7 +80,7 @@ export class GatesService {
     if (!user.access.find((prefix) => topic.startsWith(prefix))) {
       return {
         message: 'user does not have access rights for the requested gate',
-        errorCode: OpenGateRequestCodes.ACCESS_DENIED,
+        errorCode: ErrorCodes.ACCESS_DENIED,
         success: false,
       };
     }

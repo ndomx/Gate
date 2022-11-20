@@ -1,19 +1,7 @@
-import { IsBoolean, IsDefined, IsIn, IsInt, IsOptional, IsString, Matches } from "class-validator";
-import { OpenGateRequestCodes } from "src/gates/values/error-codes";
+import { IsOptional, IsString, Matches } from 'class-validator';
+import { DefaultResponseDto } from './default-response.dto';
 
-export class OpenGateResponseDto {
-  @IsBoolean()
-  @IsDefined()
-  success: Boolean;
-
-  @IsInt()
-  @IsOptional()
-  errorCode?: number;
-
-  @IsString()
-  @IsOptional()
-  message?: string;
-
+export class OpenGateResponseDto extends DefaultResponseDto {
   @IsString()
   @IsOptional()
   @Matches(/^([a-zA-Z0-9_-]+\/?)+$/)

@@ -16,6 +16,11 @@ export class CreateNodeRequestDto {
   @Expose({name: 'admin_id'})
   adminId: string;
 
+  @IsMongoId()
+  @IsDefined()
+  @Expose({name: 'root_id'})
+  rootId: string;
+
   @IsString()
   @Matches(/^([a-zA-Z0-9_-]+\/?)+$/)
   path: string;

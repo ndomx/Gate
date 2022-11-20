@@ -29,7 +29,7 @@ export class NodesController {
   async createNode(
     @Body() request: CreateNodeRequestDto,
   ): Promise<CreateNodeResponseDto> {
-    throw new NotImplementedException();
+    return this.nodesService.createNode(request);
   }
 
   @Get(':admin_id')
@@ -37,23 +37,20 @@ export class NodesController {
     @Param('admin_id') adminId: string,
     @Query() request: GetNodesRequestDto,
   ) {
-    return {
-      admin: adminId,
-      request,
-    };
+    return this.nodesService.getNodes(adminId, request);
   }
 
   @Patch()
   async updateNode(
     @Body() request: UpdateNodeRequestDto,
   ): Promise<UpdateNodeResponseDto> {
-    throw new NotImplementedException();
+    return this.nodesService.updateNode(request);
   }
 
   @Delete()
   async deleteNode(
     @Body() request: DeleteNodeRequestDto,
   ): Promise<DeleteNodeResponseDto> {
-    throw new NotImplementedException();
+    return this.nodesService.deleteNode(request);
   }
 }
