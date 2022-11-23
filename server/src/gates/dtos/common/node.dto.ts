@@ -24,6 +24,9 @@ export class NodeDto {
   @IsDefined()
   parent: string;
 
+  @ValidateNested({ each: true })
+  children?: string[];
+
   @IsString()
   @IsNotEmpty()
   @Matches(/^[a-zA-Z0-9-_]+$/)

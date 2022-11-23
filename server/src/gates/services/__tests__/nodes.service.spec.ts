@@ -1,3 +1,8 @@
+import {
+  ForbiddenException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
 import { Types } from 'mongoose';
@@ -78,10 +83,10 @@ describe('NodesService', () => {
         adminModelMock.findById.mockResolvedValueOnce(null);
       });
 
-      it('returns a NOT_ADMIN error', async () => {
-        const result = await service.createNode(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.NOT_ADMIN);
+      it('returns a NOT_ADMIN error', () => {
+        expect(() => service.createNode(request)).rejects.toThrow(
+          ForbiddenException,
+        );
       });
     });
 
@@ -90,18 +95,18 @@ describe('NodesService', () => {
         nodeModelMock.findById.mockResolvedValueOnce(null);
       });
 
-      it('returns a ROOT_NOT_FOUND_ERROR', async () => {
-        const result = await service.createNode(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.ROOT_NOT_FOUND);
+      it('returns a ROOT_NOT_FOUND_ERROR', () => {
+        expect(() => service.createNode(request)).rejects.toThrow(
+          BadRequestException,
+        );
       });
     });
 
     describe('when admin does not have access to root', () => {
-      it('returns a ACCESS_DENIED error', async () => {
-        const result = await service.createNode(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.ACCESS_DENIED);
+      it('returns a ACCESS_DENIED error', () => {
+        expect(() => service.createNode(request)).rejects.toThrow(
+          ForbiddenException,
+        );
       });
     });
 
@@ -124,10 +129,10 @@ describe('NodesService', () => {
         });
       });
 
-      it('returns a PATH_ERROR', async () => {
-        const result = await service.createNode(invalidRequest);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.PATH_ERROR);
+      it('returns a PATH_ERROR', () => {
+        expect(() => service.createNode(request)).rejects.toThrow(
+          BadRequestException,
+        );
       });
     });
 
@@ -159,10 +164,10 @@ describe('NodesService', () => {
         nodeModelMock.findOne.mockResolvedValueOnce(null);
       });
 
-      it('returns a PATH_ERROR', async () => {
-        const result = await service.createNode(invalidRequest);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.PATH_ERROR);
+      it('returns a PATH_ERROR', () => {
+        expect(() => service.createNode(request)).rejects.toThrow(
+          BadRequestException,
+        );
       });
     });
 
@@ -183,10 +188,10 @@ describe('NodesService', () => {
         nodeModelMock.create.mockResolvedValueOnce(null);
       });
 
-      it('returns a PATH_ERROR', async () => {
-        const result = await service.createNode(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.DATABASE_ERROR);
+      it('returns a PATH_ERROR', () => {
+        expect(() => service.createNode(request)).rejects.toThrow(
+          InternalServerErrorException,
+        );
       });
     });
 
@@ -215,10 +220,9 @@ describe('NodesService', () => {
       it('returns success', async () => {
         const result = await service.createNode(request);
 
-        expect(result.success).toBeTruthy();
-        expect(result.node.rootId).toStrictEqual(rootId.toHexString());
-        expect(result.node.parent).toStrictEqual(rootId.toHexString());
-        expect(result.node.name).toStrictEqual('node');
+        expect(result.rootId).toStrictEqual(rootId.toHexString());
+        expect(result.parent).toStrictEqual(rootId.toHexString());
+        expect(result.name).toStrictEqual('node');
       });
     });
   });
@@ -233,10 +237,10 @@ describe('NodesService', () => {
         adminModelMock.findById.mockResolvedValueOnce(null);
       });
 
-      it('returns a NOT_ADMIN error', async () => {
-        const result = await service.updateNode(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.NOT_ADMIN);
+      it('returns a NOT_ADMIN error', () => {
+        expect(() => service.updateNode(request)).rejects.toThrow(
+          ForbiddenException,
+        );
       });
     });
 
@@ -245,18 +249,18 @@ describe('NodesService', () => {
         nodeModelMock.findById.mockResolvedValueOnce(null);
       });
 
-      it('returns a ROOT_NOT_FOUND_ERROR', async () => {
-        const result = await service.updateNode(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.ROOT_NOT_FOUND);
+      it('returns a ROOT_NOT_FOUND_ERROR', () => {
+        expect(() => service.updateNode(request)).rejects.toThrow(
+          BadRequestException,
+        );
       });
     });
 
     describe('when admin does not have access to root', () => {
-      it('returns a ACCESS_DENIED error', async () => {
-        const result = await service.updateNode(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.ACCESS_DENIED);
+      it('returns a ACCESS_DENIED error', () => {
+        expect(() => service.updateNode(request)).rejects.toThrow(
+          ForbiddenException,
+        );
       });
     });
 
@@ -277,10 +281,10 @@ describe('NodesService', () => {
         nodeModelMock.findByIdAndUpdate.mockResolvedValueOnce(null);
       });
 
-      it('returns a NODE_NOT_FOUND error', async () => {
-        const result = await service.updateNode(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.NODE_NOT_FOUND);
+      it('returns a NODE_NOT_FOUND error', () => {
+        expect(() => service.updateNode(request)).rejects.toThrow(
+          InternalServerErrorException,
+        );
       });
     });
 
@@ -306,14 +310,13 @@ describe('NodesService', () => {
 
         nodeModelMock.findByIdAndUpdate.mockResolvedValueOnce({
           ...nodeMock,
-          ...updateRequest.node,
+          name: updateRequest.node.name,
         });
       });
 
       it('returns success', async () => {
         const result = await service.updateNode(updateRequest);
-        expect(result.success).toBeTruthy();
-        expect(result.node.name).toStrictEqual('new-node-name');
+        expect(result.name).toStrictEqual('new-node-name');
       });
     });
   });
@@ -326,10 +329,10 @@ describe('NodesService', () => {
         adminModelMock.findById.mockResolvedValueOnce(null);
       });
 
-      it('returns a NOT_ADMIN error', async () => {
-        const result = await service.deleteNode(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.NOT_ADMIN);
+      it('returns a NOT_ADMIN error', () => {
+        expect(() => service.deleteNode(request)).rejects.toThrow(
+          ForbiddenException,
+        );
       });
     });
 
@@ -338,18 +341,18 @@ describe('NodesService', () => {
         nodeModelMock.findById.mockResolvedValueOnce(null);
       });
 
-      it('returns a ROOT_NOT_FOUND_ERROR', async () => {
-        const result = await service.deleteNode(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.ROOT_NOT_FOUND);
+      it('returns a ROOT_NOT_FOUND_ERROR', () => {
+        expect(() => service.deleteNode(request)).rejects.toThrow(
+          BadRequestException,
+        );
       });
     });
 
     describe('when admin does not have access to root', () => {
-      it('returns a ACCESS_DENIED error', async () => {
-        const result = await service.deleteNode(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.ACCESS_DENIED);
+      it('returns a ACCESS_DENIED error', () => {
+        expect(() => service.deleteNode(request)).rejects.toThrow(
+          ForbiddenException,
+        );
       });
     });
 
@@ -370,10 +373,10 @@ describe('NodesService', () => {
         nodeModelMock.findByIdAndDelete.mockResolvedValueOnce(null);
       });
 
-      it('returns a NODE_NOT_FOUND error', async () => {
-        const result = await service.deleteNode(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.NODE_NOT_FOUND);
+      it('returns a NODE_NOT_FOUND error', () => {
+        expect(() => service.deleteNode(request)).rejects.toThrow(
+          InternalServerErrorException,
+        );
       });
     });
 
@@ -394,8 +397,7 @@ describe('NodesService', () => {
 
       it('returns success', async () => {
         const result = await service.deleteNode(request);
-        expect(result.success).toBeTruthy();
-        expect(result.node.nodeId).toStrictEqual(nodeMock._id.toHexString());
+        expect(result.nodeId).toStrictEqual(nodeMock._id.toHexString());
       });
     });
   });

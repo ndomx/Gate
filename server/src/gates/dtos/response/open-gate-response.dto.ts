@@ -1,9 +1,7 @@
-import { IsOptional, IsString, Matches } from 'class-validator';
-import { DefaultResponseDto } from './default-response.dto';
+import { IsString, Matches } from 'class-validator';
 
-export class OpenGateResponseDto extends DefaultResponseDto {
+export class OpenGateResponseDto {
   @IsString()
-  @IsOptional()
   @Matches(/^([a-zA-Z0-9_-]+\/?)+$/)
-  topic?: string;
+  topic: string;
 }

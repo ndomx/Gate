@@ -1,4 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OpenGateRequestDto } from '../dtos/request/open-gate-request.dto';
@@ -22,35 +28,31 @@ export class GatesService {
     // verify that user exists
     const user = await this.userModel.findById(request.userId);
     if (!user) {
-      return {
-        errorCode: ErrorCodes.USER_NOT_FOUND,
-        success: false,
-      };
+      throw new ForbiddenException({
+        error_code: ErrorCodes.USER_NOT_FOUND,
+      });
     }
 
     // verify that node exists
     const node = await this.nodeModel.findById(request.deviceId);
     if (!node) {
-      return {
-        errorCode: ErrorCodes.DEVICE_NOT_FOUND,
-        success: false,
-      };
+      throw new NotFoundException({
+        error_code: ErrorCodes.DEVICE_NOT_FOUND,
+      });
     }
 
     // verify that node is device
     if (!node.nodeInfo.isDevice) {
-      return {
-        errorCode: ErrorCodes.NOT_DEVICE,
-        success: false,
-      };
+      throw new BadRequestException({
+        error_code: ErrorCodes.NOT_DEVICE,
+      });
     }
 
     // verify that user root is the same that node root
     if (user.rootId !== node.rootId) {
-      return {
-        errorCode: ErrorCodes.ACCESS_DENIED,
-        success: false,
-      };
+      throw new ForbiddenException({
+        error_code: ErrorCodes.ACCESS_DENIED,
+      });
     }
 
     // verify tree
@@ -59,38 +61,33 @@ export class GatesService {
     while (tempNode.parent) {
       tempNode = await this.nodeModel.findById(tempNode.parent);
       if (!tempNode) {
-        return {
-          errorCode: ErrorCodes.DATABASE_ERROR,
-          success: false,
-        };
+        throw new InternalServerErrorException({
+          error_code: ErrorCodes.DATABASE_ERROR,
+        });
       }
 
       nodes.push(tempNode.name);
     }
 
     if (tempNode._id.toHexString() !== node.rootId) {
-      return {
-        errorCode: ErrorCodes.ROOT_NOT_FOUND,
+      throw new BadRequestException({
+        error_code: ErrorCodes.ROOT_NOT_FOUND,
         success: false,
-      };
+      });
     }
 
     // verify prefix
     const topic = nodes.reverse().join('/');
     if (!user.access.find((prefix) => topic.startsWith(prefix))) {
-      return {
+      throw new ForbiddenException({
         message: 'user does not have access rights for the requested gate',
-        errorCode: ErrorCodes.ACCESS_DENIED,
-        success: false,
-      };
+        error_code: ErrorCodes.ACCESS_DENIED,
+      });
     }
 
     this.#grantAccess(topic);
 
-    return {
-      topic,
-      success: true,
-    };
+    return { topic };
   }
 
   #grantAccess(topic: string) {

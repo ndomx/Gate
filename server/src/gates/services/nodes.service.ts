@@ -1,4 +1,11 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+  NotImplementedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { NodeDto } from '../dtos/common/node.dto';
@@ -24,45 +31,30 @@ export class NodesService {
   async createNode(
     request: CreateNodeRequestDto,
   ): Promise<CreateNodeResponseDto> {
-    const response = new CreateNodeResponseDto();
-
     // validate admin
     const admin = await this.adminModel.findById(request.adminId);
     if (!admin) {
-      response.success = false;
-      response.errorCode = ErrorCodes.NOT_ADMIN;
-      return response;
+      throw new ForbiddenException({ error_code: ErrorCodes.NOT_ADMIN });
     }
 
     // validate root
     const root = await this.nodeModel.findById(request.rootId);
     if (!root) {
-      response.success = false;
-      response.errorCode = ErrorCodes.ROOT_NOT_FOUND;
-      return response;
+      throw new BadRequestException({ error_code: ErrorCodes.ROOT_NOT_FOUND });
     }
 
     // validate admin access
     if (!admin.roots.includes(root._id.toHexString())) {
-      response.success = false;
-      response.errorCode = ErrorCodes.ACCESS_DENIED;
-      return response;
+      throw new ForbiddenException({ error_code: ErrorCodes.ACCESS_DENIED });
     }
 
     // validate path && options
     const path = this.#getRelativePathToRoot(root, request.path);
     if (path.length === 0) {
-      response.success = false;
-      response.message = 'invalid path for new node';
-      response.errorCode = ErrorCodes.PATH_ERROR;
-      return response;
-    }
-
-    if (request.createOptions?.createIntermidiate) {
-      response.success = false;
-      response.message = 'feature not available yet';
-      response.errorCode = ErrorCodes.GATE_ERROR;
-      return response;
+      throw new BadRequestException({
+        message: 'invalid path for new node',
+        error_code: ErrorCodes.PATH_ERROR,
+      });
     }
 
     const nodeName = path.pop();
@@ -78,10 +70,10 @@ export class NodesService {
     }
 
     if (!node) {
-      response.success = false;
-      response.message = 'path unavailable';
-      response.errorCode = ErrorCodes.PATH_ERROR;
-      return response;
+      throw new BadRequestException({
+        message: 'path unavailable',
+        error_code: ErrorCodes.PATH_ERROR,
+      });
     }
 
     // add node to db
@@ -93,23 +85,14 @@ export class NodesService {
     });
 
     if (!node) {
-      response.success = false;
-      response.message = 'unable to save node';
-      response.errorCode = ErrorCodes.DATABASE_ERROR;
-      return response;
+      throw new InternalServerErrorException({
+        message: 'unable to save node',
+        error_code: ErrorCodes.DATABASE_ERROR,
+      });
     }
 
     // package and return
-    const createdNode = new NodeDto();
-    createdNode.name = node.name;
-    createdNode.parent = node.parent;
-    createdNode.rootId = node.rootId;
-    createdNode.nodeInfo = node.nodeInfo;
-    createdNode.nodeId = node._id.toHexString();
-
-    response.success = true;
-    response.node = createdNode;
-    return response;
+    return this.#mapNodeFromSchema(node);
   }
 
   async getNodes(
@@ -122,29 +105,21 @@ export class NodesService {
   async updateNode(
     request: UpdateNodeRequestDto,
   ): Promise<UpdateNodeResponseDto> {
-    const response = new UpdateNodeResponseDto();
-
     // validate admin
     const admin = await this.adminModel.findById(request.adminId);
     if (!admin) {
-      response.success = false;
-      response.errorCode = ErrorCodes.NOT_ADMIN;
-      return response;
+      throw new ForbiddenException({ error_code: ErrorCodes.NOT_ADMIN });
     }
 
     // validate root
     const root = await this.nodeModel.findById(request.rootId);
     if (!root) {
-      response.success = false;
-      response.errorCode = ErrorCodes.ROOT_NOT_FOUND;
-      return response;
+      throw new BadRequestException({ error_code: ErrorCodes.ROOT_NOT_FOUND });
     }
 
     // validate access
     if (!admin.roots.includes(root._id.toHexString())) {
-      response.success = false;
-      response.errorCode = ErrorCodes.ACCESS_DENIED;
-      return response;
+      throw new ForbiddenException({ error_code: ErrorCodes.ACCESS_DENIED });
     }
 
     // update db
@@ -154,14 +129,11 @@ export class NodesService {
     );
 
     if (!node) {
-      response.success = false;
-      response.errorCode = ErrorCodes.NODE_NOT_FOUND;
-      return response;
+      throw new ForbiddenException({ error_code: ErrorCodes.NODE_NOT_FOUND });
     }
 
-    response.success = true;
-    response.node = { ...node, nodeId: node._id.toHexString() };
-    return response;
+    // package and return
+    return this.#mapNodeFromSchema(node);
   }
 
   async deleteNode(
@@ -172,38 +144,28 @@ export class NodesService {
     // validate admin
     const admin = await this.adminModel.findById(request.adminId);
     if (!admin) {
-      response.success = false;
-      response.errorCode = ErrorCodes.NOT_ADMIN;
-      return response;
+      throw new ForbiddenException({ error_code: ErrorCodes.NOT_ADMIN });
     }
 
     // validate root
     const root = await this.nodeModel.findById(request.rootId);
     if (!root) {
-      response.success = false;
-      response.errorCode = ErrorCodes.ROOT_NOT_FOUND;
-      return response;
+      throw new BadRequestException({ error_code: ErrorCodes.ROOT_NOT_FOUND });
     }
 
     // validate access
     if (!admin.roots.includes(root._id.toHexString())) {
-      response.success = false;
-      response.errorCode = ErrorCodes.ACCESS_DENIED;
-      return response;
+      throw new ForbiddenException({ error_code: ErrorCodes.ACCESS_DENIED });
     }
 
     // update db
     const node = await this.nodeModel.findByIdAndDelete(request.nodeId);
     if (!node) {
-      response.success = false;
-      response.errorCode = ErrorCodes.NODE_NOT_FOUND;
-      return response;
+      throw new ForbiddenException({ error_code: ErrorCodes.NODE_NOT_FOUND });
     }
 
     // package and return
-    response.success = true;
-    response.node = { ...node, nodeId: node._id.toHexString() };
-    return response;
+    return this.#mapNodeFromSchema(node);
   }
 
   #getRelativePathToRoot(root: Node, path: string): string[] {
@@ -221,5 +183,17 @@ export class NodesService {
     }
 
     return pathList;
+  }
+
+  #mapNodeFromSchema(nodeDocument: NodeDocument): NodeDto {
+    const node = new NodeDto();
+    node.name = nodeDocument.name;
+    node.parent = nodeDocument.parent;
+    node.children = nodeDocument.children;
+    node.rootId = nodeDocument.rootId;
+    node.nodeInfo = nodeDocument.nodeInfo;
+    node.nodeId = nodeDocument._id.toHexString();
+
+    return node;
   }
 }

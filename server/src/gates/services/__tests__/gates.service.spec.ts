@@ -1,12 +1,17 @@
+import {
+  ForbiddenException,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
 import { User } from '../../schemas/user.schema';
 import { Node } from '../../schemas/node.shema';
 import { OpenGateRequestDto } from '../../dtos/request/open-gate-request.dto';
-import { ErrorCodes } from '../../values/error-codes';
 import { GatesService } from '../gates.service';
 import { MqttService } from '../mqtt.service';
-import { Mongoose, Types } from 'mongoose';
+import { Types } from 'mongoose';
 
 const userMock: User = {
   personId: '12355',
@@ -77,11 +82,9 @@ describe('GatesService', () => {
         userModelMock.findById.mockResolvedValueOnce(null);
       });
 
-      it('returns USER_NOT_FOUND error', async () => {
-        const result = await service.requestAccess(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(
-          ErrorCodes.USER_NOT_FOUND,
+      it('throws USER_NOT_FOUND error', () => {
+        expect(() => service.requestAccess(request)).rejects.toThrow(
+          ForbiddenException,
         );
       });
     });
@@ -91,11 +94,9 @@ describe('GatesService', () => {
         nodeModelMock.findById.mockResolvedValueOnce(null);
       });
 
-      it('returns DEVICE_NOT_FOUND error', async () => {
-        const result = await service.requestAccess(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(
-          ErrorCodes.DEVICE_NOT_FOUND,
+      it('returns DEVICE_NOT_FOUND error', () => {
+        expect(() => service.requestAccess(request)).rejects.toThrow(
+          NotFoundException,
         );
       });
     });
@@ -110,10 +111,10 @@ describe('GatesService', () => {
         });
       });
 
-      it('returns NOT_DEVICE error', async () => {
-        const result = await service.requestAccess(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(ErrorCodes.NOT_DEVICE);
+      it('returns NOT_DEVICE error', () => {
+        expect(() => service.requestAccess(request)).rejects.toThrow(
+          BadRequestException,
+        );
       });
     });
 
@@ -125,11 +126,9 @@ describe('GatesService', () => {
         });
       });
 
-      it('returns ACCESS_DENIED error', async () => {
-        const result = await service.requestAccess(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(
-          ErrorCodes.ACCESS_DENIED,
+      it('returns ACCESS_DENIED error', () => {
+        expect(() => service.requestAccess(request)).rejects.toThrow(
+          ForbiddenException,
         );
       });
     });
@@ -147,11 +146,9 @@ describe('GatesService', () => {
         });
       });
 
-      it('returns ROOT_NOT_FOUND error', async () => {
-        const result = await service.requestAccess(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(
-          ErrorCodes.ROOT_NOT_FOUND,
+      it('returns ROOT_NOT_FOUND error', () => {
+        expect(() => service.requestAccess(request)).rejects.toThrow(
+          BadRequestException,
         );
       });
     });
@@ -163,7 +160,7 @@ describe('GatesService', () => {
         userModelMock.findById.mockResolvedValueOnce({
           ...userMock,
           rootId: rootId.toHexString(),
-          access: ['parent/other-node']
+          access: ['parent/other-node'],
         });
 
         nodeModelMock.findById.mockResolvedValueOnce({
@@ -184,11 +181,9 @@ describe('GatesService', () => {
         });
       });
 
-      it('returns ACCESS_DENIED error', async () => {
-        const result = await service.requestAccess(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(
-          ErrorCodes.ACCESS_DENIED,
+      it('returns ACCESS_DENIED error', () => {
+        expect(() => service.requestAccess(request)).rejects.toThrow(
+          ForbiddenException,
         );
       });
     });
@@ -205,7 +200,7 @@ describe('GatesService', () => {
         userModelMock.findById.mockResolvedValueOnce({
           ...userMock,
           rootId: rootId.toHexString(),
-          access: ['parent/node']
+          access: ['parent/node'],
         });
 
         nodeModelMock.findById.mockResolvedValueOnce({
@@ -228,7 +223,6 @@ describe('GatesService', () => {
 
       it('returns a successful object', async () => {
         const result = await service.requestAccess(newRequest);
-        expect(result.success).toBeTruthy();
         expect(result.topic).toStrictEqual('parent/node');
       });
     });
