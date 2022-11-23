@@ -5,10 +5,10 @@ export type PersonDocument = HydratedDocument<Person>;
 
 @Schema()
 export class Person {
-    @Prop()
+    @Prop({required:true})
     name: string;
 
-    @Prop()
+    @Prop({required:true})
     last: string;
 }
 

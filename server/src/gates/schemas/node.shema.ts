@@ -6,16 +6,19 @@ export type NodeDocument = HydratedDocument<Node>;
 
 @Schema()
 export class Node {
-  @Prop()
+  @Prop({ required: true })
   name: string;
 
-  @Prop()
+  @Prop({ required: true })
   parent: string;
 
-  @Prop()
+  @Prop({ required: false })
+  children?: [string];
+
+  @Prop({ required: true })
   rootId: string;
 
-  @Prop()
+  @Prop({ required: true })
   nodeInfo: NodeInfo;
 }
 
