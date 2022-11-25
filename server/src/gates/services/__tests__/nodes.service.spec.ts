@@ -9,9 +9,9 @@ import { Types } from 'mongoose';
 import { UpdateNodeRequestDto } from '../../dtos/request/update-node-request.dto';
 import { CreateNodeRequestDto } from '../../dtos/request/create-node-request.dto';
 import { DeleteNodeRequestDto } from '../../dtos/request/delete-node-request.dto';
+import { GetNodesRequestDto } from '../../dtos/request/get-nodes-request.dto';
 import { Admin } from '../../schemas/admin.schema';
 import { Node } from '../../schemas/node.shema';
-import { ErrorCodes } from '../../values/error-codes';
 import { NodesService } from '../nodes.service';
 
 const adminMock: Admin = {
@@ -37,6 +37,7 @@ const adminModelMock = {
 
 const nodeModelMock = {
   create: jest.fn(() => Promise.resolve(nodeMock)),
+  find: jest.fn(() => Promise.resolve([nodeMock])),
   findById: jest.fn(() => Promise.resolve(nodeMock)),
   findOne: jest.fn(() => Promise.resolve(nodeMock)),
   findByIdAndUpdate: jest.fn(() => Promise.resolve(nodeMock)),
@@ -110,12 +111,8 @@ describe('NodesService', () => {
       });
     });
 
-    describe('when path is invalid', () => {
+    describe('when path is empty', () => {
       const rootId = new Types.ObjectId();
-      const invalidRequest: CreateNodeRequestDto = {
-        ...request,
-        path: 'root',
-      };
 
       beforeEach(() => {
         adminModelMock.findById.mockResolvedValueOnce({
@@ -129,20 +126,16 @@ describe('NodesService', () => {
         });
       });
 
-      it('returns a PATH_ERROR', () => {
-        expect(() => service.createNode(request)).rejects.toThrow(
-          BadRequestException,
-        );
+      it('returns a PATH_ERROR for empty paths', () => {
+        expect(() =>
+          service.createNode({ ...request, path: '/' }),
+        ).rejects.toThrow(BadRequestException);
       });
     });
 
-    describe('when path is unavailable', () => {
+    describe('when path is invalid', () => {
       const rootId = new Types.ObjectId();
       const nodeId = new Types.ObjectId();
-      const invalidRequest: CreateNodeRequestDto = {
-        ...request,
-        path: 'root/node/other/device',
-      };
 
       beforeEach(() => {
         adminModelMock.findById.mockResolvedValueOnce({
@@ -164,10 +157,10 @@ describe('NodesService', () => {
         nodeModelMock.findOne.mockResolvedValueOnce(null);
       });
 
-      it('returns a PATH_ERROR', () => {
-        expect(() => service.createNode(request)).rejects.toThrow(
-          BadRequestException,
-        );
+      it('returns a PATH_ERROR for invalid paths', () => {
+        expect(() =>
+          service.createNode({ ...request, path: 'invalid/path' }),
+        ).rejects.toThrow(BadRequestException);
       });
     });
 
@@ -188,7 +181,7 @@ describe('NodesService', () => {
         nodeModelMock.create.mockResolvedValueOnce(null);
       });
 
-      it('returns a PATH_ERROR', () => {
+      it('returns a DATABASE_ERROR', () => {
         expect(() => service.createNode(request)).rejects.toThrow(
           InternalServerErrorException,
         );
@@ -227,7 +220,106 @@ describe('NodesService', () => {
     });
   });
 
-  describe('getNodes()', () => {});
+  describe('getNodes()', () => {
+    const adminId = new Types.ObjectId().toHexString();
+    const request = new GetNodesRequestDto();
+
+    describe('when admin is invalid', () => {
+      beforeEach(() => {
+        adminModelMock.findById.mockResolvedValueOnce(null);
+      });
+
+      it('returns a NOT_ADMIN error', () => {
+        expect(() => service.getNodes(adminId, request)).rejects.toThrow(
+          ForbiddenException,
+        );
+      });
+    });
+
+    describe('when no path is provided', () => {
+      it('returns all admin nodes', async () => {
+        const nodes = await service.getNodes(adminId, request);
+        expect(nodes.nodes.length).toBeGreaterThan(0);
+      });
+    });
+
+    describe('when valid path is provided', () => {
+      const id0 = new Types.ObjectId();
+      const id1 = new Types.ObjectId();
+      const id2 = new Types.ObjectId();
+      const id3 = new Types.ObjectId();
+      const id4 = new Types.ObjectId();
+
+      const tree: (Node & { _id: Types.ObjectId })[] = [
+        {
+          _id: id0,
+          name: 'a',
+          parent: '',
+          nodeInfo: { isDevice: false },
+          rootId: id0.toHexString(),
+        },
+        {
+          _id: id1,
+          name: 'b',
+          parent: id0.toHexString(),
+          nodeInfo: { isDevice: false },
+          rootId: id0.toHexString(),
+        },
+        {
+          _id: id2,
+          name: 'c',
+          parent: id1.toHexString(),
+          nodeInfo: { isDevice: true },
+          rootId: id0.toHexString(),
+        },
+        {
+          _id: id3,
+          name: 'd',
+          parent: id1.toHexString(),
+          nodeInfo: { isDevice: true },
+          rootId: id0.toHexString(),
+        },
+        {
+          _id: id4,
+          name: 'e',
+          parent: id3.toHexString(),
+          nodeInfo: { isDevice: false },
+          rootId: id0.toHexString(),
+        },
+      ];
+
+      beforeEach(() => {
+        nodeModelMock.findOne.mockResolvedValueOnce(tree[0]);
+        nodeModelMock.findOne.mockResolvedValueOnce(tree[1]);
+        nodeModelMock.find.mockResolvedValueOnce(tree.slice(2, 4));
+        nodeModelMock.find.mockResolvedValueOnce([]);
+        nodeModelMock.find.mockResolvedValueOnce(tree.slice(-1));
+        nodeModelMock.find.mockResolvedValueOnce([]);
+      });
+
+      it('returns an array of nodes', async () => {
+        const result = await service.getNodes(adminId, {
+          ...request,
+          path: 'a/b',
+        });
+
+        expect(result.nodes.length).toStrictEqual(4);
+      });
+    });
+
+    describe('when an invalid path is provided', () => {
+      beforeEach(() => {
+        nodeModelMock.findOne.mockResolvedValueOnce(nodeMock);
+        nodeModelMock.findOne.mockResolvedValueOnce(null);
+      });
+
+      it('throws a PATH_ERROR', () => {
+        expect(() =>
+          service.getNodes(adminId, { ...request, path: 'a/b/c' }),
+        ).rejects.toThrow(BadRequestException);
+      });
+    });
+  });
 
   describe('updateNode()', () => {
     const request = new UpdateNodeRequestDto();

@@ -1,10 +1,8 @@
 import {
   Injectable,
   ForbiddenException,
-  NotFoundException,
   BadRequestException,
   InternalServerErrorException,
-  NotImplementedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -48,37 +46,15 @@ export class NodesService {
       throw new ForbiddenException({ error_code: ErrorCodes.ACCESS_DENIED });
     }
 
-    // validate path && options
-    const path = this.#getRelativePathToRoot(root, request.path);
-    if (path.length === 0) {
-      throw new BadRequestException({
-        message: 'invalid path for new node',
-        error_code: ErrorCodes.PATH_ERROR,
-      });
-    }
-
+    // validate path
+    const path = this.#getPathFromRoot(root, request.path);
     const nodeName = path.pop();
-    let node = root;
-    let parent = root._id.toHexString();
-    for (const loc of path) {
-      node = await this.nodeModel.findOne({ parent, name: loc });
-      if (!node) {
-        break;
-      }
 
-      parent = node._id.toHexString();
-    }
-
-    if (!node) {
-      throw new BadRequestException({
-        message: 'path unavailable',
-        error_code: ErrorCodes.PATH_ERROR,
-      });
-    }
+    const parent = await this.#findByPath(path);
 
     // add node to db
-    node = await this.nodeModel.create({
-      parent,
+    const node = await this.nodeModel.create({
+      parent: parent._id.toHexString(),
       rootId: root._id.toHexString(),
       name: nodeName,
       nodeInfo: request.nodeInfo,
@@ -99,7 +75,30 @@ export class NodesService {
     adminId: string,
     request: GetNodesRequestDto,
   ): Promise<GetNodesResponseDto> {
-    throw new NotImplementedException();
+    // validate admin
+    const admin = await this.adminModel.findById(adminId);
+    if (!admin) {
+      throw new ForbiddenException({ error_code: ErrorCodes.NOT_ADMIN });
+    }
+
+    if (!request.path) {
+      const response = new GetNodesResponseDto();
+      const nodes = await this.nodeModel.find({
+        _id: { $in: admin.roots },
+      });
+      response.nodes = nodes.map((node) => this.#mapNodeFromSchema(node));
+
+      return response;
+    }
+
+    const path = request.path.split('/');
+    const next = await this.#findByPath(path);
+    const nodes = await this.#findChildren(next);
+
+    const response = new GetNodesResponseDto();
+    response.nodes = nodes;
+
+    return response;
   }
 
   async updateNode(
@@ -168,18 +167,20 @@ export class NodesService {
     return this.#mapNodeFromSchema(node);
   }
 
-  #getRelativePathToRoot(root: Node, path: string): string[] {
+  #getPathFromRoot(root: Node, path: string): string[] {
+    path = path.trim().replace(/^\/+/, '').replace(/\/+$/, '');
+
     const pathList = path.split('/');
-    if (pathList.length === 0) {
-      return [];
+    if (!pathList[0]) {
+      throw new BadRequestException({
+        message: 'path cannot be empty',
+        error_code: ErrorCodes.PATH_ERROR,
+      });
     }
 
-    if (root.name === pathList[0]) {
-      if (pathList.length === 1) {
-        return [];
-      } else {
-        return pathList.slice(1);
-      }
+    if (root.name !== pathList[0]) {
+      // path is relative, should start with root
+      pathList.splice(0, 0, root.name);
     }
 
     return pathList;
@@ -195,5 +196,42 @@ export class NodesService {
     node.nodeId = nodeDocument._id.toHexString();
 
     return node;
+  }
+
+  async #findByPath(path: string[]): Promise<NodeDocument> {
+    let next: NodeDocument;
+    let parent = '';
+
+    for (const loc of path) {
+      next = await this.nodeModel.findOne({
+        parent,
+        name: loc,
+      });
+
+      if (!next) {
+        throw new BadRequestException({
+          error_code: ErrorCodes.PATH_ERROR,
+          message: 'invalid path',
+        });
+      }
+
+      parent = next._id.toHexString();
+    }
+
+    return next;
+  }
+
+  async #findChildren(startingNode: NodeDocument): Promise<NodeDto[]> {
+    const children = await this.nodeModel.find({
+      parent: startingNode._id,
+    });
+
+    let nodes = [this.#mapNodeFromSchema(startingNode)];
+    for (const child of children) {
+      const childNodes = await this.#findChildren(child);
+      nodes = nodes.concat(childNodes);
+    }
+
+    return nodes;
   }
 }
