@@ -190,7 +190,6 @@ export class NodesService {
     const node = new NodeDto();
     node.name = nodeDocument.name;
     node.parent = nodeDocument.parent;
-    node.children = nodeDocument.children;
     node.rootId = nodeDocument.rootId;
     node.nodeInfo = nodeDocument.nodeInfo;
     node.nodeId = nodeDocument._id.toHexString();

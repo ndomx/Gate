@@ -12,9 +12,6 @@ export class Node {
   @Prop({ required: true })
   parent: string;
 
-  @Prop({ required: false })
-  children?: [string];
-
   @Prop({ required: true })
   rootId: string;
 
