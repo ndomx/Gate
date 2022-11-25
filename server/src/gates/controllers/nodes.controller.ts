@@ -7,7 +7,6 @@ import {
   Delete,
   UsePipes,
   ValidationPipe,
-  NotImplementedException,
   Param,
   Query,
 } from '@nestjs/common';
