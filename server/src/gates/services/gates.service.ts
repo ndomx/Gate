@@ -25,7 +25,7 @@ export class GatesService {
   async requestAccess(
     request: OpenGateRequestDto,
   ): Promise<OpenGateResponseDto> {
-    // verify that user exists
+    // verify user
     const user = await this.userModel.findById(request.userId);
     if (!user) {
       throw new ForbiddenException({
@@ -33,7 +33,7 @@ export class GatesService {
       });
     }
 
-    // verify that node exists
+    // verify node
     const node = await this.nodeModel.findById(request.deviceId);
     if (!node) {
       throw new NotFoundException({
@@ -41,14 +41,14 @@ export class GatesService {
       });
     }
 
-    // verify that node is device
+    // verify node is device
     if (!node.nodeInfo.isDevice) {
       throw new BadRequestException({
         error_code: ErrorCodes.NOT_DEVICE,
       });
     }
 
-    // verify that user root is the same that node root
+    // verify user root is the same as node root
     if (user.rootId !== node.rootId) {
       throw new ForbiddenException({
         error_code: ErrorCodes.ACCESS_DENIED,
@@ -85,7 +85,7 @@ export class GatesService {
       });
     }
 
-    this.#grantAccess(topic);
+    this.#grantAccess(`${node.rootId}/${topic}`);
 
     return { topic };
   }
