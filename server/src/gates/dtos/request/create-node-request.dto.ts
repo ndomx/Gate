@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
   IsDefined,
   IsMongoId,
@@ -13,24 +13,27 @@ import { NodeInfoDto } from '../common/node-info.dto';
 export class CreateNodeRequestDto {
   @IsMongoId()
   @IsDefined()
-  @Expose({name: 'admin_id'})
+  @Expose({ name: 'admin_id' })
   adminId: string;
 
   @IsMongoId()
   @IsDefined()
-  @Expose({name: 'root_id'})
+  @Expose({ name: 'root_id' })
   rootId: string;
 
   @IsString()
   @Matches(/^([a-zA-Z0-9_-]+\/?)+$/)
   path: string;
 
+  @Type(() => NodeOptionsDto)
   @ValidateNested()
   @IsOptional()
   @Expose({ name: 'create_options' })
   createOptions?: NodeOptionsDto;
 
+  @Type(() => NodeInfoDto)
   @ValidateNested()
+  @IsDefined()
   @Expose({ name: 'node_info' })
   nodeInfo: NodeInfoDto;
 }

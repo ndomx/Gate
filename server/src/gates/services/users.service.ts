@@ -13,6 +13,8 @@ import { ErrorCodes } from '../values/error-codes';
 import { Node, NodeDocument } from '../schemas/node.shema';
 import { Person, PersonDocument } from '../schemas/person.schema';
 import { UserDto } from '../dtos/common/user.dto';
+import { UpdateUserRequestDto } from '../dtos/request/update-user-request.dto';
+import { UpdateUserResponseDto } from '../dtos/response/update-user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -65,6 +67,52 @@ export class UsersService {
       rootId: root._id.toHexString(),
       access: request.access,
     });
+
+    // package & return
+    return this.#dtoFromSchema(user);
+  }
+
+  async updateUser(
+    request: UpdateUserRequestDto,
+  ): Promise<UpdateUserResponseDto> {
+    // validate admin
+    const admin = await this.adminModel.findById(request.adminId);
+    if (!admin) {
+      throw new ForbiddenException({
+        error_code: ErrorCodes.ACCESS_DENIED,
+      });
+    }
+
+    // validate user
+    let user = await this.userModel.findById(request.userId);
+    if (!user) {
+      throw new BadRequestException({
+        error_code: ErrorCodes.USER_NOT_FOUND,
+      });
+    }
+
+    // validate admin access to root
+    const root = await this.nodeModel.findById(user.rootId);
+    if (!admin.roots.includes(root._id.toHexString())) {
+      throw new ForbiddenException({
+        error_code: ErrorCodes.ACCESS_DENIED,
+        message: 'admin does not have access privilege',
+      });
+    }
+
+    // update person info
+    if (request.person) {
+      const person = await this.personModel.findByIdAndUpdate(user.personId, {
+        ...request.person,
+      });
+    }
+
+    // upadte user access
+    if (request.access) {
+      user = await this.userModel.findByIdAndUpdate(request.userId, {
+        access: request.access,
+      });
+    }
 
     // package & return
     return this.#dtoFromSchema(user);

@@ -1,4 +1,5 @@
-import { Expose } from 'class-transformer';
+import { PartialType } from '@nestjs/swagger';
+import { Expose, Type } from 'class-transformer';
 import {
   IsDefined,
   IsMongoId,
@@ -24,10 +25,12 @@ export class UpdateNodeRequestDto {
   @Expose({ name: 'node_id' })
   nodeId: string;
 
-  @IsDefined()
+  @Type(() => PartialType(NodeDto))
   @ValidateNested()
+  @IsDefined()
   node: Partial<NodeDto>;
 
+  @Type(() => NodeOptionsDto)
   @ValidateNested()
   @IsOptional()
   @Expose({ name: 'update_options' })

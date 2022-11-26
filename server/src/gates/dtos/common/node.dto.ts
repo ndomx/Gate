@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
   IsDefined,
   IsMongoId,
@@ -29,7 +29,9 @@ export class NodeDto {
   @Matches(/^[a-zA-Z0-9-_]+$/)
   name: string;
 
+  @Type(() => NodeInfoDto)
   @ValidateNested()
+  @IsDefined()
   @Expose({ name: 'node_info' })
   nodeInfo: NodeInfoDto;
 }
