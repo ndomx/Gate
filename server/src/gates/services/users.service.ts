@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
@@ -17,7 +21,7 @@ export class UsersService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Person.name)
     private readonly personModel: Model<PersonDocument>,
-    @InjectModel(Node.name) private readonly nodesModel: Model<NodeDocument>,
+    @InjectModel(Node.name) private readonly nodeModel: Model<NodeDocument>,
   ) {}
 
   async createUser(
@@ -32,9 +36,10 @@ export class UsersService {
     }
 
     // validate admin access
-    const root = await this.nodesModel.findOne({
+    const root = await this.nodeModel.findOne({
       $and: [{ _id: { $in: admin.roots } }, { _id: request.rootId }],
     });
+
     if (!root) {
       throw new ForbiddenException({
         error_code: ErrorCodes.ACCESS_DENIED,
@@ -43,6 +48,10 @@ export class UsersService {
     }
 
     // validate path
+    for (const path of request.access) {
+      const pathList = this.#getPathFromRoot(root, path);
+      await this.#findByPath(pathList);
+    }
 
     // create person
     const person = await this.personModel.create({
@@ -69,5 +78,47 @@ export class UsersService {
     user.access = userDocument.access;
 
     return user;
+  }
+
+  async #findByPath(path: string[]): Promise<NodeDocument> {
+    let next: NodeDocument;
+    let parent = '';
+
+    for (const loc of path) {
+      next = await this.nodeModel.findOne({
+        parent,
+        name: loc,
+      });
+
+      if (!next) {
+        throw new BadRequestException({
+          error_code: ErrorCodes.PATH_ERROR,
+          message: 'invalid path',
+        });
+      }
+
+      parent = next._id.toHexString();
+    }
+
+    return next;
+  }
+
+  #getPathFromRoot(root: Node, path: string): string[] {
+    path = path.trim().replace(/^\/+/, '').replace(/\/+$/, '');
+
+    const pathList = path.split('/');
+    if (!pathList[0]) {
+      throw new BadRequestException({
+        message: 'path cannot be empty',
+        error_code: ErrorCodes.PATH_ERROR,
+      });
+    }
+
+    if (root.name !== pathList[0]) {
+      // path is relative, should start with root
+      pathList.splice(0, 0, root.name);
+    }
+
+    return pathList;
   }
 }
