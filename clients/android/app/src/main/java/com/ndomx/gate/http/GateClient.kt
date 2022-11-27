@@ -32,10 +32,9 @@ class GateClient private constructor() {
         }
     }
 
-    fun requestAccess(callback: (GateResponse?) -> Unit) {
+    fun requestAccess(callback: (Boolean) -> Unit) {
         val request = GateRequest(
             deviceId = BuildConfig.DEVICE_ID,
-            rootId = BuildConfig.ROOT_ID,
             userId = BuildConfig.USER_ID,
             timestamp = Date().time,
         )
@@ -63,7 +62,8 @@ class GateClient private constructor() {
                 client?.disconnect()
             }
 
-            callback(response)
+            // TODO: Create model for server response
+            callback(response != null)
         }
     }
 

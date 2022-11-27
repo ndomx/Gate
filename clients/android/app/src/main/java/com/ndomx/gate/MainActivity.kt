@@ -114,16 +114,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
         }
     }
 
-    private fun onServerResponse(response: GateResponse?) = runOnUiThread {
-        response?.let { res ->
-            if (res.success) {
-                Toast.makeText(this, "Successfully opened gate", Toast.LENGTH_SHORT).show()
-                gateStateMachine.setState(GateState.SUCCESS)
-            } else {
-                val message = res.message ?: "Failed with code ${res.errorCode}"
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-                gateStateMachine.setState(GateState.FAILURE)
-            }
+    // TODO: Create model for server response
+    private fun onServerResponse(success: Boolean) = runOnUiThread {
+        if (success) {
+            Toast.makeText(this, "Successfully opened gate", Toast.LENGTH_SHORT).show()
+            gateStateMachine.setState(GateState.SUCCESS)
+        } else {
+            // val message = res.message ?: "Failed with code ${res.errorCode}"
+            val message = "Could not open gate"
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            gateStateMachine.setState(GateState.FAILURE)
         }
     }
 }
