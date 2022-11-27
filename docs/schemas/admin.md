@@ -4,6 +4,8 @@ Admin users manage organizations (defined by their root node). That is, they hav
 
 The `roots` field contains a list of every root node to which the user has admin rights.
 
+> See [people schema](./people.md), [nodes schema](./nodes.md)
+
 ```ts
 {
     personId: string,
