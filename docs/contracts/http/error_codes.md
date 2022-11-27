@@ -21,3 +21,7 @@ The internal error codes are described in the following table
 |   4   |  `DATABASE_ERROR`  | Database error                                 |
 |   5   |  `ROOT_NOT_FOUND`  | Root not in database or not a parent of device |
 |   6   |    `NOT_DEVICE`    | Node is abstract                               |
+|   7   |    `NOT_ADMIN`     | Invalid Admin ID                               |
+|   8   |    `PATH_ERROR`    | Provided path is invalid                       |
+|   9   |    `GATE_ERROR`    | Internal unhandled exception                   |
+|  10   |  `NODE_NOT_FOUND`  | Could not find the requested node              |
