@@ -1,25 +1,32 @@
+import {
+  ForbiddenException,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
 import { User } from '../../schemas/user.schema';
 import { Node } from '../../schemas/node.shema';
-import { OpenGateRequestDto } from '../../dtos/open-gate-request.dto';
-import { OpenGateRequestCodes } from '../../values/error-codes';
+import { OpenGateRequestDto } from '../../dtos/request/open-gate-request.dto';
 import { GatesService } from '../gates.service';
 import { MqttService } from '../mqtt.service';
-import { Mongoose, Types } from 'mongoose';
+import { Types } from 'mongoose';
 
 const userMock: User = {
-  name: 'user',
-  last: 'user',
-  access: [{ rootId: '231789', prefix: '' }],
-  admin: [{ rootId: '231789', prefix: '' }],
+  personId: '12355',
+  rootId: '8722',
+  access: [''],
 };
 
 const nodeMock: Node & { _id: Types.ObjectId } = {
   name: 'node',
+  rootId: '8722',
   parent: '',
-  isDevice: true,
   _id: new Types.ObjectId(),
+  nodeInfo: {
+    isDevice: true,
+  },
 };
 
 const mqttServiceMock = {
@@ -66,7 +73,6 @@ describe('GatesService', () => {
   describe('requestAccess()', () => {
     const request: OpenGateRequestDto = {
       userId: '1',
-      rootId: '1',
       deviceId: '2',
       timestamp: Date.now(),
     };
@@ -76,92 +82,73 @@ describe('GatesService', () => {
         userModelMock.findById.mockResolvedValueOnce(null);
       });
 
-      it('returns USER_NOT_FOUND error', async () => {
-        const result = await service.requestAccess(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(
-          OpenGateRequestCodes.USER_NOT_FOUND,
-        );
-      });
-    });
-
-    describe('when user does not have access to root', () => {
-      it('returns ACCESS_DENIED error', async () => {
-        const result = await service.requestAccess(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(
-          OpenGateRequestCodes.ACCESS_DENIED,
+      it('throws USER_NOT_FOUND error', () => {
+        expect(() => service.requestAccess(request)).rejects.toThrow(
+          ForbiddenException,
         );
       });
     });
 
     describe('when device is not found', () => {
       beforeEach(() => {
-        userModelMock.findById.mockResolvedValueOnce({
-          ...userMock,
-          access: [
-            {
-              rootId: '1',
-              prefix: '',
-            },
-          ],
-        });
-
         nodeModelMock.findById.mockResolvedValueOnce(null);
       });
 
-      it('returns DEVICE_NOT_FOUND error', async () => {
-        const result = await service.requestAccess(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(
-          OpenGateRequestCodes.DEVICE_NOT_FOUND,
+      it('returns DEVICE_NOT_FOUND error', () => {
+        expect(() => service.requestAccess(request)).rejects.toThrow(
+          NotFoundException,
         );
       });
     });
 
     describe('when node is not a device', () => {
       beforeEach(() => {
-        userModelMock.findById.mockResolvedValueOnce({
-          ...userMock,
-          access: [
-            {
-              rootId: '1',
-              prefix: '',
-            },
-          ],
-        });
-
         nodeModelMock.findById.mockResolvedValueOnce({
           ...nodeMock,
-          isDevice: false,
+          nodeInfo: {
+            isDevice: false,
+          },
         });
       });
 
-      it('returns NOT_DEVICE error', async () => {
-        const result = await service.requestAccess(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(OpenGateRequestCodes.NOT_DEVICE);
+      it('returns NOT_DEVICE error', () => {
+        expect(() => service.requestAccess(request)).rejects.toThrow(
+          BadRequestException,
+        );
+      });
+    });
+
+    describe('when user root is not the same as node root', () => {
+      beforeEach(() => {
+        userModelMock.findById.mockResolvedValueOnce({
+          ...userMock,
+          rootId: '1',
+        });
+      });
+
+      it('returns ACCESS_DENIED error', () => {
+        expect(() => service.requestAccess(request)).rejects.toThrow(
+          ForbiddenException,
+        );
       });
     });
 
     describe('when device is not child of root', () => {
       beforeEach(() => {
-        userModelMock.findById.mockResolvedValueOnce({
-          ...userMock,
-          access: [
-            {
-              rootId: '1',
-              prefix: '',
-            },
-          ],
+        nodeModelMock.findById.mockResolvedValueOnce({
+          ...nodeMock,
+          parent: '2',
+        });
+
+        nodeModelMock.findById.mockResolvedValueOnce({
+          ...nodeMock,
+          _id: new Types.ObjectId(),
         });
       });
 
-      it('returns ROOT_NOT_FOUND error', async () => {
-        const result = await service.requestAccess(request);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(
-          OpenGateRequestCodes.ROOT_NOT_FOUND,
+      it('returns ROOT_NOT_FOUND error', () => {
+        expect(() => service.requestAccess(request)).rejects.toThrow(
+          BadRequestException,
         );
       });
     });
@@ -169,40 +156,34 @@ describe('GatesService', () => {
     describe('when device does not match the prefix', () => {
       const rootId = new Types.ObjectId();
 
-      const newRequest = {
-        ...request,
-        rootId: rootId.toHexString(),
-      };
-
       beforeEach(() => {
         userModelMock.findById.mockResolvedValueOnce({
           ...userMock,
-          access: [
-            {
-              rootId: newRequest.rootId,
-              prefix: 'other/node',
-            },
-          ],
+          rootId: rootId.toHexString(),
+          access: ['parent/other-node'],
         });
 
         nodeModelMock.findById.mockResolvedValueOnce({
           ...nodeMock,
-          parent: '1',
+          rootId: rootId.toHexString(),
+          parent: rootId.toHexString(),
+          name: 'node',
         });
 
         nodeModelMock.findById.mockResolvedValueOnce({
           name: 'parent',
+          rootId: rootId.toHexString(),
           parent: '',
-          isDevice: false,
           _id: rootId,
+          nodeInfo: {
+            isDevice: false,
+          },
         });
       });
 
-      it('returns ACCESS_DENIED error', async () => {
-        const result = await service.requestAccess(newRequest);
-        expect(result.success).toBeFalsy();
-        expect(result.errorCode).toStrictEqual(
-          OpenGateRequestCodes.ACCESS_DENIED,
+      it('returns ACCESS_DENIED error', () => {
+        expect(() => service.requestAccess(request)).rejects.toThrow(
+          ForbiddenException,
         );
       });
     });
@@ -218,30 +199,30 @@ describe('GatesService', () => {
       beforeEach(() => {
         userModelMock.findById.mockResolvedValueOnce({
           ...userMock,
-          access: [
-            {
-              rootId: newRequest.rootId,
-              prefix: 'parent/node',
-            },
-          ],
+          rootId: rootId.toHexString(),
+          access: ['parent/node'],
         });
 
         nodeModelMock.findById.mockResolvedValueOnce({
           ...nodeMock,
-          parent: '1',
+          rootId: rootId.toHexString(),
+          parent: rootId.toHexString(),
+          name: 'node',
         });
 
         nodeModelMock.findById.mockResolvedValueOnce({
           name: 'parent',
+          rootId: rootId.toHexString(),
           parent: '',
-          isDevice: false,
           _id: rootId,
+          nodeInfo: {
+            isDevice: false,
+          },
         });
       });
 
       it('returns a successful object', async () => {
         const result = await service.requestAccess(newRequest);
-        expect(result.success).toBeTruthy();
         expect(result.topic).toStrictEqual('parent/node');
       });
     });

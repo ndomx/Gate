@@ -1,5 +1,5 @@
 import { IsInt } from 'class-validator';
-import { OpenGateDto } from './open-gate.dto';
+import { OpenGateDto } from '../common/open-gate.dto';
 
 export class OpenGateRequestDto extends OpenGateDto {
   @IsInt()

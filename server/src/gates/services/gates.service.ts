@@ -1,11 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { OpenGateRequestDto } from '../dtos/open-gate-request.dto';
-import { OpenGateResponseDto } from '../dtos/open-gate-response.dto';
+import { OpenGateRequestDto } from '../dtos/request/open-gate-request.dto';
+import { OpenGateResponseDto } from '../dtos/response/open-gate-response.dto';
 import { Node, NodeDocument } from '../schemas/node.shema';
 import { User, UserDocument } from '../schemas/user.schema';
-import { OpenGateRequestCodes } from '../values/error-codes';
+import { ErrorCodes } from '../values/error-codes';
 import { MqttService } from './mqtt.service';
 
 @Injectable()
@@ -19,78 +25,69 @@ export class GatesService {
   async requestAccess(
     request: OpenGateRequestDto,
   ): Promise<OpenGateResponseDto> {
-    // verify that user exists
+    // verify user
     const user = await this.userModel.findById(request.userId);
     if (!user) {
-      return {
-        errorCode: OpenGateRequestCodes.USER_NOT_FOUND,
-        success: false,
-      };
+      throw new ForbiddenException({
+        error_code: ErrorCodes.USER_NOT_FOUND,
+      });
     }
 
-    // verify if user has access to root
-    const permission = user.access.find((p) => p.rootId === request.rootId);
-    if (!permission) {
-      return {
-        message: 'user cannot access to root',
-        errorCode: OpenGateRequestCodes.ACCESS_DENIED,
-        success: false,
-      };
-    }
-
-    // verify if device exists
-    let node = await this.nodeModel.findById(request.deviceId);
+    // verify node
+    const node = await this.nodeModel.findById(request.deviceId);
     if (!node) {
-      return {
-        errorCode: OpenGateRequestCodes.DEVICE_NOT_FOUND,
-        success: false,
-      };
+      throw new NotFoundException({
+        error_code: ErrorCodes.DEVICE_NOT_FOUND,
+      });
     }
 
-    if (!node.isDevice) {
-      return {
-        errorCode: OpenGateRequestCodes.NOT_DEVICE,
-        success: false,
-      };
+    // verify node is device
+    if (!node.nodeInfo.isDevice) {
+      throw new BadRequestException({
+        error_code: ErrorCodes.NOT_DEVICE,
+      });
     }
 
-    // verify if device is child of root
+    // verify user root is the same as node root
+    if (user.rootId !== node.rootId) {
+      throw new ForbiddenException({
+        error_code: ErrorCodes.ACCESS_DENIED,
+      });
+    }
+
+    // verify tree
     const nodes = [node.name];
-    while (node.parent) {
-      node = await this.nodeModel.findById(node.parent);
-      if (!node) {
-        return {
-          errorCode: OpenGateRequestCodes.DATABASE_ERROR,
-          success: false,
-        };
+    let tempNode = node;
+    while (tempNode.parent) {
+      tempNode = await this.nodeModel.findById(tempNode.parent);
+      if (!tempNode) {
+        throw new InternalServerErrorException({
+          error_code: ErrorCodes.DATABASE_ERROR,
+        });
       }
 
-      nodes.push(node.name);
+      nodes.push(tempNode.name);
     }
 
-    if (node._id.toHexString() !== request.rootId) {
-      return {
-        errorCode: OpenGateRequestCodes.ROOT_NOT_FOUND,
+    if (tempNode._id.toHexString() !== node.rootId) {
+      throw new BadRequestException({
+        error_code: ErrorCodes.ROOT_NOT_FOUND,
         success: false,
-      };
+      });
     }
 
     // verify prefix
     const topic = nodes.reverse().join('/');
-    if (!topic.startsWith(permission.prefix)) {
-      return {
-        message: 'user cannot activate the requested device',
-        errorCode: OpenGateRequestCodes.ACCESS_DENIED,
-        success: false,
-      };
+    if (!user.access.find((prefix) => topic.startsWith(prefix))) {
+      throw new ForbiddenException({
+        message: 'user does not have access rights for the requested gate',
+        error_code: ErrorCodes.ACCESS_DENIED,
+      });
     }
 
-    this.#grantAccess(topic);
+    this.#grantAccess(`${node.rootId}/${topic}`);
 
-    return {
-      topic,
-      success: true,
-    };
+    return { topic };
   }
 
   #grantAccess(topic: string) {

@@ -22,7 +22,6 @@ android {
 
         buildConfigField("String", "SERVER_URL", secrets["SERVER_URL"])
         buildConfigField("String", "DEVICE_ID", secrets["DEVICE_ID"])
-        buildConfigField("String", "ROOT_ID", secrets["ROOT_ID"])
         buildConfigField("String", "USER_ID", secrets["USER_ID"])
     }
 
