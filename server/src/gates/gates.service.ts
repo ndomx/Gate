@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ErrorCodes } from 'src/common';
 import { MqttService } from 'src/mqtt/mqtt.service';
 import { NodesClientService } from 'src/nodes-client/nodes-client.service';
 import { UsersClientService } from 'src/users-client/users-client.service';
@@ -23,14 +28,17 @@ export class GatesService {
 
     // is device node
     if (!node.nodeInfo.isDevice) {
-      throw new Error('abstract!');
+      throw new BadRequestException({
+        error_code: ErrorCodes.NOT_DEVICE,
+        message: 'node is not a device',
+      });
     }
 
     // verify permission
     const path = await this.nodesClientService.getPathForNode(deviceId);
-    const hasAccess = user.access.every((prefix) => path.startsWith(prefix));
+    const hasAccess = user.access.some((prefix) => path.startsWith(prefix));
     if (!hasAccess) {
-      throw new Error('No access');
+      throw new UnauthorizedException({ error_code: ErrorCodes.ACCESS_DENIED });
     }
 
     // grant access
