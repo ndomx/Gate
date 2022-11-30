@@ -16,7 +16,7 @@ export class GatesService {
     private readonly mqttService: MqttService,
   ) {}
 
-  async requestAccess(deviceId: string, userId: string) {
+  async activateDevice(deviceId: string, userId: string) {
     // verify user
     const user = await this.usersClientService.getUser(userId);
 
