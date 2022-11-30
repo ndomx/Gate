@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { MqttService } from 'src/mqtt/mqtt.service';
 import { NodesClientService } from 'src/nodes-client/nodes-client.service';
 import { UsersClientService } from 'src/users-client/users-client.service';
 
@@ -7,6 +8,7 @@ export class GatesService {
   constructor(
     private readonly nodesClientService: NodesClientService,
     private readonly usersClientService: UsersClientService,
+    private readonly mqttService: MqttService,
   ) {}
 
   async requestAccess(deviceId: string, userId: string) {
@@ -32,7 +34,10 @@ export class GatesService {
     }
 
     // grant access
-    // call mqtt service
+    const topic = `${node.rootId}/${path}`;
+    this.mqttService.activateDevice(topic, {
+      action: 'on/off',
+    });
 
     // response
     return { topic: path };

@@ -7,6 +7,7 @@ import { NodesModule } from './nodes/nodes.module';
 import { NodesClientModule } from './nodes-client/nodes-client.module';
 import { GatesModule } from './gates/gates.module';
 import { UsersClientModule } from './users-client/users-client.module';
+import { MqttModule } from './mqtt/mqtt.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UsersClientModule } from './users-client/users-client.module';
     NodesClientModule,
     GatesModule,
     UsersClientModule,
+    MqttModule,
   ],
   controllers: [],
   providers: [],
