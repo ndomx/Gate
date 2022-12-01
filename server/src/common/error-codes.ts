@@ -9,4 +9,5 @@ export enum ErrorCodes {
   PATH_ERROR = 8,
   GATE_ERROR = 9,
   NODE_NOT_FOUND = 10,
+  INVALID_REQUEST = 11,
 }

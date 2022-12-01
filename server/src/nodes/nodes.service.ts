@@ -27,6 +27,16 @@ export class NodesService {
     return this.#mapFromSchema(node);
   }
 
+  async findByNameAndParent(parentId: string, name: string): Promise<NodeDto> {
+    const node = await this.nodeModel.findOne({ parent: parentId, name });
+    return this.#mapFromSchema(node);
+  }
+
+  async findChildren(nodeId: string): Promise<NodeDto[]> {
+    const nodes = await this.nodeModel.find({ parent: nodeId });
+    return nodes.map((node) => this.#mapFromSchema(node));
+  }
+
   async updateOne(
     nodeId: string,
     updateFields: UpdateNodeDto,
