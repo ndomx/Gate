@@ -1,9 +1,14 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  instanceToPlain,
+  plainToInstance,
+} from 'class-transformer';
 import { ErrorCodes } from 'src/common';
 import { NodesService } from 'src/nodes/nodes.service';
 import { UserDto } from 'src/users/dtos/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserRequestDto } from './dtos/create-user-request.dto';
+import { PublicUserDto } from './dtos/public-user.dto';
 import { UpdateUserRequestDto } from './dtos/udpate-user-request.dto';
 
 @Injectable()
@@ -22,6 +27,8 @@ export class UsersClientService {
       });
     }
 
+    // TODO: validate username
+
     const user = await this.usersService.createOne(request);
     if (!user) {
       throw new BadRequestException({
@@ -33,7 +40,7 @@ export class UsersClientService {
     return user;
   }
 
-  async getUser(userId: string): Promise<UserDto> {
+  async getUser(userId: string): Promise<PublicUserDto> {
     const user = await this.usersService.findOne(userId);
     if (!user) {
       throw new BadRequestException({
@@ -42,13 +49,13 @@ export class UsersClientService {
       });
     }
 
-    return user;
+    return this.#removeFields(user);
   }
 
   async updateUser(
     userId: string,
     fields: UpdateUserRequestDto,
-  ): Promise<UserDto> {
+  ): Promise<PublicUserDto> {
     const user = await this.usersService.updateOne(userId, fields);
     if (!user) {
       throw new BadRequestException({
@@ -57,10 +64,10 @@ export class UsersClientService {
       });
     }
 
-    return user;
+    return this.#removeFields(user);
   }
 
-  async deleteUser(userId: string): Promise<UserDto> {
+  async deleteUser(userId: string): Promise<PublicUserDto> {
     const user = await this.usersService.deleteOne(userId);
     if (!user) {
       throw new BadRequestException({
@@ -69,6 +76,11 @@ export class UsersClientService {
       });
     }
 
-    return user;
+    return this.#removeFields(user);
+  }
+
+  #removeFields(user: UserDto): PublicUserDto {
+    const plain = instanceToPlain<UserDto>(user);
+    return plainToInstance(PublicUserDto, plain);
   }
 }

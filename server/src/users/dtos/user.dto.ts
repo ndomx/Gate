@@ -1,14 +1,12 @@
-import { Expose, Transform } from 'class-transformer';
-import { IsDefined, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { Exclude, Expose, Transform } from 'class-transformer';
+import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 export class UserDto {
   @IsMongoId()
-  @IsDefined()
   @Expose({ name: 'user_id' })
   userId: string;
 
   @IsMongoId()
-  @IsDefined()
   @Expose({ name: 'root_id' })
   rootId: string;
 
@@ -29,8 +27,8 @@ export class UserDto {
 
   @IsString()
   @IsNotEmpty()
+  @Exclude({ toPlainOnly: true })
   password: string;
 
-  @IsDefined()
   access: string[];
 }

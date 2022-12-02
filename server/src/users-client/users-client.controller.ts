@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { UserDto } from 'src/users/dtos/user.dto';
 import { CreateUserRequestDto } from './dtos/create-user-request.dto';
+import { PublicUserDto } from './dtos/public-user.dto';
 import { UpdateUserRequestDto } from './dtos/udpate-user-request.dto';
 import { UsersClientService } from './users-client.service';
 
@@ -22,7 +23,7 @@ export class UsersClientController {
   }
 
   @Get(':userId')
-  async getUser(@Param('userId') userId: string): Promise<UserDto> {
+  async getUser(@Param('userId') userId: string): Promise<PublicUserDto> {
     return this.usersClientService.getUser(userId);
   }
 
@@ -30,12 +31,12 @@ export class UsersClientController {
   update(
     @Param('userId') userId: string,
     @Body() fields: UpdateUserRequestDto,
-  ): Promise<UserDto> {
+  ): Promise<PublicUserDto> {
     return this.usersClientService.updateUser(userId, fields);
   }
 
   @Delete(':userId')
-  remove(@Param('userId') userId: string): Promise<UserDto> {
+  remove(@Param('userId') userId: string): Promise<PublicUserDto> {
     return this.usersClientService.deleteUser(userId);
   }
 }
