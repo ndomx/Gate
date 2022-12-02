@@ -7,12 +7,18 @@ import mongoose from 'mongoose';
 import { ErrorCodes } from 'src/common';
 import { NodeDto } from 'src/nodes/dtos/node.dto';
 import { NodesService } from 'src/nodes/nodes.service';
+import { UsersService } from 'src/users/users.service';
 import { CreateNodeRequestDto } from './dtos/create-node-request.dto';
+import { GetNodesResponseDto } from './dtos/get-nodes-response.dto';
 import { UpdateNodeRequestDto } from './dtos/update-node-request.dto';
+import { UserNodesResponseDto } from './dtos/user-nodes-response.dto';
 
 @Injectable()
 export class NodesClientService {
-  constructor(private readonly nodesService: NodesService) {}
+  constructor(
+    private readonly nodesService: NodesService,
+    private readonly usersService: UsersService,
+  ) {}
 
   async getNodeInRoot(nodeId: string, rootId: string): Promise<NodeDto> {
     const node = await this.nodesService.findInRoot(nodeId, rootId);
@@ -81,25 +87,29 @@ export class NodesClientService {
     return node;
   }
 
-  async getNodesByPrefix(prefix: string): Promise<NodeDto[]> {
-    if(!prefix.match(/^([a-zA-Z0-9_-]+\/?)+$/)) {
+  async getNodesByPrefix(prefix: string): Promise<GetNodesResponseDto> {
+    if (!prefix.match(/^([a-zA-Z0-9_-]+\/?)+$/)) {
       throw new BadRequestException({
         error_code: ErrorCodes.INVALID_REQUEST,
-        message: 'path should match /^([a-zA-Z0-9_-]+\/?)+$/'
-      })
+        message: 'path should match /^([a-zA-Z0-9_-]+/?)+$/',
+      });
     }
 
     const path = this.#processPath(prefix);
     const startNode = await this.#getNodeFromPath(path);
-    return this.#findChildren(startNode);
+
+    const response = new GetNodesResponseDto();
+    response.nodes = await this.#findChildren(startNode);
+
+    return response;
   }
 
-  async getChildren(nodeId: string): Promise<NodeDto[]> {
+  async getChildren(nodeId: string): Promise<GetNodesResponseDto> {
     if (!mongoose.isValidObjectId(nodeId)) {
       throw new BadRequestException({
         error_code: ErrorCodes.INVALID_REQUEST,
-        message: 'node_id must be a valid mongo id'
-      })
+        message: 'node_id must be a valid mongo id',
+      });
     }
 
     const startNode = await this.nodesService.findOne(nodeId);
@@ -110,7 +120,38 @@ export class NodesClientService {
       });
     }
 
-    return this.#findChildren(startNode);
+    const response = new GetNodesResponseDto();
+    response.nodes = await this.#findChildren(startNode);
+
+    return response;
+  }
+
+  async getUserNodes(
+    userId: string,
+    deviceOnly: boolean = true,
+  ): Promise<UserNodesResponseDto> {
+    const user = await this.usersService.findOne(userId);
+    if (!user) {
+      throw new BadRequestException({
+        error_code: ErrorCodes.USER_NOT_FOUND,
+        message: 'user not found',
+      });
+    }
+
+    const response = new UserNodesResponseDto();
+    response.user = user;
+    response.nodes = [];
+
+    for (const prefix of user.access) {
+      const children = await this.getNodesByPrefix(prefix);
+      const nodes = deviceOnly
+        ? children.nodes.filter((node) => node.nodeInfo.isDevice)
+        : children.nodes;
+        
+      response.nodes.push(...nodes);
+    }
+
+    return response;
   }
 
   async updateNode(

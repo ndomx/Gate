@@ -37,6 +37,11 @@ export class NodesService {
     return nodes.map((node) => this.#mapFromSchema(node));
   }
 
+  async findRoot(rootId: string): Promise<NodeDto> {
+    const root = await this.nodeModel.findOne({ _id: rootId, parent: '' });
+    return this.#mapFromSchema(root);
+  }
+
   async updateOne(
     nodeId: string,
     updateFields: UpdateNodeDto,

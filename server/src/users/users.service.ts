@@ -38,8 +38,11 @@ export class UsersService {
     }
 
     const user = new UserDto();
+    user.name = userDocument.name;
+    user.last = userDocument.last;
+    user.username = userDocument.username;
+    user.password = userDocument.password;
     user.access = userDocument.access;
-    user.personId = userDocument.personId;
     user.rootId = userDocument.rootId;
     user.userId = userDocument._id.toHexString();
 
