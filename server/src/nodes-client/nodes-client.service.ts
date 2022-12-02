@@ -38,7 +38,7 @@ export class NodesClientService {
 
     const nodes = [node.name];
     while (node.nodeId !== rootId) {
-      node = await this.nodesService.findOne(node.nodeId);
+      node = await this.nodesService.findOne(node.parent);
       if (!node) {
         throw new InternalServerErrorException({
           error_code: ErrorCodes.DATABASE_ERROR,
