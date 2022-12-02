@@ -1,8 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import {
-  instanceToPlain,
-  plainToInstance,
-} from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { ErrorCodes } from 'src/common';
 import { NodesService } from 'src/nodes/nodes.service';
 import { UserDto } from 'src/users/dtos/user.dto';
@@ -26,8 +23,6 @@ export class UsersClientService {
         message: 'invalid root id',
       });
     }
-
-    // TODO: validate username
 
     const user = await this.usersService.createOne(request);
     if (!user) {
