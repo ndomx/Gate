@@ -22,6 +22,11 @@ export class UsersService {
     return this.#mapFromSchema(user);
   }
 
+  async findByUsername(username: string): Promise<UserDto> {
+    const user = await this.userModel.findOne({ username });
+    return this.#mapFromSchema(user);
+  }
+
   async updateOne(userId: string, fields: UpdateUserDto): Promise<UserDto> {
     const user = await this.userModel.findByIdAndUpdate(userId, fields);
     return this.#mapFromSchema(user);
