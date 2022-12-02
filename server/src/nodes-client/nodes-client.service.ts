@@ -204,7 +204,7 @@ export class NodesClientService {
     let next: NodeDto;
     let parent = '';
 
-    for (const step in steps) {
+    for (const step of steps) {
       next = await this.nodesService.findByNameAndParent(parent, step);
 
       if (!next) {
