@@ -49,6 +49,7 @@ export class UsersService {
     user.password = userDocument.password;
     user.access = userDocument.access;
     user.rootId = userDocument.rootId;
+    user.roles = userDocument.roles;
     user.userId = userDocument._id.toHexString();
 
     return user;

@@ -5,6 +5,6 @@ export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    return false;
+    return true;
   }
 }

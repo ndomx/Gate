@@ -1,5 +1,11 @@
 import { Exclude, Expose, Transform } from 'class-transformer';
-import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { Role } from 'src/common/role.enum';
 
 export class UserDto {
   @IsMongoId()
@@ -31,4 +37,7 @@ export class UserDto {
   password: string;
 
   access: string[];
+
+  @IsOptional()
+  roles?: Role[];
 }
