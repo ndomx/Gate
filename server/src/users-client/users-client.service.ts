@@ -7,6 +7,7 @@ import { UsersService } from 'src/users/users.service';
 import { CreateUserRequestDto } from './dtos/create-user-request.dto';
 import { PublicUserDto } from './dtos/public-user.dto';
 import { UpdateUserRequestDto } from './dtos/udpate-user-request.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersClientService {
@@ -24,7 +25,11 @@ export class UsersClientService {
       });
     }
 
-    const user = await this.usersService.createOne(request);
+    const user = await this.usersService.createOne({
+      ...request,
+      password: this.#hashPassword(request.password),
+    });
+
     if (!user) {
       throw new BadRequestException({
         error_code: ErrorCodes.DATABASE_ERROR,
@@ -51,6 +56,10 @@ export class UsersClientService {
     userId: string,
     fields: UpdateUserRequestDto,
   ): Promise<PublicUserDto> {
+    if (fields.password) {
+      fields.password = this.#hashPassword(fields.password);
+    }
+
     const user = await this.usersService.updateOne(userId, fields);
     if (!user) {
       throw new BadRequestException({
@@ -77,5 +86,10 @@ export class UsersClientService {
   #removeFields(user: UserDto): PublicUserDto {
     const plain = instanceToPlain<UserDto>(user);
     return plainToInstance(PublicUserDto, plain);
+  }
+
+  #hashPassword(password: string): string {
+    const rounds = 10;
+    return bcrypt.hashSync(password, rounds);
   }
 }
