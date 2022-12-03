@@ -9,6 +9,8 @@ import { GatesModule } from './gates/gates.module';
 import { UsersClientModule } from './users-client/users-client.module';
 import { MqttModule } from './mqtt/mqtt.module';
 import { LoginModule } from './login/login.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './common/roles.guard';
 
 @Module({
   imports: [
@@ -17,8 +19,8 @@ import { LoginModule } from './login/login.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get('MONGO_DB_URI')
-      })
+        uri: configService.get('MONGO_DB_URI'),
+      }),
     }),
     AuthModule,
     UsersModule,
@@ -30,6 +32,11 @@ import { LoginModule } from './login/login.module';
     LoginModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}
