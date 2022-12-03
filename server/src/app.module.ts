@@ -8,7 +8,6 @@ import { NodesClientModule } from './nodes-client/nodes-client.module';
 import { GatesModule } from './gates/gates.module';
 import { UsersClientModule } from './users-client/users-client.module';
 import { MqttModule } from './mqtt/mqtt.module';
-import { LoginModule } from './login/login.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/roles.guard';
 
@@ -29,7 +28,6 @@ import { RolesGuard } from './common/roles.guard';
     GatesModule,
     UsersClientModule,
     MqttModule,
-    LoginModule,
   ],
   controllers: [],
   providers: [
