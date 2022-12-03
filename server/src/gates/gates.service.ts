@@ -3,7 +3,7 @@ import {
   BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ErrorCodes } from 'src/common/error-codes.enum';
+import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { MqttService } from 'src/mqtt/mqtt.service';
 import { NodesClientService } from 'src/nodes-client/nodes-client.service';
 import { UsersClientService } from 'src/users-client/users-client.service';

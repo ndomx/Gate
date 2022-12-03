@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import mongoose from 'mongoose';
-import { ErrorCodes } from 'src/common/error-codes.enum';
+import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { NodeDto } from 'src/nodes/dtos/node.dto';
 import { NodesService } from 'src/nodes/nodes.service';
 import { UsersService } from 'src/users/users.service';

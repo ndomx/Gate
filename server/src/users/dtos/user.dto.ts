@@ -5,7 +5,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Role } from 'src/common/role.enum';
+import { Role } from 'src/common/enum/role.enum';
 
 export class UserDto {
   @IsMongoId()
