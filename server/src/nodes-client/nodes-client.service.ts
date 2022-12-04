@@ -3,10 +3,13 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import mongoose from 'mongoose';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { NodeDto } from 'src/nodes/dtos/node.dto';
 import { NodesService } from 'src/nodes/nodes.service';
+import { PublicUserDto } from 'src/users-client/dtos/public-user.dto';
+import { UserDto } from 'src/users/dtos/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { CreateNodeRequestDto } from './dtos/create-node-request.dto';
 import { GetNodesResponseDto } from './dtos/get-nodes-response.dto';
@@ -139,7 +142,7 @@ export class NodesClientService {
     }
 
     const response = new UserNodesResponseDto();
-    response.user = user;
+    response.user = this.#removeFields(user);
     response.nodes = [];
 
     for (const prefix of user.access) {
@@ -147,7 +150,7 @@ export class NodesClientService {
       const nodes = deviceOnly
         ? children.nodes.filter((node) => node.nodeInfo.isDevice)
         : children.nodes;
-        
+
       response.nodes.push(...nodes);
     }
 
@@ -230,5 +233,10 @@ export class NodesClientService {
     }
 
     return nodes;
+  }
+
+  #removeFields(user: UserDto): PublicUserDto {
+    const plain = instanceToPlain<UserDto>(user);
+    return plainToInstance(PublicUserDto, plain);
   }
 }

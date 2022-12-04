@@ -1,13 +1,13 @@
 import { Type } from 'class-transformer';
 import { IsDefined, ValidateNested } from 'class-validator';
 import { NodeDto } from 'src/nodes/dtos/node.dto';
-import { UserDto } from 'src/users/dtos/user.dto';
+import { PublicUserDto } from 'src/users-client/dtos/public-user.dto';
 
 export class UserNodesResponseDto {
   @ValidateNested()
-  @Type(() => UserDto)
+  @Type(() => PublicUserDto)
   @IsDefined()
-  user: UserDto;
+  user: PublicUserDto;
 
   @ValidateNested({ each: true })
   @Type(() => NodeDto)
