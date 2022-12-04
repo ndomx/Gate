@@ -3,9 +3,9 @@ package com.ndomx.gate.http
 import android.util.Log
 import com.ndomx.gate.BuildConfig
 import com.ndomx.gate.http.models.GateRequest
-import com.ndomx.gate.http.models.GateResponse
-import com.ndomx.gate.http.models.LoginRequest
-import com.ndomx.gate.http.models.LoginResponse
+import com.ndomx.gate.http.models.AccessResponse
+import com.ndomx.gate.http.models.RegisterRequest
+import com.ndomx.gate.http.models.RegisterResponse
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -43,7 +43,7 @@ class GateClient private constructor() {
 
         val body = Json.encodeToString(request)
 
-        var response: GateResponse? = null
+        var response: AccessResponse? = null
         thread {
             val url = URL(BuildConfig.SERVER_URL)
             var client: HttpsURLConnection? = null
@@ -69,11 +69,11 @@ class GateClient private constructor() {
         }
     }
 
-    fun register(serverUrl: String, request: LoginRequest, callback: (String?) -> Unit) {
+    fun register(serverUrl: String, request: RegisterRequest, callback: (String?) -> Unit) {
         val body = Json.encodeToString(request)
 
         thread {
-            val response = fetch<LoginResponse>(serverUrl, "POST", body)
+            val response = fetch<RegisterResponse>(serverUrl, "POST", body)
             callback(response?.token)
         }
     }

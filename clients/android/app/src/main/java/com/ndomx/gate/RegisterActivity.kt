@@ -6,7 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.ndomx.gate.http.GateClient
-import com.ndomx.gate.http.models.LoginRequest
+import com.ndomx.gate.http.models.RegisterRequest
 import kotlin.concurrent.thread
 
 class RegisterActivity : AppCompatActivity(R.layout.activity_register) {
@@ -32,7 +32,7 @@ class RegisterActivity : AppCompatActivity(R.layout.activity_register) {
         saveToPrefs("server_url", server)
 
         // call http client
-        val request = LoginRequest(
+        val request = RegisterRequest(
             username, password
         )
 
