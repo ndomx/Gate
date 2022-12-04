@@ -2,38 +2,35 @@
 
 ## Create Node
 
+Creates a new node
+
 ### Request
 
-- HTTP method: `POST`
+- Route: `(POST) /nodes-client`
+- Required headers:
+  - Json Web Token (JWT) with admin access
 - Body:
+  | field | type | is optional | description |
+  | :---------: | :------: | :---------: | :-------------------------------- |
+  | `root_id` | `string` | ❌ | node's root id |
+  | `path` | `string` | ❌ | hierarchical loaction of the node |
+  | `name` | `string` | ❌ | node's name |
+  | `node_info` | `Object` | ❌ | additional info |
 
-|      field       |   type   | is optional | description                                |
-| :--------------: | :------: | :---------: | :----------------------------------------- |
-|    `root_id`     | `string` |     ❌      | Root ID to host the created node           |
-|    `admin_id`    | `string` |     ❌      | Admin ID with access to the requested root |
-|      `path`      | `string` |     ❌      | Hierarchical loaction of the node          |
-| `create_options` | `Object` |     ✅      | Additional options (not implemented yet)   |
-|   `node_info`    | `Object` |     ❌      | Node additional information                |
-
-**Create Options** (Not implemeted yet)
-| field | type | is optional | description |
-| :--------------: | :------: | :---------: | :----------------------------------------- |
-| `create_intermidiate` | `boolean` | ✅ | Create missing nodes to complete path |
-
-**Node Info**
-| field | type | is optional | description |
-| :--------------: | :------: | :---------: | :----------------------------------------- |
-| `is_device` | `boolean` | ❌ | `true` for _device nodes_ and `false` elsewhere |
+  **Node Info**
+  | field | type | is optional | description |
+  | :--------------: | :------: | :---------: | :----------------------------------------- |
+  | `is_device` | `boolean` | ❌ | `true` for _device nodes_ and `false` elsewhere |
 
 ### Response
 
-|   field    |   type   | is optional | description                                |
-| :--------: | :------: | :---------: | :----------------------------------------- |
-|  `nodeId`  | `string` |     ❌      | Created node ID                            |
-|  `rootId`  | `string` |     ❌      | Node's root ID                             |
-|  `parent`  | `string` |     ❌      | Node's parent ID                           |
-|   `name`   | `string` |     ❌      | Node's name (used for path and MQTT topic) |
-| `nodeInfo` | `Object` |     ❌      | Node information                           |
+|   field    |   type   | is optional | description            |
+| :--------: | :------: | :---------: | :--------------------- |
+|  `nodeId`  | `string` |     ❌      | created node's id      |
+|  `rootId`  | `string` |     ❌      | node's root id         |
+|  `parent`  | `string` |     ❌      | node's parent id       |
+|   `name`   | `string` |     ❌      | node's name            |
+| `nodeInfo` | `Object` |     ❌      | additional information |
 
 **Node Info**
 | field | type | is optional | description |
@@ -45,9 +42,9 @@
 ```jsonc
 // Request
 {
-    "admin_id": "638178c1b1348308cc1e37be",
     "root_id": "636674f1e0ac56ce4ff1949c",
-    "path": "home/test-gate",
+    "path": "home/test",
+    "name": "door",
     "node_info": {
         "is_device": true
     }
@@ -58,97 +55,41 @@
     "nodeId": "636674f101ac56ce4ff1949c",
     "rootId": "632174f101ac56ce4ff1949c",
     "parent": "63ca74f101ac56ce4ff1949c",
-    "path": "home/test-gate",
+    "path": "home/test/door",
     "nodeInfo": {
         "isDevice": true
     }
 }
 ```
 
-## Get Nodes
+## Get Children of Node
+
+Finds all nodes that are descendant of the requested node
 
 ### Request
 
-- HTTP method: `GET`
+- Route: `(GET) /nodes-client/children/:nodeId`
+- Required headers:
+  - Json Web Token (JWT) with admin access
 - Params:
   | field | type | is optional | description |
   | :-------: | :------: | :---------: | :-------------------------------- |
-  | `admin_id` | `string` | ❌ | Admin ID |
-
-- Query Params:
-  | field | type | is optional | description |
-  | :-------: | :------: | :---------: | :-------------------------------- |
-  | `user_id` | `string` | ✅ | Filter nodes by user's access |
-  | `path` | `string` | ✅ | Filter nodes that match with path |
+  | `nodeId` | `string` | ❌ | node's id |
 
 ### Response
 
 |  field  |    type    | is optional | description           |
 | :-----: | :--------: | :---------: | :-------------------- |
-| `nodes` | `string[]` |     ❌      | List of fetched nodes |
-
-### Example
-
-```bash
-# Request
-curl localhost:3000/nodes/63ca74f101ac56ce4ff1949c\
-user_id=63ca74f101abd6ce4ff1949c&\
-path_id=home/node1/node2
-```
-
-```jsonc
-// Response
-{
-  "nodes": [
-    "63ca74f101ac56ce4ff1949c",
-    "63ca74f101ac56de4ff1949c",
-    "63ca74f101acfffe4ff1949c",
-    "632174f101ac56ce4ff1949c"
-  ]
-}
-```
-
-## Update Node
-
-### Request
-
-- HTTP method: `PATCH`
-- Body:
-
-|      field       |   type   | is optional | description                                |
-| :--------------: | :------: | :---------: | :----------------------------------------- |
-|    `node_id`     | `string` |     ❌      | Node to update                             |
-|    `root_id`     | `string` |     ❌      | Root ID to host the created node           |
-|    `admin_id`    | `string` |     ❌      | Admin ID with access to the requested root |
-|      `node`      | `Object` |     ❌      | Node update details                        |
-| `update_options` | `Object` |     ✅      | Additional options (not implemented yet)   |
+| `nodes` | `Object[]` |     ❌      | List of fetched nodes |
 
 **Node**
 | field | type | is optional | description |
-| :--------------: | :------: | :---------: | :----------------------------------------- |
-| `parent` | `string` | ✅ | New node's parent node |
-| `name` | `string` | ✅ | New node's name |
-| `node_info` | `Object` | ✅ | New node's additional information |
-
-**Node Info**
-| field | type | is optional | description |
-| :--------------: | :------: | :---------: | :----------------------------------------- |
-| `is_device` | `boolean` | ❌ | `true` for _device nodes_ and `false` elsewhere |
-
-**Update Options** (Not implemeted yet)
-| field | type | is optional | description |
-| :--------------: | :------: | :---------: | :----------------------------------------- |
-| `create_intermidiate` | `boolean` | ✅ | Create missing nodes to complete path |
-
-### Response
-
-|   field    |   type   | is optional | description                                |
-| :--------: | :------: | :---------: | :----------------------------------------- |
-|  `nodeId`  | `string` |     ❌      | Created node ID                            |
-|  `rootId`  | `string` |     ❌      | Node's root ID                             |
-|  `parent`  | `string` |     ❌      | Node's parent ID                           |
-|   `name`   | `string` |     ❌      | Node's name (used for path and MQTT topic) |
-| `nodeInfo` | `Object` |     ❌      | Node information                           |
+| :-----: | :---------: | :---------: | :-------------------- |
+| `nodeId` | `string` | ❌ | node's id |
+| `rootId` | `string` | ❌ | node's root id |
+| `parent` | `string` | ❌ | node's parent id |
+| `name` | `string` | ❌ | node's name |
+| `nodeInfo` | `Object` | ❌ | node's additional information |
 
 **Node Info**
 | field | type | is optional | description |
@@ -157,29 +98,266 @@ path_id=home/node1/node2
 
 ### Example
 
+```bash
+# Request
+curl -H 'Authorization: Bearer eus87...Y7Hs' \
+localhost:3000/nodes-client/638951909c2acdb5e789aa22
+```
+
 ```jsonc
-// Request
+// Response
 {
-    "admin_id": "638178c1b1348308cc1e37be",
+  "nodes": [
+    {
+      "name": "home",
+      "parent": "",
+      "rootId": "638951909c2acdb5e789aa22",
+      "nodeInfo": {
+        "isDevice": false
+      },
+      "nodeId": "638951909c2acdb5e789aa22"
+    },
+    {
+      "name": "main-entrance",
+      "parent": "638951909c2acdb5e789aa22",
+      "rootId": "638951909c2acdb5e789aa22",
+      "nodeInfo": {
+        "isDevice": true
+      },
+      "nodeId": "63895a0711f0927f59e02bb3"
+    }
+  ]
+}
+```
+
+## Get User's Nodes
+
+Find all nodes that are accessable by the user
+
+### Request
+
+- Route: `(GET) /nodes-client/user`
+- Required headers:
+  - Json Web Token (JWT) with user access
+- Query:
+  | field | type | is optional | description |
+  | :-------: | :------: | :---------: | :-------------------------------- |
+  | `device_only` | `boolean` | ✅ | look only for _device nodes_ |
+
+### Response
+
+|  field  |    type    | is optional | description           |
+| :-----: | :--------: | :---------: | :-------------------- |
+| `user`  |  `Object`  |     ❌      | user information      |
+| `nodes` | `Object[]` |     ❌      | list of fetched nodes |
+
+**User**
+| field | type | is optional | description |
+| :-----: | :---------: | :---------: | :-------------------- |
+| `userId` | `string` | ❌ | user's id |
+| `rootId` | `string` | ❌ | user's root id |
+| `name` | `string` | ❌ | first name |
+| `last` | `string` | ❌ | last name |
+| `username` | `string` | ❌ | username |
+| `access` | `string[]` | ❌ | list of accessable paths |
+| `roles` | `string[]` | ❌ | list of roles (server use only) |
+
+**Node**
+| field | type | is optional | description |
+| :-----: | :---------: | :---------: | :-------------------- |
+| `nodeId` | `string` | ❌ | node's id |
+| `rootId` | `string` | ❌ | node's root id |
+| `parent` | `string` | ❌ | node's parent id |
+| `name` | `string` | ❌ | node's name |
+| `nodeInfo` | `Object` | ❌ | node's additional information |
+
+**Node Info**
+| field | type | is optional | description |
+| :--------------: | :------: | :---------: | :----------------------------------------- |
+| `isDevice` | `boolean` | ❌ | `true` for _device nodes_ and `false` elsewhere |
+
+### Example
+
+```bash
+# Request
+curl -H 'Authorization: Bearer eus87...Y7Hs' \
+localhost:3000/nodes-client/user?is_device=true
+```
+
+```jsonc
+// Response
+{
+  "user": {
+    "name": "nicolas",
+    "last": "dominguez",
+    "username": "ndomx",
+    "access": ["home"],
+    "rootId": "638951909321fdb5e789aa22",
+    "roles": ["admin", "user"],
+    "userId": "6389b3a40a7c03ca5c49f4d9"
+  },
+  "nodes": [
+    {
+      "name": "main-entrance",
+      "parent": "638951909321fdb5e789aa22",
+      "rootId": "638951909321fdb5e789aa22",
+      "nodeInfo": {
+        "isDevice": true
+      },
+      "nodeId": "63895a0711f0927f59e02bb3"
+    },
+    {
+      "name": "gate",
+      "parent": "63895a2d11f0927f59e02bb7",
+      "rootId": "638951909c2acdb5e789aa22",
+      "nodeInfo": {
+        "isDevice": true
+      },
+      "nodeId": "63895a3e11f0927f59e02bbc"
+    }
+  ]
+}
+```
+
+## Get Matching Nodes
+
+Find all nodes that match with the provided prefix
+
+### Request
+
+- Route: `(GET) /nodes-client/match`
+- Required headers:
+  - Json Web Token (JWT) with admin access
+- Query:
+  | field | type | is optional | description |
+  | :-------: | :------: | :---------: | :-------------------------------- |
+  | `prefix` | `string` | ❌ | prefix for node query |
+
+### Response
+
+|  field  |    type    | is optional | description           |
+| :-----: | :--------: | :---------: | :-------------------- |
+| `nodes` | `Object[]` |     ❌      | list of fetched nodes |
+
+**Node**
+| field | type | is optional | description |
+| :-----: | :---------: | :---------: | :-------------------- |
+| `nodeId` | `string` | ❌ | node's id |
+| `rootId` | `string` | ❌ | node's root id |
+| `parent` | `string` | ❌ | node's parent id |
+| `name` | `string` | ❌ | node's name |
+| `nodeInfo` | `Object` | ❌ | node's additional information |
+
+**Node Info**
+| field | type | is optional | description |
+| :--------------: | :------: | :---------: | :----------------------------------------- |
+| `isDevice` | `boolean` | ❌ | `true` for _device nodes_ and `false` elsewhere |
+
+### Example
+
+```bash
+# Request
+curl -H 'Authorization: Bearer eus87...Y7Hs' \
+localhost:3000/nodes-client/match?prefix=home/3rd-floor
+```
+
+```jsonc
+// Response
+{
+  "nodes": [
+    {
+      "name": "3rd-floor",
+      "parent": "638951909c2acdb5e789aa22",
+      "rootId": "638951909c2acdb5e789aa22",
+      "nodeInfo": {
+        "isDevice": false
+      },
+      "nodeId": "63895a2d11f0927f59e02bb7"
+    },
+    {
+      "name": "gate",
+      "parent": "63895a2d11f0927f59e02bb7",
+      "rootId": "638951909c2acdb5e789aa22",
+      "nodeInfo": {
+        "isDevice": true
+      },
+      "nodeId": "63895a3e11f0927f59e02bbc"
+    }
+  ]
+}
+```
+
+## Update Node
+
+Updates a node
+
+### Request
+
+- HTTP method: `(PATCH) /nodes-client/:nodeId`
+- Required headers:
+  - Json Web Token (JWT) with admin access
+- Params:
+  | field | type | is optional | description |
+  | :-------: | :------: | :---------: | :-------------------------------- |
+  | `nodeId` | `string` | ❌ | node's id |
+- Body:
+  | field | type | is optional | description |
+  | :--------------: | :------: | :---------: | :----------------------------------------- |
+  | `root_id` | `string` | ✅ | node's root id |
+  | `parent` | `string` | ✅ | node's parent id |
+  | `name` | `string` | ✅ | node's name |
+  | `node_info` | `Object` | ✅ | node's additional info |
+
+  **Node Info**
+  | field | type | is optional | description |
+  | :--------------: | :------: | :---------: | :----------------------------------------- |
+  | `is_device` | `boolean` | ❌ | `true` for _device nodes_ and `false` elsewhere |
+
+### Response
+
+|   field    |   type   | is optional | description                                |
+| :--------: | :------: | :---------: | :----------------------------------------- |
+|  `nodeId`  | `string` |     ❌      | node's id                                  |
+|  `rootId`  | `string` |     ❌      | node's root id                             |
+|  `parent`  | `string` |     ❌      | node's parent id                           |
+|   `name`   | `string` |     ❌      | node's name (used for path and MQTT topic) |
+| `nodeInfo` | `Object` |     ❌      | node information                           |
+
+**Node Info**
+| field | type | is optional | description |
+| :--------------: | :------: | :---------: | :----------------------------------------- |
+| `isDevice` | `boolean` | ❌ | `true` for _device nodes_ and `false` elsewhere |
+
+### Example
+
+```bash
+# Request
+curl \
+-X PATCH \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer su87...Hs89' \
+-d '{
     "root_id": "636674f1e0ac56ce4ff1949c",
-    "node_id": "6366abf1e0ac56ce4ff1949c",
     "node": {
         "parent": "636674f1e0ac56cf4ff1949c",
         "node_info": {
             "is_device": false
         }
     }
-}
+}' \
+localhost:3000/nodes-client/63895a3e11f0927f59e02bbc
+```
 
+```jsonc
 // Response
 {
-    "nodeId": "6366abf1e0ac56ce4ff1949c",
-    "rootId": "636674f1e0ac56ce4ff1949c",
-    "parent": "636674f1e0ac56cf4ff1949c",
-    "path": "home/test-gate",
-    "nodeInfo": {
-        "isDevice": false
-    }
+  "nodeId": "6366abf1e0ac56ce4ff1949c",
+  "rootId": "636674f1e0ac56ce4ff1949c",
+  "parent": "636674f1e0ac56cf4ff1949c",
+  "path": "home/test-gate",
+  "nodeInfo": {
+    "isDevice": false
+  }
 }
 ```
 
@@ -187,24 +365,23 @@ path_id=home/node1/node2
 
 ### Request
 
-- HTTP method: `DELETE`
-- Body:
-
-|      field       |   type   | is optional | description                                |
-| :--------------: | :------: | :---------: | :----------------------------------------- |
-|    `node_id`     | `string` |     ❌      | Node to update                             |
-|    `root_id`     | `string` |     ❌      | Root ID to host the created node           |
-|    `admin_id`    | `string` |     ❌      | Admin ID with access to the requested root |
+- Route: `(DELETE) /nodes-client/:nodeId`
+- Required headers:
+  - Json Web Token (JWT) with admin access
+- Params:
+  | field | type | is optional | description |
+  | :-------: | :------: | :---------: | :-------------------------------- |
+  | `nodeId` | `string` | ❌ | node's id |
 
 ### Response
 
 |   field    |   type   | is optional | description                                |
 | :--------: | :------: | :---------: | :----------------------------------------- |
-|  `nodeId`  | `string` |     ❌      | Created node ID                            |
-|  `rootId`  | `string` |     ❌      | Node's root ID                             |
-|  `parent`  | `string` |     ❌      | Node's parent ID                           |
-|   `name`   | `string` |     ❌      | Node's name (used for path and MQTT topic) |
-| `nodeInfo` | `Object` |     ❌      | Node information                           |
+|  `nodeId`  | `string` |     ❌      | deleted node id                            |
+|  `rootId`  | `string` |     ❌      | node's root id                             |
+|  `parent`  | `string` |     ❌      | node's parent id                           |
+|   `name`   | `string` |     ❌      | node's name (used for path and MQTT topic) |
+| `nodeInfo` | `Object` |     ❌      | node information                           |
 
 **Node Info**
 | field | type | is optional | description |
@@ -213,22 +390,22 @@ path_id=home/node1/node2
 
 ### Example
 
-```jsonc
-// Request
-{
-    "admin_id": "638178c1b1348308cc1e37be",
-    "root_id": "636674f1e0ac56ce4ff1949c",
-    "node_id": "6366abf1e0ac56ce4ff1949c"
-}
+```bash
+curl \
+-X DELETE \
+-H 'Authorization: Bearer su87...Hs89' \
+localhost:3000/nodes-client/6366abf1e0ac56ce4ff1949c
+```
 
+```jsonc
 // Response
 {
-    "nodeId": "6366abf1e0ac56ce4ff1949c",
-    "rootId": "636674f1e0ac56ce4ff1949c",
-    "parent": "636674f1e0ac56cf4ff1949c",
-    "path": "home/test-gate",
-    "nodeInfo": {
-        "isDevice": false
-    }
+  "nodeId": "6366abf1e0ac56ce4ff1949c",
+  "rootId": "636674f1e0ac56ce4ff1949c",
+  "parent": "636674f1e0ac56cf4ff1949c",
+  "name": "test-gate",
+  "nodeInfo": {
+    "isDevice": false
+  }
 }
 ```
