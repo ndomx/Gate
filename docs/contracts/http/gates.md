@@ -4,39 +4,30 @@
 
 ### Request
 
-- HTTP method: `PUT`
-- Body:
+- Route: `(GET) /activate/:device_id`
+- Required headers:
+  - Json Web Token (JWT)
+- Params:
   | field | type | is optional | description |
   | :---------: | :------: | :---------: | :------------------------ |
   | `device_id` | `string` | ❌ | Device trying to open |
-  | `user_id` | `string` | ❌ | User ID, must have acess |
-  | `timestamp` | `number` | ❌ | Unix timestamp of request |
+
+> The user needs to have access to the requested device in order to activate it
 
 **Example**
 
-```json
-{
-  "device_id": "63702e9d3c71cb704ab9aa4b",
-  "user_id": "637025023e71cb704af9aa49",
-  "timestamp": 1668356350
-}
+```bash
+curl -H 'Authorization: Bearer ey...Fjg' \
+localhost:3000/activate/63702e9d3c71cb704ab9aa4b
 ```
 
 ### Response
 
-If there are no errors in the request, the server will return the topic to which the device is listening.
+If there are no errors in the request, the server will return the topic to which the device is listening. Otherwise, refer to [error codes](./error_codes.md).
 
 ### Example
 
-```jsonc
-// Request
-{
-  "device_id": "63702e9d3c71cb704ab9aa4b",
-  "user_id": "637025023e71cb704af9aa49",
-  "timestamp": 1668356350
-}
-
-// Response
+```json
 {
   "topic": "home/entrance"
 }
