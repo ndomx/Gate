@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAdminAuthGuard } from 'src/auth/guards/jwt-admin-auth.guard';
-import { UserDto } from 'src/users/dtos/user.dto';
 import { CreateUserRequestDto } from './dtos/create-user-request.dto';
 import { PublicUserDto } from './dtos/public-user.dto';
 import { UpdateUserRequestDto } from './dtos/udpate-user-request.dto';
@@ -21,7 +20,7 @@ export class UsersClientController {
   constructor(private readonly usersClientService: UsersClientService) {}
 
   @Post()
-  create(@Body() request: CreateUserRequestDto): Promise<UserDto> {
+  create(@Body() request: CreateUserRequestDto): Promise<PublicUserDto> {
     return this.usersClientService.createUser(request);
   }
 

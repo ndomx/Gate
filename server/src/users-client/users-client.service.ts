@@ -16,7 +16,7 @@ export class UsersClientService {
     private readonly nodesService: NodesService,
   ) {}
 
-  async createUser(request: CreateUserRequestDto): Promise<UserDto> {
+  async createUser(request: CreateUserRequestDto): Promise<PublicUserDto> {
     const root = await this.nodesService.findRoot(request.rootId);
     if (!root) {
       throw new BadRequestException({
@@ -37,7 +37,7 @@ export class UsersClientService {
       });
     }
 
-    return user;
+    return this.#removeFields(user);
   }
 
   async getUser(userId: string): Promise<PublicUserDto> {
