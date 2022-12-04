@@ -7,7 +7,9 @@ import {
   Query,
   Delete,
   Param,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAdminAuthGuard } from 'src/auth/guards/jwt-admin-auth.guard';
 import { NodeDto } from 'src/nodes/dtos/node.dto';
 import { CreateNodeRequestDto } from './dtos/create-node-request.dto';
 import { GetNodesResponseDto } from './dtos/get-nodes-response.dto';
@@ -16,6 +18,7 @@ import { UserNodesResponseDto } from './dtos/user-nodes-response.dto';
 import { NodesClientService } from './nodes-client.service';
 
 @Controller('nodes-client')
+@UseGuards(JwtAdminAuthGuard)
 export class NodesClientController {
   constructor(private readonly nodesClientService: NodesClientService) {}
 

@@ -8,9 +8,7 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { Role } from 'src/common/enum/role.enum';
-import { Roles } from 'src/common/decorator/roles.decorator';
+import { JwtAdminAuthGuard } from 'src/auth/guards/jwt-admin-auth.guard';
 import { UserDto } from 'src/users/dtos/user.dto';
 import { CreateUserRequestDto } from './dtos/create-user-request.dto';
 import { PublicUserDto } from './dtos/public-user.dto';
@@ -18,8 +16,7 @@ import { UpdateUserRequestDto } from './dtos/udpate-user-request.dto';
 import { UsersClientService } from './users-client.service';
 
 @Controller('users-client')
-@UseGuards(JwtAuthGuard)
-@Roles(Role.ADMIN)
+@UseGuards(JwtAdminAuthGuard)
 export class UsersClientController {
   constructor(private readonly usersClientService: UsersClientService) {}
 
@@ -29,7 +26,6 @@ export class UsersClientController {
   }
 
   @Get(':userId')
-  @Roles(Role.ALL)
   async getUser(@Param('userId') userId: string): Promise<PublicUserDto> {
     return this.usersClientService.getUser(userId);
   }
