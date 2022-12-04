@@ -44,7 +44,7 @@ export class GatesService {
     // grant access
     const topic = `${node.rootId}/${path}`;
     this.mqttService.activateDevice(topic, {
-      action: 'on/off',
+      action: 'open',
     });
 
     // response
