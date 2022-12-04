@@ -24,7 +24,7 @@ Creates a user
 
 |   field    |    type    | is optional | description             |
 | :--------: | :--------: | :---------: | :---------------------- |
-|  `userId`  |  `string`  |     ❌      | user's is               |
+|  `userId`  |  `string`  |     ❌      | user's id              |
 |  `rootId`  |  `string`  |     ❌      | user's root id          |
 |   `name`   |  `string`  |     ❌      | first name              |
 |   `last`   |  `string`  |     ❌      | last name               |
