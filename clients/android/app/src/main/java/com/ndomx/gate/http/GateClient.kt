@@ -4,6 +4,8 @@ import android.util.Log
 import com.ndomx.gate.BuildConfig
 import com.ndomx.gate.http.models.GateRequest
 import com.ndomx.gate.http.models.GateResponse
+import com.ndomx.gate.http.models.LoginRequest
+import com.ndomx.gate.http.models.LoginResponse
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -67,6 +69,39 @@ class GateClient private constructor() {
         }
     }
 
+    fun register(serverUrl: String, request: LoginRequest, callback: (String?) -> Unit) {
+        val body = Json.encodeToString(request)
+
+        thread {
+            val response = fetch<LoginResponse>(serverUrl, "POST", body)
+            callback(response?.token)
+        }
+    }
+
+    private inline fun <reified T> fetch(serverUrl: String, method: String, body: String): T? {
+        val url = URL(serverUrl)
+        var client: HttpsURLConnection? = null
+
+        var response: T? = null
+        try {
+            client = (url.openConnection() as HttpsURLConnection).apply {
+                doOutput = true
+                requestMethod = method
+                setChunkedStreamingMode(0)
+                setRequestProperty("Content-Type", "application/json")
+            }
+
+            sendRequest(client, body)
+            response = getResponse<T>(client)
+        } catch (e: Exception) {
+            Log.e(LOG_TAG, e.message ?: "Unknown error while sending request")
+        } finally {
+            client?.disconnect()
+        }
+
+        return response
+    }
+
     private fun sendRequest(client: HttpsURLConnection, body: String) {
         val outputStream = BufferedOutputStream(client.outputStream)
         val writer = OutputStreamWriter(outputStream)
@@ -76,7 +111,7 @@ class GateClient private constructor() {
         writer.close()
     }
 
-    private fun getResponse(client: HttpsURLConnection): GateResponse? {
+    private inline fun <reified T> getResponse(client: HttpsURLConnection): T? {
         val responseCode = client.responseCode
         if (responseCode !in SUPPORTED_CODES) {
             Log.e(LOG_TAG, "Received code $responseCode")
