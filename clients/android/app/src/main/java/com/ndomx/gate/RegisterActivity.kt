@@ -1,13 +1,11 @@
 package com.ndomx.gate
 
-import android.content.Context
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.ndomx.gate.http.GateClient
-import com.ndomx.gate.http.models.RegisterRequest
-import kotlin.concurrent.thread
+import com.ndomx.gate.http.models.RegisterRequestBody
 
 class RegisterActivity : AppCompatActivity(R.layout.activity_register) {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,35 +20,22 @@ class RegisterActivity : AppCompatActivity(R.layout.activity_register) {
             registerUser(
                 username = usernameInput.text.toString(),
                 password = passwordInput.text.toString(),
-                server = serverInput.text.toString()
+                host = serverInput.text.toString()
             )
         }
     }
 
-    private fun registerUser(username: String, password: String, server: String) {
-        // update server in prefs
-        saveToPrefs("server_url", server)
-
-        // call http client
-        val request = RegisterRequest(
+    private fun registerUser(username: String, password: String, host: String) {
+        PrefsManager.save(this, PrefsManager.HOST_URL_KEY, host)
+        val request = RegisterRequestBody(
             username, password
         )
 
         val gateClient = GateClient.getInstance()
-        gateClient.register(server, request) { onRegistrationSuccess(it) }
+        gateClient.register(host, "/auth", request) { onRegistrationSuccess(it) }
     }
 
     private fun onRegistrationSuccess(token: String?) {
-        token?.let { saveToPrefs("user_token", it) }
-    }
-
-    private fun saveToPrefs(key: String, value: String) {
-        thread {
-            val prefs = getSharedPreferences("gate", Context.MODE_PRIVATE)
-            with(prefs.edit()) {
-                putString(key, value)
-                apply()
-            }
-        }
+        token?.let { PrefsManager.saveAsync(this, PrefsManager.ACCESS_TOKEN_KEY, it) }
     }
 }

@@ -17,11 +17,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.ndomx.gate.auth.AuthListener
 import com.ndomx.gate.auth.AuthManager
 import com.ndomx.gate.http.GateClient
-import com.ndomx.gate.http.models.GateResponse
 import com.ndomx.gate.machine.GateState
 import com.ndomx.gate.machine.GateStateData
 import com.ndomx.gate.machine.GateStateListener
 import com.ndomx.gate.machine.GateStateMachine
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, GateStateListener {
     companion object {
@@ -78,8 +78,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
 
     override fun onAuthSuccess() {
         val client = GateClient.getInstance()
-        client.requestAccess {
-            onServerResponse(it)
+        thread {
+            val host = PrefsManager.loadString(this, PrefsManager.HOST_URL_KEY)
+                ?: throw Exception("URL not configured yet")
+
+            val token = PrefsManager.loadString(this, PrefsManager.ACCESS_TOKEN_KEY)
+                ?: throw Exception("User not registered yet")
+
+            client.requestAccess(host, "/gates/activate", token, "123") {
+                onServerResponse(it)
+            }
         }
     }
 
