@@ -41,7 +41,7 @@ abstract class HttpClient {
 
         try {
             client = (url.openConnection() as HttpsURLConnection).apply {
-                doOutput = true
+                doOutput = (request.method != HttpMethod.GET)
                 requestMethod = request.method.name
                 setChunkedStreamingMode(0)
                 request.headers?.forEach { entry -> setRequestProperty(entry.key, entry.value) }
