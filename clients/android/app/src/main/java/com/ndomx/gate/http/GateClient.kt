@@ -31,7 +31,7 @@ class GateClient private constructor() : HttpClient() {
     ) {
         thread {
             val response = fetch<AccessResponse>(
-                serverUrl = "$host/${path.trim('/')}",
+                serverUrl = buildUrl(host, path),
                 request = HttpRequest(
                     method = HttpMethod.GET,
                     headers = mapOf(
@@ -55,7 +55,7 @@ class GateClient private constructor() : HttpClient() {
 
         thread {
             val response = fetch<RegisterResponse>(
-                serverUrl = "$host/${path.trim('/')}",
+                serverUrl = buildUrl(host, path),
                 request = HttpRequest(
                     method = HttpMethod.POST,
                     headers = mapOf(
@@ -65,7 +65,11 @@ class GateClient private constructor() : HttpClient() {
                 )
             )
 
-            callback(response?.token)
+            callback(response?.accessToken)
         }
+    }
+
+    private fun buildUrl(host: String, path: String): String {
+        return "https://$host/${path.trim('/')}"
     }
 }

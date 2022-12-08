@@ -1,8 +1,10 @@
 package com.ndomx.gate.http.models
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class RegisterResponse(
-    val token: String
+    @SerialName("access_token")
+    val accessToken: String
 )
