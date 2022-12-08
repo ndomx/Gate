@@ -5,10 +5,6 @@ plugins {
     id 'kotlin-kapt'
 }
 
-def secretsFile = rootProject.file("secrets.properties")
-def secrets = new Properties()
-secrets.load(new FileInputStream(secretsFile))
-
 android {
     compileSdk 32
 
@@ -20,10 +16,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField("String", "SERVER_URL", secrets["SERVER_URL"])
-        buildConfigField("String", "DEVICE_ID", secrets["DEVICE_ID"])
-        buildConfigField("String", "USER_ID", secrets["USER_ID"])
     }
 
     buildTypes {
