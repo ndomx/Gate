@@ -6,10 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/node_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.constraintlayout.utils.widget.ImageFilterView
         android:id="@+id/button_open_gate"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,9 +31,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="20dp"
-        tools:text="Verify"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="@id/button_open_gate"
         app:layout_constraintStart_toStartOf="@id/button_open_gate"
-        app:layout_constraintTop_toBottomOf="@id/button_open_gate" />
+        app:layout_constraintTop_toBottomOf="@id/button_open_gate"
+        tools:text="Verify" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,8 +14,11 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ndomx.gate.auth.AuthListener
 import com.ndomx.gate.auth.AuthManager
+import com.ndomx.gate.db.GateDatabase
 import com.ndomx.gate.http.GateClient
 import com.ndomx.gate.machine.GateState
 import com.ndomx.gate.machine.GateStateData
@@ -47,6 +50,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
 
     private lateinit var caption: TextView
 
+    private val nodesAdapter = NodesRecyclerViewAdapter { node ->
+        if (gateStateMachine.isIdle) {
+            gateStateMachine.nodeId = node.id
+            requestAccess()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -56,6 +66,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
                 requestAccess()
             }
         }
+
+        val recyclerView = findViewById<RecyclerView>(R.id.node_list)
+        loadRecyclerView(recyclerView)
 
         icon = button.drawable as LayerDrawable
         caption = findViewById(R.id.button_state)
@@ -85,7 +98,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
             val token = PrefsManager.loadString(this, PrefsManager.ACCESS_TOKEN_KEY)
                 ?: throw Exception("User not registered yet")
 
-            client.requestAccess(host, token, "123") {
+            val nodeId = gateStateMachine.nodeId ?: throw Exception("Node id cannot be null")
+
+            client.requestAccess(host, token, nodeId) {
                 onServerResponse(it)
             }
         }
@@ -132,6 +147,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
             val message = "Could not open gate"
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             gateStateMachine.setState(GateState.FAILURE)
+        }
+    }
+
+    private fun loadRecyclerView(view: RecyclerView) = with(view) {
+        layoutManager = LinearLayoutManager(context)
+        adapter = nodesAdapter
+
+        val db = GateDatabase.db(context)
+        db.getAllNodes { nodes ->
+            nodesAdapter.addNodes(nodes)
         }
     }
 }

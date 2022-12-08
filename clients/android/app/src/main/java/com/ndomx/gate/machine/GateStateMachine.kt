@@ -13,6 +13,8 @@ class GateStateMachine(private val listener: GateStateListener) {
         private const val FAILURE_ANIMATION_DURATION = 3000L
     }
 
+    var nodeId: String? = null
+
     val isIdle get() = (state == GateState.IDLE)
 
     private var state = GateState.IDLE
@@ -35,6 +37,7 @@ class GateStateMachine(private val listener: GateStateListener) {
 
     private fun setIdle(): GateStateData {
         state = GateState.IDLE
+        nodeId = null
 
         return GateStateData(
             background = idleBackground,
