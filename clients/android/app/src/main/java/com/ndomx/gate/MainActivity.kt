@@ -8,12 +8,15 @@ import android.graphics.drawable.LevelListDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ndomx.gate.auth.AuthListener
@@ -67,6 +70,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
             }
         }
 
+        val toolbar = findViewById<Toolbar>(R.id.main_toolbar)
+        setSupportActionBar(toolbar)
+
         val recyclerView = findViewById<RecyclerView>(R.id.node_list)
         loadRecyclerView(recyclerView)
 
@@ -87,6 +93,25 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
         super.onStart()
 
         gateStateMachine.setState(GateState.IDLE)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_login -> {
+            val i = Intent(this, RegisterActivity::class.java)
+            startActivity(i)
+            true
+        }
+        R.id.action_sync -> {
+            syncNodes()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onAuthSuccess() {
@@ -154,7 +179,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
         layoutManager = LinearLayoutManager(context)
         adapter = nodesAdapter
 
-        val db = GateDatabase.db(context)
+        syncNodes()
+    }
+
+    private fun syncNodes() {
+        val db = GateDatabase.db(this)
         db.getAllNodes { nodes ->
             nodesAdapter.addNodes(nodes)
         }
