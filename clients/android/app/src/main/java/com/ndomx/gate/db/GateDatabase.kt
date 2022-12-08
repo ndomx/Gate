@@ -32,4 +32,8 @@ abstract class GateDatabase : RoomDatabase() {
     fun getAllNodes(callback: (List<NodeModel>) -> Unit) = thread {
         callback(nodeDao().getAll())
     }
+
+    fun saveNodes(nodes: List<NodeModel>) = thread {
+        nodeDao().insertMany(nodes)
+    }
 }

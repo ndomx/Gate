@@ -1,4 +1,4 @@
-package com.ndomx.gate.http.models
+package com.ndomx.gate.http.models.request
 
 import kotlinx.serialization.Serializable
 

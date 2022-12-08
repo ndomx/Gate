@@ -1,8 +1,9 @@
 package com.ndomx.gate.http
 
-import com.ndomx.gate.http.models.AccessResponse
-import com.ndomx.gate.http.models.RegisterRequestBody
-import com.ndomx.gate.http.models.RegisterResponse
+import com.ndomx.gate.http.models.request.RegisterRequestBody
+import com.ndomx.gate.http.models.response.AccessResponse
+import com.ndomx.gate.http.models.response.RegisterResponse
+import com.ndomx.gate.http.models.response.UserNodesResponse
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.concurrent.thread
@@ -24,49 +25,65 @@ class GateClient private constructor() : HttpClient() {
 
     fun requestAccess(
         host: String,
-        path: String,
         token: String,
         deviceId: String,
         callback: (Boolean) -> Unit
-    ) {
-        thread {
-            val response = fetch<AccessResponse>(
-                serverUrl = buildUrl(host, path),
-                request = HttpRequest(
-                    method = HttpMethod.GET,
-                    headers = mapOf(
-                        "Authorization" to "Bearer $token"
-                    ),
-                    params = listOf(deviceId)
-                )
+    ) = thread {
+        val response = fetch<AccessResponse>(
+            serverUrl = buildUrl(host, "/gates/activate"),
+            request = HttpRequest(
+                method = HttpMethod.GET,
+                headers = mapOf(
+                    "Authorization" to "Bearer $token"
+                ),
+                params = listOf(deviceId)
             )
+        )
 
-            callback(response != null)
-        }
+        callback(response != null)
     }
 
     fun register(
         host: String,
-        path: String,
         request: RegisterRequestBody,
         callback: (String?) -> Unit
-    ) {
+    ) = thread {
         val body = Json.encodeToString(request)
 
-        thread {
-            val response = fetch<RegisterResponse>(
-                serverUrl = buildUrl(host, path),
-                request = HttpRequest(
-                    method = HttpMethod.POST,
-                    headers = mapOf(
-                        "Content-Type" to "application/json"
-                    ),
-                    body = body,
+
+        val response = fetch<RegisterResponse>(
+            serverUrl = buildUrl(host, "/auth"),
+            request = HttpRequest(
+                method = HttpMethod.POST,
+                headers = mapOf(
+                    "Content-Type" to "application/json"
+                ),
+                body = body,
+            )
+        )
+
+        callback(response?.accessToken)
+    }
+
+    fun fetchUserNodes(
+        host: String,
+        token: String,
+        callback: (UserNodesResponse?) -> Unit
+    ) = thread {
+        val response = fetch<UserNodesResponse>(
+            serverUrl = buildUrl(host, "/nodes-client/user"),
+            request = HttpRequest(
+                method = HttpMethod.GET,
+                headers = mapOf(
+                    "Authorization" to "Bearer $token"
+                ),
+                query = mapOf(
+                    "device_only" to "true"
                 )
             )
+        )
 
-            callback(response?.accessToken)
-        }
+        callback(response)
     }
 
     private fun buildUrl(host: String, path: String): String {

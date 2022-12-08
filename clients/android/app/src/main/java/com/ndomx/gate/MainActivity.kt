@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, Ga
             val token = PrefsManager.loadString(this, PrefsManager.ACCESS_TOKEN_KEY)
                 ?: throw Exception("User not registered yet")
 
-            client.requestAccess(host, "/gates/activate", token, "123") {
+            client.requestAccess(host, token, "123") {
                 onServerResponse(it)
             }
         }
