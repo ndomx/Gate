@@ -20,7 +20,6 @@ import { UserNodesResponseDto } from './dtos/user-nodes-response.dto';
 import { NodesClientService } from './nodes-client.service';
 
 @Controller('nodes-client')
-@UseGuards(JwtAdminAuthGuard)
 export class NodesClientController {
   constructor(private readonly nodesClientService: NodesClientService) {}
 
