@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.ndomx.gate.db.GateDatabase
 import com.ndomx.gate.db.models.NodeModel
 import com.ndomx.gate.http.GateClient
@@ -14,6 +15,11 @@ import kotlin.concurrent.thread
 class RegisterActivity : AppCompatActivity(R.layout.activity_register) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val toolbar = findViewById<Toolbar>(R.id.register_toolbar)
+        toolbar.title = "Register"
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val button = findViewById<Button>(R.id.button_register)
         val usernameInput = findViewById<EditText>(R.id.username_input)
