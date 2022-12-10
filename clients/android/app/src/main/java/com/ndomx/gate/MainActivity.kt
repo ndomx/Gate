@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ndomx.gate.auth.AuthListener
 import com.ndomx.gate.auth.AuthManager
 import com.ndomx.gate.db.GateDatabase
+import com.ndomx.gate.db.models.NodeModel
 import com.ndomx.gate.http.GateClient
 import com.ndomx.gate.http.models.response.AccessResponse
 import com.ndomx.gate.states.NodeState
@@ -77,7 +78,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
             true
         }
         R.id.action_sync -> {
-            syncNodes()
+            fetchNodes()
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -160,7 +161,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
         syncNodes()
     }
 
-    private fun syncNodes() {
+    private fun syncNodes() = thread {
         val db = GateDatabase.db(this)
         db.getAllNodes { nodes ->
             runOnUiThread {
@@ -168,6 +169,32 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
             }
         }
     }
+
+    private fun fetchNodes() = thread {
+        val host = PrefsManager.loadString(this, PrefsManager.HOST_URL_KEY) ?: return@thread
+        val token = PrefsManager.loadString(this, PrefsManager.ACCESS_TOKEN_KEY) ?: return@thread
+
+        val client = GateClient.getInstance()
+        client.fetchUserNodes(host, token) { res ->
+            res?.nodes?.let {
+                val nodes = it.map { node ->
+                    NodeModel(
+                        id = node.id,
+                        name = node.name
+                    )
+                }
+
+                val db = GateDatabase.db(this)
+                db.saveNodes(nodes)
+
+                runOnUiThread {
+                    Toast.makeText(this, "Found ${nodes.size} devices", Toast.LENGTH_SHORT).show()
+                    nodesAdapter.addNodes(nodes)
+                }
+            }
+        }
+    }
+
 
     private fun getNodePositionOrThrow(nodeId: String): Int {
         return deviceMap[nodeId] ?: throw Exception("device not mapped")

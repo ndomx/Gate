@@ -3,6 +3,7 @@ package com.ndomx.gate
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.ndomx.gate.db.GateDatabase
@@ -71,6 +72,10 @@ class RegisterActivity : AppCompatActivity(R.layout.activity_register) {
                     name = node.name
                 )
             })
+
+            runOnUiThread {
+                Toast.makeText(this, "Found ${nodes.size} devices", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
