@@ -7,6 +7,7 @@ import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { MqttService } from 'src/mqtt/mqtt.service';
 import { NodesClientService } from 'src/nodes-client/nodes-client.service';
 import { UsersClientService } from 'src/users-client/users-client.service';
+import { ActivateDeviceResponseDto } from './dtos/activate-device-response.dto';
 
 @Injectable()
 export class GatesService {
@@ -16,7 +17,10 @@ export class GatesService {
     private readonly mqttService: MqttService,
   ) {}
 
-  async activateDevice(deviceId: string, userId: string) {
+  async activateDevice(
+    deviceId: string,
+    userId: string,
+  ): Promise<ActivateDeviceResponseDto> {
     // verify user
     const user = await this.usersClientService.getUser(userId);
 
@@ -48,6 +52,11 @@ export class GatesService {
     });
 
     // response
-    return { topic: path };
+    const response = new ActivateDeviceResponseDto();
+    response.node = node;
+    response.success = true;
+    response.topic = path;
+
+    return response;
   }
 }
