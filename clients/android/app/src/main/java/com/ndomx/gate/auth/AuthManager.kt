@@ -1,6 +1,8 @@
 package com.ndomx.gate.auth
 
 import android.app.Activity
+import android.app.KeyguardManager
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.biometric.BiometricManager.Authenticators.*
@@ -37,7 +39,16 @@ class AuthManager(private val listener: AuthListener) {
         }
     }
 
+    /**
+     * todo: if device is not secured, an internal auth should be required
+     */
     fun showBiometricPrompt(activity: Activity, nodeId: String) {
+        val keyguardManager = activity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        if (!keyguardManager.isKeyguardSecure) {
+            listener.onAuthSuccess(nodeId)
+            return
+        }
+
         val callbackManager = CallbackManager(nodeId)
         val executor = ContextCompat.getMainExecutor(activity.baseContext)
         val biometricPrompt =
