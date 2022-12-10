@@ -163,7 +163,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
     private fun syncNodes() {
         val db = GateDatabase.db(this)
         db.getAllNodes { nodes ->
-            nodesAdapter.addNodes(nodes)
+            runOnUiThread {
+                nodesAdapter.addNodes(nodes)
+            }
         }
     }
 
