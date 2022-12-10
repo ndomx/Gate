@@ -27,7 +27,7 @@ class GateClient private constructor() : HttpClient() {
         host: String,
         token: String,
         deviceId: String,
-        callback: (Boolean) -> Unit
+        callback: (AccessResponse?) -> Unit
     ) = thread {
         val response = fetch<AccessResponse>(
             serverUrl = buildUrl(host, "/gates/activate"),
@@ -40,7 +40,7 @@ class GateClient private constructor() : HttpClient() {
             )
         )
 
-        callback(response != null)
+        callback(response)
     }
 
     fun register(

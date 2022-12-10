@@ -20,10 +20,12 @@ import com.ndomx.gate.auth.AuthListener
 import com.ndomx.gate.auth.AuthManager
 import com.ndomx.gate.db.GateDatabase
 import com.ndomx.gate.http.GateClient
+import com.ndomx.gate.http.models.response.AccessResponse
 import com.ndomx.gate.states.NodeState
 import com.ndomx.gate.utils.PrefsManager
 import kotlin.concurrent.thread
 
+// todo: handle exceptions
 class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
     companion object {
         private const val LOG_TAG = "MainActivity"
@@ -92,9 +94,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
 
             updateNode(nodeId, NodeState.WAITING)
 
-            // todo: should return a model
-            client.requestAccess(host, token, nodeId) {
-                onServerResponse(nodeId, it)
+            client.requestAccess(host, token, nodeId) { res ->
+                res?.let { onServerResponse(it) } ?: onAccessDenied(nodeId)
             }
         }
     }
@@ -115,12 +116,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
         }
     }
 
-    // TODO: create model for response
-    private fun onServerResponse(nodeId: String, success: Boolean) {
-        if (success) {
-            onAccessGranted(nodeId)
+    private fun onServerResponse(response: AccessResponse) {
+        if (response.success) {
+            onAccessGranted(response.node.id)
         } else {
-            onAccessDenied(nodeId)
+            onAccessDenied(response.node.id)
         }
     }
 
