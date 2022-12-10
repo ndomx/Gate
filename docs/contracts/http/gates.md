@@ -18,7 +18,25 @@ Activates a device
 
 ### Response
 
-If there are no errors in the request, the server will return the topic to which the device is listening. Otherwise, refer to [error codes](./error_codes.md).
+|    field    |   type   | is optional | description           |
+| :---------: | :------: | :---------: | :-------------------- |
+| `topic` | `string` |     ❌      | device's mqtt topic |
+| `success` | `boolean` |     ❌      | operation result |
+| `node` | `Object` |     ❌      | device's info |
+
+**Node**
+|   field    |   type   | is optional | description            |
+| :--------: | :------: | :---------: | :--------------------- |
+|  `nodeId`  | `string` |     ❌      | created node's id      |
+|  `rootId`  | `string` |     ❌      | node's root id         |
+|  `parent`  | `string` |     ❌      | node's parent id       |
+|   `name`   | `string` |     ❌      | node's name            |
+| `nodeInfo` | `Object` |     ❌      | additional information |
+
+**Node Info**
+| field | type | is optional | description |
+| :--------------: | :------: | :---------: | :----------------------------------------- |
+| `isDevice` | `boolean` | ❌ | `true` for _device nodes_ and `false` elsewhere |
 
 ### Example
 
@@ -31,6 +49,16 @@ localhost:3000/activate/63702e9d3c71cb704ab9aa4b
 ```jsonc
 // Response
 {
-  "topic": "home/entrance"
+  "node": {
+    "name": "main-entrance",
+    "parent": "6389519092341db5e789aa22",
+    "rootId": "6389519092341db5e789aa22",
+    "nodeInfo": {
+      "isDevice": true
+    },
+    "nodeId": "63702e9d3c71cb704ab9aa4b"
+  },
+  "success": true,
+  "topic": "home/main-entrance"
 }
 ```
