@@ -1,4 +1,4 @@
-package com.ndomx.gate
+package com.ndomx.gate.utils
 
 import android.content.Context
 import android.content.SharedPreferences

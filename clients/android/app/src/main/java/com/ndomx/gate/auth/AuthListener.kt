@@ -1,6 +1,6 @@
 package com.ndomx.gate.auth
 
 interface AuthListener {
-    fun onAuthSuccess()
-    fun onAuthFailure()
+    fun onAuthSuccess(nodeId: String)
+    fun onAuthFailure(nodeId: String)
 }

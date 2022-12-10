@@ -10,6 +10,7 @@ import com.ndomx.gate.db.models.NodeModel
 import com.ndomx.gate.http.GateClient
 import com.ndomx.gate.http.models.request.RegisterRequestBody
 import com.ndomx.gate.http.models.response.UserNodesResponse
+import com.ndomx.gate.utils.PrefsManager
 import kotlin.concurrent.thread
 
 class RegisterActivity : AppCompatActivity(R.layout.activity_register) {

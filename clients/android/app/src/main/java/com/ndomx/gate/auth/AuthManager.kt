@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
@@ -18,32 +17,32 @@ class AuthManager(private val listener: AuthListener) {
         private const val LOG_TAG = "AuthManager.Callback"
     }
 
-    private inner class CallbackManager() : BiometricPrompt.AuthenticationCallback() {
+    private inner class CallbackManager(private val nodeId: String) :
+        BiometricPrompt.AuthenticationCallback() {
         override fun onAuthenticationFailed() {
             super.onAuthenticationFailed()
 
             Log.i(LOG_TAG, "Auth success")
-            listener.onAuthFailure()
+            listener.onAuthFailure(nodeId)
         }
 
         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
             super.onAuthenticationError(errorCode, errString)
 
             Log.i(LOG_TAG, "Auth error")
-            listener.onAuthFailure()
+            listener.onAuthFailure(nodeId)
         }
 
         override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
             super.onAuthenticationSucceeded(result)
 
             Log.i(LOG_TAG, "Auth success")
-            listener.onAuthSuccess()
+            listener.onAuthSuccess(nodeId)
         }
     }
 
-    private val callbackManager = CallbackManager()
-
-    fun showBiometricPrompt(activity: Activity) {
+    fun showBiometricPrompt(activity: Activity, nodeId: String) {
+        val callbackManager = CallbackManager(nodeId)
         val executor = ContextCompat.getMainExecutor(activity.baseContext)
         val biometricPrompt =
             BiometricPrompt(activity as FragmentActivity, executor, callbackManager)
@@ -56,9 +55,14 @@ class AuthManager(private val listener: AuthListener) {
         biometricPrompt.authenticate(promptInfo)
     }
 
-    fun showKeyguardPrompt(context: Context, launcher: ActivityResultLauncher<Intent>) {
+    fun showKeyguardPrompt(
+        context: Context,
+        launcher: ActivityResultLauncher<Intent>,
+        nodeId: String
+    ) {
         val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         val intent = keyguardManager.createConfirmDeviceCredentialIntent("Please verify", "")
+        intent.putExtra("nodeId", nodeId)
 
         launcher.launch(intent)
     }

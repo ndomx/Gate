@@ -31,15 +31,11 @@
                 android:textSize="24sp"
                 tools:text="Main Entrance" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <androidx.constraintlayout.utils.widget.ImageFilterView
                 android:id="@+id/node_open_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="end"
-                app:tint="@color/white"
-                app:srcCompat="@drawable/ic_round_send_24" />
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:srcCompat="@drawable/lock_icon" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
