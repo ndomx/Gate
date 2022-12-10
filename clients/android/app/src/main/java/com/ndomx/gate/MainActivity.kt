@@ -1,17 +1,12 @@
 package com.ndomx.gate
 
-import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,8 +31,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
     }
 
     private val deviceMap = mutableMapOf<String, Int>()
-
-    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     private val authManager = AuthManager(this)
 
     private lateinit var nodesAdapter: NodesRecyclerViewAdapter
@@ -50,19 +43,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
 
         val recyclerView = findViewById<RecyclerView>(R.id.node_list)
         loadRecyclerView(recyclerView)
-
-        resultLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            val nodeId = result.data?.getStringExtra("nodeId")
-                ?: throw Exception("intent must contain node id")
-
-            if (result.resultCode == Activity.RESULT_OK) {
-                onAuthSuccess(nodeId)
-            } else {
-                onAuthFailure(nodeId)
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -85,16 +65,27 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
     }
 
     override fun onAuthSuccess(nodeId: String) {
-        val client = GateClient.getInstance()
         thread {
-            val host = PrefsManager.loadString(this, PrefsManager.HOST_URL_KEY)
-                ?: throw Exception("URL not configured yet")
+            val host: String
+            val token: String
 
-            val token = PrefsManager.loadString(this, PrefsManager.ACCESS_TOKEN_KEY)
-                ?: throw Exception("User not registered yet")
+            try {
+                host = PrefsManager.loadString(this, PrefsManager.HOST_URL_KEY)
+                    ?: throw Exception("URL not configured yet")
 
-            updateNode(nodeId, NodeState.WAITING)
+                token = PrefsManager.loadString(this, PrefsManager.ACCESS_TOKEN_KEY)
+                    ?: throw Exception("User not registered yet")
 
+                updateNode(nodeId, NodeState.WAITING)
+            } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                }
+
+                return@thread
+            }
+
+            val client = GateClient.getInstance()
             client.requestAccess(host, token, nodeId) { res ->
                 res?.let { onServerResponse(it) } ?: onAccessDenied(nodeId)
             }
@@ -108,13 +99,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
     }
 
     private fun requestAccess(nodeId: String) {
-        if (Build.VERSION.SDK_INT > 29) {
-            Log.i(LOG_TAG, "Using BiometricPrompt API")
-            authManager.showBiometricPrompt(this, nodeId)
-        } else {
-            Log.i(LOG_TAG, "Using KeyGuardPrompt API")
-            authManager.showKeyguardPrompt(this, resultLauncher, nodeId)
-        }
+        authManager.showBiometricPrompt(this, nodeId)
     }
 
     private fun onServerResponse(response: AccessResponse) {
