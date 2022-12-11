@@ -7,7 +7,7 @@ if __name__ == '__main__':
     mqtt_client = MqttClient()
     state_machine = StateMachine(RELAY_ON_DURATION)
 
-    mqtt_client.connect('home/main', lambda msg: state_machine.set_flag())
+    mqtt_client.connect(lambda msg: state_machine.set_flag())
 
     while True:
         state_machine.run()
