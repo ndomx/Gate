@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ndomx.gate.db.models.NodeModel
 import com.ndomx.gate.states.NodeState
 import com.ndomx.gate.ui.UiNode
+import com.ndomx.gate.utils.parseNodeName
 
 class NodesRecyclerViewAdapter(
     context: Context,
@@ -59,7 +60,8 @@ class NodesRecyclerViewAdapter(
     @SuppressLint("NotifyDataSetChanged")
     fun addNodes(toAdd: List<NodeModel>) {
         nodes.clear()
-        nodes.addAll(toAdd.map { UiNode(it.id, it.name, NodeState.IDLE) })
+        nodes.addAll(toAdd.map { UiNode(it.id, it.name.parseNodeName(), NodeState.IDLE) })
+        // todo: node model should contain a [displayName] field
 
         /**
          * Because the method clears the whole list,
