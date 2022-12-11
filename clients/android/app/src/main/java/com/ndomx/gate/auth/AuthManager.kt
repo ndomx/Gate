@@ -44,7 +44,7 @@ class AuthManager(private val listener: AuthListener) {
      */
     fun showBiometricPrompt(activity: Activity, nodeId: String) {
         val keyguardManager = activity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-        if (!keyguardManager.isKeyguardSecure) {
+        if (!keyguardManager.isDeviceSecure) {
             listener.onAuthSuccess(nodeId)
             return
         }

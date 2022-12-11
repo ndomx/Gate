@@ -3,10 +3,12 @@ package com.ndomx.gate.utils
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import kotlin.concurrent.thread
 
 object PrefsManager {
-    private const val PREFS_NAME = "gate"
+    private const val PREFS_NAME = "gate_secure"
 
     const val ACCESS_TOKEN_KEY = "access_token"
     const val HOST_URL_KEY = "host_url"
@@ -35,7 +37,17 @@ object PrefsManager {
     }
 
     private fun getPrefs(context: Context): SharedPreferences {
-        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
+        return EncryptedSharedPreferences.create(
+            context,
+            PREFS_NAME,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
 
 }

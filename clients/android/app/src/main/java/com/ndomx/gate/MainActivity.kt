@@ -45,6 +45,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
         loadRecyclerView(recyclerView)
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        validateLogin()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
 
@@ -142,8 +148,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
 
         layoutManager = LinearLayoutManager(context)
         adapter = nodesAdapter
-
-        syncNodes()
     }
 
     private fun syncNodes() = thread {
@@ -153,6 +157,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
                 nodesAdapter.addNodes(nodes)
             }
         }
+    }
+
+    private fun clearNodes() = thread {
+        val db = GateDatabase.db(this)
+        db.clearAllTables()
     }
 
     private fun fetchNodes() = thread {
@@ -188,5 +197,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
     private fun updateNode(nodeId: String, state: NodeState) = runOnUiThread {
         val position = getNodePositionOrThrow(nodeId)
         nodesAdapter.updateIconByState(position, state)
+    }
+
+    private fun validateLogin() {
+        PrefsManager.loadStringAsync(this, PrefsManager.ACCESS_TOKEN_KEY) { token ->
+            token?.let { syncNodes() } ?: clearNodes()
+        }
     }
 }
