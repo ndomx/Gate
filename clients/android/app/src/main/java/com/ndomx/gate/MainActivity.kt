@@ -21,7 +21,6 @@ import com.ndomx.gate.states.NodeState
 import com.ndomx.gate.utils.PrefsManager
 import kotlin.concurrent.thread
 
-// todo: handle exceptions
 class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
     companion object {
         private const val LOG_TAG = "MainActivity"
