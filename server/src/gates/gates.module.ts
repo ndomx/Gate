@@ -1,27 +1,13 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { GatesController } from './controllers/gates.controller';
-import { NodesController } from './controllers/nodes.controller';
-import { UsersController } from './controllers/users.controller';
-import { Admin, AdminSchema } from './schemas/admin.schema';
-import { Node, NodeSchema } from './schemas/node.shema';
-import { Person, PersonSchema } from './schemas/person.schema';
-import { User, UserSchema } from './schemas/user.schema';
-import { GatesService } from './services/gates.service';
-import { MqttService } from './services/mqtt.service';
-import { NodesService } from './services/nodes.service';
-import { UsersService } from './services/users.service';
+import { NodesClientModule } from 'src/nodes-client/nodes-client.module';
+import { UsersClientModule } from 'src/users-client/users-client.module';
+import { GatesService } from './gates.service';
+import { GatesController } from './gates.controller';
+import { MqttModule } from 'src/mqtt/mqtt.module';
 
 @Module({
-  providers: [GatesService, MqttService, NodesService, UsersService],
-  controllers: [GatesController, NodesController, UsersController],
-  imports: [
-    MongooseModule.forFeature([
-      { name: Node.name, schema: NodeSchema },
-      { name: User.name, schema: UserSchema },
-      { name: Admin.name, schema: AdminSchema },
-      { name: Person.name, schema: PersonSchema },
-    ]),
-  ],
+  imports: [NodesClientModule, UsersClientModule, MqttModule],
+  providers: [GatesService],
+  controllers: [GatesController],
 })
 export class GatesModule {}

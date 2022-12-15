@@ -25,3 +25,4 @@ The internal error codes are described in the following table
 |   8   |    `PATH_ERROR`    | Provided path is invalid                       |
 |   9   |    `GATE_ERROR`    | Internal unhandled exception                   |
 |  10   |  `NODE_NOT_FOUND`  | Could not find the requested node              |
+|  10   | `INVALID_REQUEST`  | Request contains invalid data                  |

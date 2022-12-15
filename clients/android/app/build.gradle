@@ -2,27 +2,20 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.20'
+    id 'kotlin-kapt'
 }
-
-def secretsFile = rootProject.file("secrets.properties")
-def secrets = new Properties()
-secrets.load(new FileInputStream(secretsFile))
 
 android {
     compileSdk 32
 
     defaultConfig {
         applicationId "com.ndomx.gate"
-        minSdk 21
+        minSdk 24
         targetSdk 32
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField("String", "SERVER_URL", secrets["SERVER_URL"])
-        buildConfigField("String", "DEVICE_ID", secrets["DEVICE_ID"])
-        buildConfigField("String", "USER_ID", secrets["USER_ID"])
     }
 
     buildTypes {
@@ -52,4 +45,17 @@ dependencies {
 
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1'
     implementation 'androidx.biometric:biometric:1.1.0'
+
+    // Room
+    def room_version = "2.4.3"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+    implementation "androidx.room:room-ktx:$room_version"
+
+    // Secure files
+    implementation "androidx.security:security-crypto-ktx:1.1.0-alpha03"
+    implementation "androidx.security:security-identity-credential:1.0.0-alpha03"
+    implementation "androidx.security:security-app-authenticator:1.0.0-alpha02"
+    androidTestImplementation "androidx.security:security-app-authenticator:1.0.0-alpha02"
 }

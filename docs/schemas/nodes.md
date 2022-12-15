@@ -1,6 +1,6 @@
 # Nodes Schema
 
-_nodes_ are the link between the software layer and every physical device in **Gate** ecosystem. Some nodes literally represent a physical device whereas the other nodes exist for management purposes. The first kind of nodes are called _device nodes_. This nodes are responsible for acting upon the hardware. The other kind of nodes are called _abstract nodes_. These provide a hierarchy tree where platform administrators can grant access to many devices just by enabling access to one node.
+_nodes_ are the link between the software layer and every physical device in the **Gate** ecosystem. Some nodes literally represent a physical device whereas the other nodes, that exist for management purposes. The first kind of nodes are called _device nodes_. This nodes are responsible for acting upon the hardware. The other kind of nodes are called _abstract nodes_. These provide a hierarchy tree where platform administrators can grant access to many devices just by enabling access to one node.
 
 Each node contains a reference to its parent. And the node that does not have a parent node is called a _root node_. Root nodes represent an encapsulated organization. Might be a house, a building containing many apartments, etc.
 
@@ -19,9 +19,9 @@ Every node has the `nodeInfo.isDevice` field, that tells if the node is a _devic
 
 > Note that addionally to the fields shown above, MongoDB adds a few more fields, like `_id` that will be used later in this document
 
-> Root nodes have an empty `rootId` field
+> Root nodes should have an empty `rootId` field
 
-Each _device node_ is listening to a MQTT topic made of the names of each leaf in it path joined by a `/` character.
+Each _device node_ is listening to a MQTT topic made of the names of each leaf in its path joined by a `/` character.
 
 ### Example
 

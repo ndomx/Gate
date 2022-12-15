@@ -1,27 +1,16 @@
 package com.ndomx.gate.http
 
-import android.util.Log
-import com.ndomx.gate.BuildConfig
-import com.ndomx.gate.http.models.GateRequest
-import com.ndomx.gate.http.models.GateResponse
-import kotlinx.serialization.decodeFromString
+import com.ndomx.gate.http.models.request.RegisterRequestBody
+import com.ndomx.gate.http.models.response.AccessResponse
+import com.ndomx.gate.http.models.response.RegisterResponse
+import com.ndomx.gate.http.models.response.UserNodesResponse
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.io.BufferedOutputStream
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
-import java.net.URL
-import java.util.*
-import javax.net.ssl.HttpsURLConnection
 import kotlin.concurrent.thread
 
-class GateClient private constructor() {
+class GateClient private constructor() : HttpClient() {
     companion object {
         private const val LOG_TAG = "GateClient"
-
-        private val SUPPORTED_CODES =
-            arrayOf(HttpsURLConnection.HTTP_OK, HttpsURLConnection.HTTP_CREATED)
 
         private var INSTANCE: GateClient? = null
         fun getInstance(): GateClient {
@@ -32,67 +21,72 @@ class GateClient private constructor() {
         }
     }
 
-    fun requestAccess(callback: (Boolean) -> Unit) {
-        val request = GateRequest(
-            deviceId = BuildConfig.DEVICE_ID,
-            userId = BuildConfig.USER_ID,
-            timestamp = Date().time,
+    override val logTag = LOG_TAG
+
+    fun requestAccess(
+        host: String,
+        token: String,
+        deviceId: String,
+        callback: (AccessResponse?) -> Unit
+    ) = thread {
+        val response = fetch<AccessResponse>(
+            serverUrl = buildUrl(host, "/gates/activate"),
+            request = HttpRequest(
+                method = HttpMethod.GET,
+                headers = mapOf(
+                    "Authorization" to "Bearer $token"
+                ),
+                params = listOf(deviceId)
+            )
         )
 
+        callback(response)
+    }
+
+    fun register(
+        host: String,
+        request: RegisterRequestBody,
+        callback: (String?) -> Unit
+    ) = thread {
         val body = Json.encodeToString(request)
 
-        var response: GateResponse? = null
-        thread {
-            val url = URL(BuildConfig.SERVER_URL)
-            var client: HttpsURLConnection? = null
 
-            try {
-                client = (url.openConnection() as HttpsURLConnection).apply {
-                    doOutput = true
-                    requestMethod = "PUT"
-                    setChunkedStreamingMode(0)
-                    setRequestProperty("Content-Type", "application/json")
-                }
+        val response = fetch<RegisterResponse>(
+            serverUrl = buildUrl(host, "/auth"),
+            request = HttpRequest(
+                method = HttpMethod.POST,
+                headers = mapOf(
+                    "Content-Type" to "application/json"
+                ),
+                body = body,
+            )
+        )
 
-                sendRequest(client, body)
-                response = getResponse(client)
-            } catch (e: Exception) {
-                Log.e(LOG_TAG, e.message ?: "Unknown error while sending request")
-            } finally {
-                client?.disconnect()
-            }
-
-            // TODO: Create model for server response
-            callback(response != null)
-        }
+        callback(response?.accessToken)
     }
 
-    private fun sendRequest(client: HttpsURLConnection, body: String) {
-        val outputStream = BufferedOutputStream(client.outputStream)
-        val writer = OutputStreamWriter(outputStream)
+    fun fetchUserNodes(
+        host: String,
+        token: String,
+        callback: (UserNodesResponse?) -> Unit
+    ) = thread {
+        val response = fetch<UserNodesResponse>(
+            serverUrl = buildUrl(host, "/nodes-client/user"),
+            request = HttpRequest(
+                method = HttpMethod.GET,
+                headers = mapOf(
+                    "Authorization" to "Bearer $token"
+                ),
+                query = mapOf(
+                    "device_only" to "true"
+                )
+            )
+        )
 
-        writer.write(body)
-        writer.flush()
-        writer.close()
+        callback(response)
     }
 
-    private fun getResponse(client: HttpsURLConnection): GateResponse? {
-        val responseCode = client.responseCode
-        if (responseCode !in SUPPORTED_CODES) {
-            Log.e(LOG_TAG, "Received code $responseCode")
-            return null
-        }
-
-        val inputStream = InputStreamReader(client.inputStream)
-        val reader = BufferedReader(inputStream)
-
-        val response = reader.readLines().joinToString("")
-        return try {
-            val builder = Json { ignoreUnknownKeys = true }
-            builder.decodeFromString(response)
-        } catch (e: Exception) {
-            Log.e(LOG_TAG, e.message ?: "Cannot decode $response")
-            null
-        }
+    private fun buildUrl(host: String, path: String): String {
+        return "https://$host/${path.trim('/')}"
     }
 }

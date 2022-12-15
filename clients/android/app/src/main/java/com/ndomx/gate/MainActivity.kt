@@ -1,129 +1,206 @@
 package com.ndomx.gate
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.LayerDrawable
-import android.graphics.drawable.LevelListDrawable
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.widget.ImageView
-import android.widget.TextView
+import android.os.Handler
+import android.os.Looper
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ndomx.gate.auth.AuthListener
 import com.ndomx.gate.auth.AuthManager
+import com.ndomx.gate.db.GateDatabase
+import com.ndomx.gate.db.models.NodeModel
 import com.ndomx.gate.http.GateClient
-import com.ndomx.gate.http.models.GateResponse
-import com.ndomx.gate.machine.GateState
-import com.ndomx.gate.machine.GateStateData
-import com.ndomx.gate.machine.GateStateListener
-import com.ndomx.gate.machine.GateStateMachine
+import com.ndomx.gate.http.models.response.AccessResponse
+import com.ndomx.gate.states.NodeState
+import com.ndomx.gate.utils.PrefsManager
+import kotlin.concurrent.thread
 
-class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener, GateStateListener {
+class MainActivity : AppCompatActivity(R.layout.activity_main), AuthListener {
     companion object {
         private const val LOG_TAG = "MainActivity"
-        private const val BACKGROUND_INDEX = 0
-        private const val LOCK_INDEX = 1
 
-        private val STATE_CAPTION = mapOf(
-            GateState.IDLE to "Press the button to open",
-            GateState.WAITING to "Opening gate...",
-            GateState.SUCCESS to "Gate opened!",
-            GateState.FAILURE to "Failed to open gate",
-        )
+        private const val SUCCESS_ANIMATION_DURATION = 2000L
+        private const val FAILURE_ANIMATION_DURATION = 2000L
     }
 
-    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
+    private val deviceMap = mutableMapOf<String, Int>()
     private val authManager = AuthManager(this)
-    private val gateStateMachine by lazy { GateStateMachine(this) }
 
-    private lateinit var icon: LayerDrawable
-    private val iconBackground by lazy { icon.getDrawable(BACKGROUND_INDEX) }
-    private val lockIcon by lazy { icon.getDrawable(LOCK_INDEX) as LevelListDrawable }
-
-    private lateinit var caption: TextView
+    private lateinit var nodesAdapter: NodesRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val button = findViewById<ImageView>(R.id.button_open_gate)
-        button.setOnClickListener {
-            if (gateStateMachine.isIdle) {
-                requestAccess()
-            }
-        }
+        val toolbar = findViewById<Toolbar>(R.id.main_toolbar)
+        setSupportActionBar(toolbar)
 
-        icon = button.drawable as LayerDrawable
-        caption = findViewById(R.id.button_state)
-
-        resultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    onAuthSuccess()
-                } else {
-                    onAuthFailure()
-                }
-            }
+        val recyclerView = findViewById<RecyclerView>(R.id.node_list)
+        loadRecyclerView(recyclerView)
     }
 
     override fun onStart() {
         super.onStart()
 
-        gateStateMachine.setState(GateState.IDLE)
+        validateLogin()
     }
 
-    override fun onAuthSuccess() {
-        val client = GateClient.getInstance()
-        client.requestAccess {
-            onServerResponse(it)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_login -> {
+            val i = Intent(this, RegisterActivity::class.java)
+            startActivity(i)
+            true
+        }
+        R.id.action_sync -> {
+            fetchNodes()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
+    }
+
+    override fun onAuthSuccess(nodeId: String) {
+        thread {
+            val host: String
+            val token: String
+
+            try {
+                host = PrefsManager.loadString(this, PrefsManager.HOST_URL_KEY)
+                    ?: throw Exception("URL not configured yet")
+
+                token = PrefsManager.loadString(this, PrefsManager.ACCESS_TOKEN_KEY)
+                    ?: throw Exception("User not registered yet")
+
+                updateNode(nodeId, NodeState.WAITING)
+            } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                }
+
+                return@thread
+            }
+
+            val client = GateClient.getInstance()
+            client.requestAccess(host, token, nodeId) { res ->
+                res?.let { onServerResponse(it) } ?: onAccessDenied(nodeId)
+            }
         }
     }
 
-    override fun onAuthFailure() = runOnUiThread {
-        Toast.makeText(this, "Auth failed", Toast.LENGTH_SHORT).show()
+    override fun onAuthFailure(nodeId: String) {
         runOnUiThread {
-            gateStateMachine.setState(GateState.FAILURE)
+            Toast.makeText(this, "Auth failed", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun getContext(): Context {
-        return this
+    private fun requestAccess(nodeId: String) {
+        authManager.showBiometricPrompt(this, nodeId)
     }
 
-    override fun onState(gateStateData: GateStateData) = runOnUiThread {
-        iconBackground.setTint(gateStateData.background)
-        lockIcon.level = gateStateData.foregroundLevel
-        caption.text = STATE_CAPTION[gateStateData.state]
-    }
-
-    private fun requestAccess() {
-        runOnUiThread {
-            gateStateMachine.setState(GateState.WAITING)
-        }
-
-        if (Build.VERSION.SDK_INT > 29) {
-            Log.i(LOG_TAG, "Using BiometricPrompt API")
-            authManager.showBiometricPrompt(this)
+    private fun onServerResponse(response: AccessResponse) {
+        if (response.success) {
+            onAccessGranted(response.node.id)
         } else {
-            Log.i(LOG_TAG, "Using KeyGuardPrompt API")
-            authManager.showKeyguardPrompt(this, resultLauncher)
+            onAccessDenied(response.node.id)
         }
     }
 
-    // TODO: Create model for server response
-    private fun onServerResponse(success: Boolean) = runOnUiThread {
-        if (success) {
+    private fun onAccessGranted(nodeId: String) {
+        updateNode(nodeId, NodeState.SUCCESS)
+
+        val runnable = Runnable { updateNode(nodeId, NodeState.IDLE) }
+        val handler = Handler(Looper.getMainLooper())
+        handler.postDelayed(runnable, SUCCESS_ANIMATION_DURATION)
+
+        runOnUiThread {
             Toast.makeText(this, "Successfully opened gate", Toast.LENGTH_SHORT).show()
-            gateStateMachine.setState(GateState.SUCCESS)
-        } else {
-            // val message = res.message ?: "Failed with code ${res.errorCode}"
-            val message = "Could not open gate"
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-            gateStateMachine.setState(GateState.FAILURE)
+        }
+    }
+
+    private fun onAccessDenied(nodeId: String) {
+        updateNode(nodeId, NodeState.FAILURE)
+
+        val runnable = Runnable { updateNode(nodeId, NodeState.IDLE) }
+        val handler = Handler(Looper.getMainLooper())
+        handler.postDelayed(runnable, FAILURE_ANIMATION_DURATION)
+
+        runOnUiThread {
+            Toast.makeText(this, "Could not open gate", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun loadRecyclerView(view: RecyclerView) = with(view) {
+        nodesAdapter = NodesRecyclerViewAdapter(context) { node, position ->
+            deviceMap[node.id] = position
+            requestAccess(node.id)
+        }
+
+        layoutManager = LinearLayoutManager(context)
+        adapter = nodesAdapter
+    }
+
+    private fun syncNodes() = thread {
+        val db = GateDatabase.db(this)
+        db.getAllNodes { nodes ->
+            runOnUiThread {
+                nodesAdapter.addNodes(nodes)
+            }
+        }
+    }
+
+    private fun clearNodes() = thread {
+        val db = GateDatabase.db(this)
+        db.clearAllTables()
+    }
+
+    private fun fetchNodes() = thread {
+        val host = PrefsManager.loadString(this, PrefsManager.HOST_URL_KEY) ?: return@thread
+        val token = PrefsManager.loadString(this, PrefsManager.ACCESS_TOKEN_KEY) ?: return@thread
+
+        val client = GateClient.getInstance()
+        client.fetchUserNodes(host, token) { res ->
+            res?.nodes?.let {
+                val nodes = it.map { node ->
+                    NodeModel(
+                        id = node.id,
+                        name = node.name
+                    )
+                }
+
+                val db = GateDatabase.db(this)
+                db.saveNodes(nodes)
+
+                runOnUiThread {
+                    Toast.makeText(this, "Found ${nodes.size} devices", Toast.LENGTH_SHORT).show()
+                    nodesAdapter.addNodes(nodes)
+                }
+            }
+        }
+    }
+
+
+    private fun getNodePositionOrThrow(nodeId: String): Int {
+        return deviceMap[nodeId] ?: throw Exception("device not mapped")
+    }
+
+    private fun updateNode(nodeId: String, state: NodeState) = runOnUiThread {
+        val position = getNodePositionOrThrow(nodeId)
+        nodesAdapter.updateIconByState(position, state)
+    }
+
+    private fun validateLogin() {
+        PrefsManager.loadStringAsync(this, PrefsManager.ACCESS_TOKEN_KEY) { token ->
+            token?.let { syncNodes() } ?: clearNodes()
         }
     }
 }
