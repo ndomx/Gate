@@ -14,14 +14,28 @@ class SettingsView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Settings'),
       ),
-      body: DropdownButton<ThemeMode>(
-        value: controller.themeMode,
-        onChanged: controller.updateThemeMode,
-        items: const [
-          DropdownMenuItem(
-              value: ThemeMode.system, child: Text('System Theme')),
-          DropdownMenuItem(value: ThemeMode.light, child: Text('Light Theme')),
-          DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark Theme')),
+      body: Column(
+        children: [
+          ListTile(
+            title: const Text('Theme'),
+            trailing: DropdownButton<ThemeMode>(
+              value: controller.themeMode,
+              onChanged: controller.updateThemeMode,
+              items: const [
+                DropdownMenuItem(
+                    value: ThemeMode.system, child: Text('System Theme')),
+                DropdownMenuItem(
+                    value: ThemeMode.light, child: Text('Light Theme')),
+                DropdownMenuItem(
+                    value: ThemeMode.dark, child: Text('Dark Theme')),
+              ],
+            ),
+          ),
+          CheckboxListTile(
+            value: controller.requireAuth,
+            onChanged: controller.updateRequireAuth,
+            title: const Text('Require authentication'),
+          ),
         ],
       ),
     );

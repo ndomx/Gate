@@ -9,10 +9,13 @@ class SettingsController with ChangeNotifier {
   late ThemeMode _themeMode;
   ThemeMode get themeMode => _themeMode;
 
-  Future<void> loadSettings() async {
-    Future.delayed(const Duration(seconds: 2));
+  late bool _requireAuth;
+  bool get requireAuth => _requireAuth;
 
+  Future<void> loadSettings() async {
     _themeMode = await _settingsService.themeMode();
+    _requireAuth = await _settingsService.requireAuth();
+
     notifyListeners();
   }
 
@@ -29,5 +32,20 @@ class SettingsController with ChangeNotifier {
     notifyListeners();
 
     await _settingsService.updateThemeMode(newThemeMode);
+  }
+
+  Future<void> updateRequireAuth(bool? requireAuth) async {
+    if (requireAuth == null) {
+      return;
+    }
+
+    if (requireAuth == _requireAuth) {
+      return;
+    }
+
+    _requireAuth = requireAuth;
+    notifyListeners();
+
+    await _settingsService.updateAuthRequired(requireAuth);
   }
 }

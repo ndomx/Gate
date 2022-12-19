@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:secure_shared_preferences/secure_shared_preferences.dart';
 
 class PrefsService {
@@ -10,26 +11,39 @@ class PrefsService {
       {bool encrypt = false}) async {
     final prefs = await SecureSharedPref.getInstance();
 
-    if (T is String) {
-      prefs.putString(key, value as String, isEncrypted: encrypt);
-    } else if (T is int) {
-      prefs.putInt(key, value as int, isEncrypted: encrypt);
-    } else if (T is bool) {
-      prefs.putBool(key, value as bool, isEncrypted: encrypt);
+    switch (T) {
+      case String:
+        prefs.putString(key, value as String, isEncrypted: encrypt);
+        break;
+
+      case int:
+        prefs.putInt(key, value as int, isEncrypted: encrypt);
+        break;
+
+      case bool:
+        prefs.putBool(key, value as bool, isEncrypted: encrypt);
+        break;
     }
   }
 
   static Future<T?> load<T>(String key, {bool encrypted = false}) async {
     final prefs = await SecureSharedPref.getInstance();
+    dynamic result;
 
-    if (T is String) {
-      return prefs.getString(key, isEncrypted: encrypted) as T?;
-    } else if (T is int) {
-      return prefs.getString(key, isEncrypted: encrypted) as T?;
-    } else if (T is bool) {
-      return prefs.getString(key, isEncrypted: encrypted) as T?;
+    switch (T) {
+      case String:
+        result = prefs.getString(key, isEncrypted: encrypted);
+        break;
+
+      case int:
+        result = prefs.getInt(key, isEncrypted: encrypted);
+        break;
+
+      case bool:
+        result = prefs.getBool(key, isEncrypted: encrypted);
+        break;
     }
 
-    return null;
+    return result;
   }
 }
