@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_client/src/controllers/settings_controller.dart';
+import 'package:flutter_client/src/views/home_view.dart';
+import 'package:flutter_client/src/views/login_view.dart';
 import 'package:flutter_client/src/views/settings_view.dart';
 
 class GateApp extends StatelessWidget {
@@ -22,10 +24,14 @@ class GateApp extends StatelessWidget {
           settings: routeSettings,
           builder: (context) {
             switch (routeSettings.name) {
+              case HomeView.routeName:
+                return const HomeView();
               case SettingsView.routeName:
                 return SettingsView(controller: settingsController);
+              case LoginView.routeName:
+                return LoginView();
               default:
-                return SettingsView(controller: settingsController);
+                return const HomeView();
             }
           },
         ),
