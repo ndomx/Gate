@@ -4,7 +4,6 @@ import 'package:flutter_client/src/services/prefs_service.dart';
 class SettingsService {
   Future<ThemeMode> themeMode() async {
     final index = await PrefsService.load<int>(PrefsService.themeKey);
-    print('index = $index');
     if (index == null) {
       return ThemeMode.system;
     }
@@ -15,7 +14,6 @@ class SettingsService {
   Future<bool> requireAuth() async {
     final isRequired =
         await PrefsService.load<bool>(PrefsService.requireAuthKey);
-        print('isRequired = $isRequired');
     return ((isRequired == null) || isRequired);
   }
 

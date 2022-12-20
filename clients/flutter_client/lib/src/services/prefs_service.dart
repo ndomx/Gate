@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:secure_shared_preferences/secure_shared_preferences.dart';
 
 class PrefsService {
