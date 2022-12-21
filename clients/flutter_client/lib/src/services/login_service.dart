@@ -17,7 +17,7 @@ class LoginService {
     await PrefsService.save<String>(PrefsService.hostUrlKey, server,
         encrypt: true);
     await PrefsService.save<String>(PrefsService.accessTokenKey, res.token,
-        encrypt: false);
+        encrypt: true);
 
     return res;
   }
@@ -30,7 +30,7 @@ class LoginService {
     }
 
     final token = await PrefsService.load<String>(PrefsService.accessTokenKey,
-        encrypted: false);
+        encrypted: true);
     if (token == null) {
       return null;
     }
