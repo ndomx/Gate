@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:flutter_client/src/http/dtos/response/access_response_dto.dart';
 import 'package:flutter_client/src/http/dtos/response/login_response_dto.dart';
 import 'package:flutter_client/src/http/dtos/response/user_nodes_response_dto.dart';
-import 'package:flutter_client/src/http/server_properties.dart';
-import 'package:flutter_client/src/services/prefs_service.dart';
 import 'package:http/http.dart' as http;
 
 class GateClient {

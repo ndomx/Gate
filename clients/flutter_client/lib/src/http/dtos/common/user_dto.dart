@@ -23,8 +23,8 @@ class UserDto {
         name: json['name'],
         last: json['last'],
         username: json['username'],
-        access: json['access'],
-        roles: json['roles']);
+        access: List<String>.from(json['access']),
+        roles: List<String>.from(json['roles']));
   }
 
   Map<String, dynamic> toJson() {

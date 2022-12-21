@@ -9,14 +9,14 @@ class UserNodesResponseDto {
 
   factory UserNodesResponseDto.fromJson(Map<String, dynamic> json) {
     return UserNodesResponseDto(
-        user: json['user'],
+        user: UserDto.fromJson(json['user']),
         nodes: List<NodeDto>.from(
             json['nodes'].map((item) => NodeDto.fromJson(item))));
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'user': user,
+      'user': user.toJson(),
       'nodes': nodes.map((node) => node.toJson()),
     };
   }

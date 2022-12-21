@@ -1,14 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_client/src/controllers/login_controller.dart';
+
 class LoginView extends StatelessWidget {
   LoginView({super.key});
 
   static const routeName = '/login';
 
+  final _controller = LoginController();
+
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final serverController = TextEditingController();
 
-  Future<void> _onLoginButtonClick() async {}
+  Future<void> _onLoginButtonClick(BuildContext context) async {
+    final username = usernameController.text;
+    final password = passwordController.text;
+    final server = serverController.text;
+
+    final res =
+        await _controller.onLoginButtonPress(username, password, server);
+
+    if (res == null) {
+      _showSnackBar(context, 'Unable to register user');
+      return;
+    }
+
+    _showSnackBar(context, 'Found ${res.length} devices');
+
+    Navigator.pop(context);
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      duration: const Duration(seconds: 1),
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +65,7 @@ class LoginView extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             TextField(
-              controller: usernameController,
+              controller: serverController,
               decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Enter your name',
@@ -48,7 +75,7 @@ class LoginView extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: _onLoginButtonClick,
+              onPressed: () => _onLoginButtonClick(context),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: const [

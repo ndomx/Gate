@@ -20,7 +20,7 @@ class GateDatabase {
       join(dbPath, _dbName),
       version: 1,
       onCreate: (db, version) => db.execute(
-          'CREATE TABLE $_nodesTableName(id TEXT PRIMARY KEY, name TEXT'),
+          'CREATE TABLE $_nodesTableName(id TEXT PRIMARY KEY, name TEXT)'),
     );
   }
 
