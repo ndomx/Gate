@@ -14,11 +14,6 @@ class SettingsService {
   Future<bool> requireAuth() async {
     final isRequired =
         await PrefsService.load<bool>(PrefsService.requireAuthKey);
-
-    final token = await PrefsService.load<String>(PrefsService.accessTokenKey, encrypted: true);
-    final server = await PrefsService.load<String>(PrefsService.hostUrlKey, encrypted: true);
-    print(server);
-    print(token);
     return ((isRequired == null) || isRequired);
   }
 
