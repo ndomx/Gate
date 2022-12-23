@@ -61,7 +61,7 @@ class _DevicesViewState extends State<DevicesView> {
         trailing: const CircleAvatar(
           child: Icon(Icons.lock_outline),
         ),
-        onTap: () => _controller.requestAccess(devices[index]),
+        onTap: () => _onDeviceTap(context, devices[index]),
       ),
       itemCount: devices.length,
     );
@@ -73,5 +73,13 @@ class _DevicesViewState extends State<DevicesView> {
 
   Widget _errorWidget(BuildContext context) {
     return const Text('error');
+  }
+
+  Future<void> _onDeviceTap(
+      BuildContext context, DeviceViewModel device) async {
+    final result = await _controller.requestAccess(device);
+    final message = result ? 'success' : 'failure';
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 }
