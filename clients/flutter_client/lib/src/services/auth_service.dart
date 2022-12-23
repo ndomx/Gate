@@ -18,6 +18,7 @@ class AuthService {
     return (canCheckBiometrics || isDeviceSupported);
   }
 
+  // TODO: if user does not have any auth enrolled, should use internal auth
   Future<bool> authenticate() async {
     final canAuthenticate = await _canAuthenticate();
     if (!canAuthenticate) {
@@ -31,9 +32,9 @@ class AuthService {
 
     bool authResult = false;
     try {
-      authResult = await _auth.authenticate(localizedReason: 'Please authenticate to request access');
-    } on PlatformException catch (e) {
-      print(e);
+      authResult = await _auth.authenticate(
+          localizedReason: 'Please authenticate to request access');
+    } on PlatformException {
       authResult = false;
     }
 
