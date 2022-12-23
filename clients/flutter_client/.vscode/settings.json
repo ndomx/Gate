@@ -3,6 +3,8 @@
         "autocorrect",
         "dtos",
         "prefs",
-        "sqflite"
+        "sqflite",
+        "viewmodel",
+        "viewmodels"
     ]
 }

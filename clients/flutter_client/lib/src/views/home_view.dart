@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_client/src/views/devices_view.dart';
 import 'package:flutter_client/src/views/login_view.dart';
 import 'package:flutter_client/src/views/settings_view.dart';
 
@@ -41,6 +42,7 @@ class HomeView extends StatelessWidget {
           )
         ],
       ),
+      body: const DevicesView(),
     );
   }
 }
