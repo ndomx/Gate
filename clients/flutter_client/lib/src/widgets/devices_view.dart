@@ -16,7 +16,7 @@ class DevicesView extends StatelessWidget {
             style: const TextStyle(fontSize: 28)),
         trailing: CircleAvatar(
           backgroundColor: devices[index].backgroundColor,
-          child: devices[index].icon,
+          child: devices[index].stateIcon,
         ),
         onTap: () => onDeviceTap(context, index),
         enabled: devices[index].isClickable,

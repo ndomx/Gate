@@ -25,16 +25,18 @@ class DeviceViewModel {
     }
   }
 
-  Widget get icon {
+  Widget get stateIcon {
     switch (state) {
       case DeviceState.waiting:
         return Stack(
           children: const [
-            Icon(
-              Icons.lock_outline,
-              color: Colors.white,
+            Center(
+              child: Icon(
+                Icons.lock_outline,
+                color: Colors.white,
+              ),
             ),
-            CircularProgressIndicator(value: null)
+            Center(child: CircularProgressIndicator(value: null))
           ],
         );
       case DeviceState.success:
