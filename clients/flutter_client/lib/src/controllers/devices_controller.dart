@@ -18,7 +18,7 @@ class DevicesController {
   Future<List<DeviceViewModel>> refreshData() async {
     await _devicesService.removeNodes();
     await _devicesService.fetchAndSaveNodes();
-    
+
     return loadDevices();
   }
 
