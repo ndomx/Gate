@@ -5,12 +5,21 @@ class DevicesController {
   final _devicesService = DevicesService();
 
   Future<List<DeviceViewModel>> loadDevices() async {
+    await Future.delayed(const Duration(seconds: 2));
+
     final nodes = await _devicesService.getStoredNodes();
     if (nodes == null) {
       return [];
     }
 
     return List.from(nodes.map((node) => DeviceViewModel(node)));
+  }
+
+  Future<List<DeviceViewModel>> refreshData() async {
+    await _devicesService.removeNodes();
+    await _devicesService.fetchAndSaveNodes();
+    
+    return loadDevices();
   }
 
   Future<bool> requestAccess(DeviceViewModel device) async {

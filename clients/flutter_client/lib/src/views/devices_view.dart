@@ -1,59 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_client/src/controllers/devices_controller.dart';
 import 'package:flutter_client/src/viewmodels/device_viewmodel.dart';
 
-class DevicesView extends StatefulWidget {
-  const DevicesView({super.key});
+class DevicesView extends StatelessWidget {
+  const DevicesView({super.key, required this.devices, required this.onDeviceTap});
 
-  @override
-  State<DevicesView> createState() => _DevicesViewState();
-}
-
-class _DevicesViewState extends State<DevicesView> {
-  final _controller = DevicesController();
-
-  late Future<List<DeviceViewModel>> _devices;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _devices = _controller.loadDevices();
-  }
+  final List<DeviceViewModel> devices;
+  final Function(BuildContext, DeviceViewModel) onDeviceTap;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      builder: (context, snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return _loadingWidget(context);
-          case ConnectionState.done:
-            if (snapshot.hasError) {
-              return _errorWidget(context);
-            }
-
-            final devices = snapshot.data;
-            if (devices == null) {
-              return _errorWidget(context);
-            }
-
-            return _deviceListWidget(context, devices);
-
-          default:
-            return _loadingWidget(context);
-        }
-      },
-      future: _devices,
-    );
-  }
-
-  Widget _deviceListWidget(
-      BuildContext context, List<DeviceViewModel> devices) {
-    if (devices.isEmpty) {
-      return const Text('No devices found');
-    }
-
     return ListView.builder(
       itemBuilder: (context, index) => ListTile(
         title: Text(devices[index].node.name,
@@ -61,25 +16,9 @@ class _DevicesViewState extends State<DevicesView> {
         trailing: const CircleAvatar(
           child: Icon(Icons.lock_outline),
         ),
-        onTap: () => _onDeviceTap(context, devices[index]),
+        onTap: () => onDeviceTap(context, devices[index]),
       ),
       itemCount: devices.length,
     );
-  }
-
-  Widget _loadingWidget(BuildContext context) {
-    return const Text('Loading...');
-  }
-
-  Widget _errorWidget(BuildContext context) {
-    return const Text('error');
-  }
-
-  Future<void> _onDeviceTap(
-      BuildContext context, DeviceViewModel device) async {
-    final result = await _controller.requestAccess(device);
-    final message = result ? 'success' : 'failure';
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
   }
 }
