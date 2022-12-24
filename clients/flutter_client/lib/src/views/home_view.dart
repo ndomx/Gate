@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_client/src/controllers/devices_controller.dart';
 import 'package:flutter_client/src/viewmodels/device_viewmodel.dart';
-import 'package:flutter_client/src/views/devices_view.dart';
-import 'package:flutter_client/src/views/home_default_view.dart';
+import 'package:flutter_client/src/widgets/devices_view.dart';
+import 'package:flutter_client/src/widgets/home_default_view.dart';
 import 'package:flutter_client/src/views/login_view.dart';
 import 'package:flutter_client/src/views/settings_view.dart';
 
