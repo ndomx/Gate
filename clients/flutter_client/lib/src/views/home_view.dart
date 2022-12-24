@@ -104,12 +104,36 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
-  Future<void> _onDeviceTap(
-      BuildContext context, DeviceViewModel device) async {
-    final result = await _controller.requestAccess(device);
+  Future<void> _onDeviceTap(BuildContext context, int index) async {
+    List<DeviceViewModel> devices;
 
-    final message = result ? 'success' : 'failure';
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    devices = await _devices;
+    devices[index].state = DeviceState.waiting;
+
+    setState(() {
+      _devices = Future.value(devices);
+    });
+
+    final accessGranted = await _controller.requestAccess(devices[index]);
+
+    Duration duration;
+    if (accessGranted) {
+      devices[index].state = DeviceState.success;
+      duration = const Duration(seconds: 3);
+    } else {
+      devices[index].state = DeviceState.failure;
+      duration = const Duration(seconds: 2);
+    }
+
+    setState(() {
+      _devices = Future.value(devices);
+    });
+
+    await Future.delayed(duration);
+
+    devices[index].state = DeviceState.idle;
+    setState(() {
+      _devices = Future.value(devices);
+    });
   }
 }

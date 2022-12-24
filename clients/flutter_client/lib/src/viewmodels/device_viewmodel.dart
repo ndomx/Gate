@@ -22,11 +22,28 @@ class DeviceViewModel {
     }
   }
 
-  Icon get icon {
-    if (state == DeviceState.success) {
-      return const Icon(Icons.lock_outline);
-    } else {
-      return const Icon(Icons.lock_open_outlined);
+  Widget get icon {
+    switch (state) {
+      case DeviceState.waiting:
+        return Stack(
+          children: const [
+            Icon(
+              Icons.lock_outline,
+              color: Colors.white,
+            ),
+            CircularProgressIndicator(value: null)
+          ],
+        );
+      case DeviceState.success:
+        return const Icon(
+          Icons.lock_open,
+          color: Colors.white,
+        );
+      default:
+        return const Icon(
+          Icons.lock_outline,
+          color: Colors.white,
+        );
     }
   }
 

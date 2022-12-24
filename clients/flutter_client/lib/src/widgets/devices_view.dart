@@ -6,7 +6,7 @@ class DevicesView extends StatelessWidget {
       {super.key, required this.devices, required this.onDeviceTap});
 
   final List<DeviceViewModel> devices;
-  final Function(BuildContext, DeviceViewModel) onDeviceTap;
+  final Function(BuildContext, int) onDeviceTap;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class DevicesView extends StatelessWidget {
           backgroundColor: devices[index].backgroundColor,
           child: devices[index].icon,
         ),
-        onTap: () => onDeviceTap(context, devices[index]),
+        onTap: () => onDeviceTap(context, index),
         enabled: devices[index].isClickable,
       ),
       itemCount: devices.length,
