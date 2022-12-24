@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_client/src/viewmodels/device_viewmodel.dart';
 
@@ -11,17 +13,21 @@ class DevicesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemBuilder: (context, index) => ListTile(
-        title: Text(devices[index].node.name,
-            style: const TextStyle(fontSize: 28)),
-        trailing: CircleAvatar(
-          backgroundColor: devices[index].backgroundColor,
-          child: devices[index].stateIcon,
+      itemBuilder: (context, index) => Card(
+        child: ListTile(
+          title: Text(devices[index].node.name,
+              style: const TextStyle(fontSize: 28)),
+          trailing: CircleAvatar(
+            backgroundColor: devices[index].backgroundColor,
+            child: devices[index].stateIcon,
+          ),
+          onTap: () => onDeviceTap(context, index),
+          enabled: devices[index].isClickable,
+          contentPadding: const EdgeInsets.all(10),
         ),
-        onTap: () => onDeviceTap(context, index),
-        enabled: devices[index].isClickable,
       ),
       itemCount: devices.length,
+      padding: const EdgeInsets.all(5),
     );
   }
 }
