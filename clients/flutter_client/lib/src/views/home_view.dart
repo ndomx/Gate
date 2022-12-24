@@ -119,10 +119,12 @@ class _HomeViewState extends State<HomeView> {
     Duration duration;
     if (accessGranted) {
       devices[index].state = DeviceState.success;
-      duration = const Duration(seconds: 3);
+      duration =
+          const Duration(seconds: DeviceViewModel.successAnimationDuration);
     } else {
       devices[index].state = DeviceState.failure;
-      duration = const Duration(seconds: 2);
+      duration =
+          const Duration(seconds: DeviceViewModel.failureAnimationDuration);
     }
 
     setState(() {

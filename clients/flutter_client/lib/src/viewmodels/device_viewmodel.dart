@@ -4,6 +4,9 @@ import 'package:flutter_client/src/db/entities/node_entity.dart';
 enum DeviceState { idle, waiting, failure, success }
 
 class DeviceViewModel {
+  static const successAnimationDuration = 2;
+  static const failureAnimationDuration = 2;
+
   final NodeEntity node;
   DeviceState state = DeviceState.idle;
 
