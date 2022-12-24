@@ -12,7 +12,7 @@ class DevicesView extends StatefulWidget {
 class _DevicesViewState extends State<DevicesView> {
   final _controller = DevicesController();
 
-  late Future<List<DeviceViewModel>?> _devices;
+  late Future<List<DeviceViewModel>> _devices;
 
   @override
   void initState() {
