@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_client/src/controllers/settings_controller.dart';
+import 'package:link_text/link_text.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key, required this.controller});
@@ -36,6 +37,27 @@ class SettingsView extends StatelessWidget {
             onChanged: controller.updateRequireAuth,
             title: const Text('Require authentication'),
           ),
+          ListTile(
+            title: const Text('About'),
+            leading: const Icon(Icons.info_outline),
+            onTap: () {
+              showAboutDialog(
+                  context: context,
+                  applicationName: 'Gate',
+                  applicationVersion: '1.0.0',
+                  children: [
+                    const Text(
+                      'This app is fully open source. Check the Github repository '
+                      'to find the source code for all apps in the Gate ecosystem.',
+                      textAlign: TextAlign.justify,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const LinkText('https://github.com/ndomx/Gate')
+                  ]);
+            },
+          )
         ],
       ),
       bottomNavigationBar: TextButton(
