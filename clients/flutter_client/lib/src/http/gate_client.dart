@@ -17,8 +17,13 @@ class GateClient {
   Future<AccessResponseDto?> requestAccess(
       String host, String token, String deviceId) async {
     final url = Uri.https(host, '/gates/activate/$deviceId');
-    final res =
-        await http.get(url, headers: {'Authorization': 'Bearer $token'});
+
+    http.Response res;
+    try {
+      res = await http.get(url, headers: {'Authorization': 'Bearer $token'});
+    } catch (e) {
+      return null;
+    }
 
     if (res.statusCode != 200) {
       return null;
@@ -39,14 +44,19 @@ class GateClient {
   Future<LoginResponseDto?> login(
       String host, String username, String password) async {
     final url = Uri.https(host, '/auth');
-    final res = await http.post(url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'username': username,
-          'password': password,
-        }));
+    http.Response res;
+    try {
+      res = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'username': username,
+            'password': password,
+          }));
+    } catch (e) {
+      return null;
+    }
 
     final json = jsonDecode(res.body) as Map<String, dynamic>;
     LoginResponseDto? loginResponse;
@@ -62,8 +72,13 @@ class GateClient {
   Future<UserNodesResponseDto?> fetchUserNodes(
       String host, String token) async {
     final url = Uri.https(host, '/nodes-client/user', {'device_only': 'true'});
-    final res =
-        await http.get(url, headers: {'Authorization': 'Bearer $token'});
+
+    http.Response res;
+    try {
+      res = await http.get(url, headers: {'Authorization': 'Bearer $token'});
+    } catch (e) {
+      return null;
+    }
 
     final json = jsonDecode(res.body) as Map<String, dynamic>;
     UserNodesResponseDto? userNodes;

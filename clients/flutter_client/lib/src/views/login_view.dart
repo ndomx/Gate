@@ -21,20 +21,12 @@ class LoginView extends StatelessWidget {
         await _controller.onLoginButtonPress(username, password, server);
 
     if (res == null) {
-      _showSnackBar(context, 'Unable to register user');
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Invalid credentials')));
       return;
     }
 
-    _showSnackBar(context, 'Found ${res.length} devices');
-
-    Navigator.pop(context);
-  }
-
-  void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(message),
-      duration: const Duration(seconds: 1),
-    ));
+    Navigator.pop(context, true);
   }
 
   @override

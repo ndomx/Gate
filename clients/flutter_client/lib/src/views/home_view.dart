@@ -90,11 +90,23 @@ class _HomeViewState extends State<HomeView> {
   void _onMenuItemSelected(BuildContext context, MenuItem item) {
     switch (item) {
       case MenuItem.login:
-        Navigator.restorablePushNamed(context, LoginView.routeName);
+        _goToLoginScreen(context);
         break;
       case MenuItem.settings:
         Navigator.restorablePushNamed(context, SettingsView.routeName);
         break;
+    }
+  }
+
+  Future<void> _goToLoginScreen(BuildContext context) async {
+    final refresh = await Navigator.push<bool?>(
+        context, MaterialPageRoute(builder: (context) => LoginView()));
+
+    if ((refresh == true) && mounted) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('Successfully logged in')));
+      _onRefresh(context);
     }
   }
 
