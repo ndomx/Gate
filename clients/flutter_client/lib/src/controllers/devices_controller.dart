@@ -4,7 +4,12 @@ import 'package:flutter_client/src/viewmodels/device_viewmodel.dart';
 class DevicesController {
   final _devicesService = DevicesService();
 
-  Future<List<DeviceViewModel>> loadDevices() async {
+  Future<List<DeviceViewModel>> loadDevicesIfLoggedIn() async {
+    final isLoggedIn = await _devicesService.checkLogin();
+    if (!isLoggedIn) {
+      return [];
+    }
+    
     await Future.delayed(const Duration(seconds: 2));
 
     final nodes = await _devicesService.getStoredNodes();
@@ -19,7 +24,7 @@ class DevicesController {
     await _devicesService.removeNodes();
     await _devicesService.fetchAndSaveNodes();
 
-    return loadDevices();
+    return loadDevicesIfLoggedIn();
   }
 
   Future<bool> requestAccess(DeviceViewModel device) async {

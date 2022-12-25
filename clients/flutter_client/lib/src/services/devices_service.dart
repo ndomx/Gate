@@ -20,6 +20,13 @@ class DevicesService {
     await db.clearDatabase();
   }
 
+  Future<bool> checkLogin() async {
+    final token = await PrefsService.load<String>(PrefsService.accessTokenKey,
+        encrypted: true);
+
+    return (token != null);
+  }
+
   Future<UserNodesResponseDto?> fetchAndSaveNodes() async {
     final host = await PrefsService.load<String>(PrefsService.hostUrlKey,
         encrypted: true);

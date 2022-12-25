@@ -27,7 +27,7 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
 
-    _devices = _controller.loadDevices();
+    _devices = _controller.loadDevicesIfLoggedIn();
   }
 
   @override
@@ -63,16 +63,25 @@ class _HomeViewState extends State<HomeView> {
 
             case ConnectionState.done:
               if (snapshot.hasError) {
-                return const HomeEmptyView(title: 'Error loading devices', secondary: 'Try again later or contact the platform admin',);
+                return const HomeEmptyView(
+                  title: 'Error loading devices',
+                  secondary: 'Try again later or contact the platform admin',
+                );
               }
 
               final devices = snapshot.data;
               if (devices == null) {
-                return const HomeEmptyView(title: 'Error loading devices', secondary: 'Try again later or contact the platform admin',);
+                return const HomeEmptyView(
+                  title: 'Error loading devices',
+                  secondary: 'Try again later or contact the platform admin',
+                );
               }
 
               if (devices.isEmpty) {
-                return const HomeEmptyView(title: 'No devices found', secondary: 'Make sure you are logged in',);
+                return const HomeEmptyView(
+                  title: 'No devices found',
+                  secondary: 'Make sure you are logged in',
+                );
               }
 
               return DevicesView(
@@ -94,7 +103,7 @@ class _HomeViewState extends State<HomeView> {
         _goToLoginScreen(context);
         break;
       case MenuItem.settings:
-        Navigator.restorablePushNamed(context, SettingsView.routeName);
+        _goToSettingsScreen(context);
         break;
     }
   }
@@ -109,6 +118,18 @@ class _HomeViewState extends State<HomeView> {
         ..showSnackBar(const SnackBar(content: Text('Successfully logged in')));
       _onRefresh(context);
     }
+  }
+
+  Future<void> _goToSettingsScreen(BuildContext context) async {
+    final result = await Navigator.pushNamed(context, SettingsView.routeName);
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _devices = _controller.loadDevicesIfLoggedIn();
+    });
   }
 
   void _onRefresh(BuildContext context) {
