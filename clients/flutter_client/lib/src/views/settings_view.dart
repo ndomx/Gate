@@ -39,9 +39,7 @@ class SettingsView extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: TextButton(
-          onPressed: () {
-            print('press');
-          },
+          onPressed: () => _onLogoutPress(context),
           style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.all(Theme.of(context).cardColor)),
@@ -50,5 +48,49 @@ class SettingsView extends StatelessWidget {
             style: TextStyle(color: Colors.redAccent, fontSize: 24),
           )),
     );
+  }
+
+  void _onLogoutPress(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: ((context) => AlertDialog(
+              title: const Text('Log out?'),
+              content: Column(mainAxisSize: MainAxisSize.min, children: [
+                const Text(
+                    'This will log you out of the platform and delete all data'),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: const [
+                    Icon(
+                      Icons.warning_amber_outlined,
+                      color: Colors.amberAccent,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Expanded(
+                        child: Text('Warning: this action cannot be undone'))
+                  ],
+                )
+              ]),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Cancel')),
+                TextButton(
+                    onPressed: () {
+                      controller.logout();
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Confirm',
+                      style: TextStyle(color: Colors.redAccent),
+                    )),
+              ],
+            )));
   }
 }

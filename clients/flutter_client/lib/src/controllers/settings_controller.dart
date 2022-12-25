@@ -48,4 +48,9 @@ class SettingsController with ChangeNotifier {
 
     await _settingsService.updateAuthRequired(requireAuth);
   }
+
+  Future<void> logout() async {
+    await _settingsService.deletePrefs();
+    await _settingsService.deleteDevices();
+  }
 }

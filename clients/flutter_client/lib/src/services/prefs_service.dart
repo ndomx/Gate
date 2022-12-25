@@ -46,15 +46,18 @@ class PrefsService {
     return result;
   }
 
-  static Future<void> _putString(
-      String key, String value, bool encrypt) async {
-        if (encrypt) {
-          await _secureStorage.write(key: key, value: value);
-        } else {
-          final prefs = await SharedPreferences.getInstance();
-          prefs.setString(key, value);
-        }
-      }
+  static Future<void> deleteEncrypted() async {
+    await _secureStorage.deleteAll();
+  }
+
+  static Future<void> _putString(String key, String value, bool encrypt) async {
+    if (encrypt) {
+      await _secureStorage.write(key: key, value: value);
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString(key, value);
+    }
+  }
 
   static Future<void> _putInt(String key, int value, bool encrypt) async {
     if (encrypt) {
