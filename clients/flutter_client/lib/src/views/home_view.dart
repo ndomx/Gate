@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_client/src/controllers/devices_controller.dart';
 import 'package:flutter_client/src/viewmodels/device_viewmodel.dart';
 import 'package:flutter_client/src/widgets/devices_view.dart';
-import 'package:flutter_client/src/widgets/home_default_view.dart';
+import 'package:flutter_client/src/widgets/home_empty_view.dart';
 import 'package:flutter_client/src/views/login_view.dart';
 import 'package:flutter_client/src/views/settings_view.dart';
 
@@ -58,20 +58,20 @@ class _HomeViewState extends State<HomeView> {
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
-              return const HomeDefaultView(message: 'Loading...');
+              return const HomeEmptyView(title: 'Loading...', secondary: '',);
 
             case ConnectionState.done:
               if (snapshot.hasError) {
-                return const HomeDefaultView(message: 'Error loading devices');
+                return const HomeEmptyView(title: 'Error loading devices', secondary: 'Try again later or contact the platform admin',);
               }
 
               final devices = snapshot.data;
               if (devices == null) {
-                return const HomeDefaultView(message: 'Error loading devices');
+                return const HomeEmptyView(title: 'Error loading devices', secondary: 'Try again later or contact the platform admin',);
               }
 
               if (devices.isEmpty) {
-                return const HomeDefaultView(message: 'No devices found');
+                return const HomeEmptyView(title: 'No devices found', secondary: 'Make sure you are logged in',);
               }
 
               return DevicesView(
@@ -80,7 +80,7 @@ class _HomeViewState extends State<HomeView> {
               );
 
             default:
-              return const HomeDefaultView(message: 'Loading...');
+              return const HomeEmptyView(title: 'Loading...', secondary: '',);
           }
         },
       ),
