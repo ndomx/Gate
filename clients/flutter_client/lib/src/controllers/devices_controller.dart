@@ -5,7 +5,7 @@ class DevicesController {
   final _devicesService = DevicesService();
 
   Future<List<DeviceViewModel>> loadDevices() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(days: 10));
 
     final nodes = await _devicesService.getStoredNodes();
     if (nodes == null) {

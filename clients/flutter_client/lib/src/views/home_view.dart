@@ -5,6 +5,7 @@ import 'package:flutter_client/src/widgets/devices_view.dart';
 import 'package:flutter_client/src/widgets/home_empty_view.dart';
 import 'package:flutter_client/src/views/login_view.dart';
 import 'package:flutter_client/src/views/settings_view.dart';
+import 'package:flutter_client/src/widgets/loading_view.dart';
 
 enum MenuItem { login, settings }
 
@@ -58,7 +59,7 @@ class _HomeViewState extends State<HomeView> {
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
-              return const HomeEmptyView(title: 'Loading...', secondary: '',);
+              return const LoadingView(message: 'Loading...');
 
             case ConnectionState.done:
               if (snapshot.hasError) {
@@ -80,7 +81,7 @@ class _HomeViewState extends State<HomeView> {
               );
 
             default:
-              return const HomeEmptyView(title: 'Loading...', secondary: '',);
+              return const LoadingView(message: 'Loading...');
           }
         },
       ),
