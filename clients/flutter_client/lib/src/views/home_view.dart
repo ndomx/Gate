@@ -121,7 +121,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Future<void> _goToSettingsScreen(BuildContext context) async {
-    final result = await Navigator.pushNamed(context, SettingsView.routeName);
+    await Navigator.pushNamed(context, SettingsView.routeName);
 
     if (!mounted) {
       return;

@@ -83,8 +83,11 @@ class SettingsView extends StatelessWidget {
                     child: const Text('Cancel')),
                 TextButton(
                     onPressed: () {
-                      controller.logout();
                       Navigator.pop(context);
+                      controller.logout().then((value) =>
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Deleted all user data'))));
                     },
                     child: const Text(
                       'Confirm',
