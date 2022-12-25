@@ -38,6 +38,17 @@ class SettingsView extends StatelessWidget {
           ),
         ],
       ),
+      bottomNavigationBar: TextButton(
+          onPressed: () {
+            print('press');
+          },
+          style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all(Theme.of(context).cardColor)),
+          child: const Text(
+            'Log out',
+            style: TextStyle(color: Colors.redAccent, fontSize: 24),
+          )),
     );
   }
 }
