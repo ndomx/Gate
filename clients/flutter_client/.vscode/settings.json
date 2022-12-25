@@ -4,6 +4,7 @@
         "dtos",
         "prefs",
         "sqflite",
+        "unfocus",
         "viewmodel",
         "viewmodels"
     ]
