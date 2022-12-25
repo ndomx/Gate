@@ -22,7 +22,7 @@ class LoginView extends StatelessWidget {
 
     if (res == null) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Invalid credentials')));
+          .showSnackBar(const SnackBar(content: Text('Invalid credentials')));
       return;
     }
 

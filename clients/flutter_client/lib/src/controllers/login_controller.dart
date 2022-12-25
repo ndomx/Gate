@@ -1,4 +1,3 @@
-import 'package:flutter_client/src/db/entities/node_entity.dart';
 import 'package:flutter_client/src/services/login_service.dart';
 
 class LoginController {

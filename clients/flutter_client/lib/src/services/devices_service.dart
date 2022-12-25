@@ -20,7 +20,6 @@ class DevicesService {
     await db.clearDatabase();
   }
 
-  // TODO: duplicated code (see ./login_service.dart)
   Future<UserNodesResponseDto?> fetchAndSaveNodes() async {
     final host = await PrefsService.load<String>(PrefsService.hostUrlKey,
         encrypted: true);
