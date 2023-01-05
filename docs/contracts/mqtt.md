@@ -22,10 +22,12 @@ Thus, the smart switch should be subscribed to the topic `123/home/bedroom/smart
 
 ## Payload
 
-> **NOTE**: this contract is under development and can (probably will) change drastically in the future
+|   field   |   type   | is optional | description      |
+| :-------: | :------: | :---------: | :--------------- |
+| `action`  | `string` |     ❌      | requested action |
+| `pattern` | `string` |     ❌      | mqtt topic       |
 
-|  field   |   type   | is optional | description      |
-| :------: | :------: | :---------: | :--------------- |
-| `action` | `string` |     ❌      | requested action |
+> **NOTE**: this contract is under development and can (probably will) change drastically in the future \
+> **NOTE 2**: the `pattern` field is sent automatically by the MQTT client used in the server app.
 
 For the time being, the only action supported is `open`. But more actions will be added in the future.
