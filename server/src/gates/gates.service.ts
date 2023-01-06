@@ -2,9 +2,10 @@ import {
   Injectable,
   BadRequestException,
   UnauthorizedException,
+  Inject,
 } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices/client';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
-import { MqttService } from 'src/mqtt/mqtt.service';
 import { NodesClientService } from 'src/nodes-client/nodes-client.service';
 import { UsersClientService } from 'src/users-client/users-client.service';
 import { ActivateDeviceResponseDto } from './dtos/activate-device-response.dto';
@@ -14,7 +15,7 @@ export class GatesService {
   constructor(
     private readonly nodesClientService: NodesClientService,
     private readonly usersClientService: UsersClientService,
-    private readonly mqttService: MqttService,
+    @Inject('MQTT_BROKER_SERVICE') private readonly mqttClient: ClientProxy,
   ) {}
 
   async activateDevice(
@@ -47,7 +48,7 @@ export class GatesService {
 
     // grant access
     const topic = `${node.rootId}/${path}`;
-    this.mqttService.activateDevice(topic, {
+    this.mqttClient.emit(topic, {
       action: 'open',
     });
 
