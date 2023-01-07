@@ -1,4 +1,4 @@
-from embedded.rpi.python.gpio_manager import GpioManager
+from gpio_manager import GpioManager
 from mqtt_client import MqttClient
 from state_machine import StateMachine
 
