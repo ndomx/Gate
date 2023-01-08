@@ -1,45 +1,76 @@
 import time
+
 from gpiozero import DigitalOutputDevice as digital_output
 
-RELAY_PIN = 4 # pin 7
-
 STATE_IDLE = 0
-STATE_RELAY_ON = 1
+STATE_ACTIVE = 1
+STATE_DISABLED = 2
+STATE_ERROR = -1
+
+DEFAULT_TIMEOUT_MS = 1000
 
 class StateMachine:
-    __on_duration = 0
-    __relay = digital_output(RELAY_PIN)
     __state = STATE_IDLE
-    __relay_flag = False
+    __action_flag = False
     __stopwatch = 0
 
-    def __init__(self, relay_on_duration: int):
-        self.__on_duration = relay_on_duration
+    def __init__(self, output: digital_output, active_timeout_ms: int = DEFAULT_TIMEOUT_MS, disabled_timeout_ms: int = DEFAULT_TIMEOUT_MS):
+        self.__active_timeout = active_timeout_ms * 0.001
+        self.__disabled_timeout = disabled_timeout_ms * 0.001
+        self.__output_controller = output
+
+        self.__set_state_idle()
 
     def set_flag(self):
-        self.__relay_flag = True
-
-    def __set_idle(self):
-        self.__state = STATE_IDLE
-        self.__relay.off()
-
-    def __set_relay_on(self):
-        self.__state = STATE_RELAY_ON
-        self.__relay.on()
-        self.__stopwatch = time.time()
-
-    def __on_idle(self):
-        if self.__relay_flag:
-            self.__relay_flag = False
-            self.__set_relay_on()
-        
-    def __on_relay_on(self):
-        now = time.time()
-        if (now - self.__stopwatch) > self.__on_duration:
-            self.__set_idle()
+        self.__action_flag = True
 
     def run(self):
         if self.__state == STATE_IDLE:
-            self.__on_idle()
-        elif self.__state == STATE_RELAY_ON:
-            self.__on_relay_on()
+            self.__on_state_idle()
+        elif self.__state == STATE_ACTIVE:
+            self.__on_state_active()
+        elif self.__state == STATE_DISABLED:
+            self.__on_state_disabled()
+        elif self.__state == STATE_ERROR:
+            self.__on_state_error()
+        
+        else:
+            self.__set_state_error()
+
+    def __set_state_idle(self):
+        self.__state = STATE_IDLE
+        self.__action_flag = False
+
+    def __set_state_active(self):
+        self.__state = STATE_ACTIVE
+        self.__output_controller.on()
+
+        self.__stopwatch = time.time()
+
+    def __set_state_disabled(self):
+        self.__state = STATE_DISABLED
+        self.__output_controller.off()
+        
+        self.__stopwatch = time.time()
+
+    def __set_state_error(self):
+        self.__state = STATE_ERROR
+        self.__output_controller.off()
+        self.__action_flag = False
+
+    def __on_state_idle(self):
+        if self.__action_flag:
+            self.__set_state_active()
+
+    def __on_state_active(self):
+        dt = time.time() - self.__stopwatch
+        if dt > self.__active_timeout:
+            self.__set_state_disabled()
+
+    def __on_state_disabled(self):
+        dt = time.time() - self.__stopwatch
+        if dt > self.__disabled_timeout:
+            self.__set_state_idle()
+
+    def __on_state_error(self):
+        pass

@@ -1,0 +1,4 @@
+{
+    "relay_controller_pin": 7,
+    "bypass_button_pin": 11
+}
