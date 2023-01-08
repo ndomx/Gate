@@ -7,7 +7,7 @@ RELAY_PIN = 4 # pin 7
 BYPASS_PIN = 17 # pin 11
 
 ButtonPressCallback = Callable[[], None]
-SetRelayHandler = Callable[[bool], None]
+DigitalOutputHandler = Callable[[bool], None]
 
 class GpioManager:
     __relay_out = digital_output(RELAY_PIN)
