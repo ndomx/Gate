@@ -64,12 +64,12 @@ class StateMachine:
 
     def __on_state_active(self):
         dt = time.time() - self.__stopwatch
-        if dt < self.__active_timeout:
+        if dt > self.__active_timeout:
             self.__set_state_disabled()
 
     def __on_state_disabled(self):
         dt = time.time() - self.__stopwatch
-        if dt < self.__disabled_timeout:
+        if dt > self.__disabled_timeout:
             self.__set_state_idle()
 
     def __on_state_error(self):

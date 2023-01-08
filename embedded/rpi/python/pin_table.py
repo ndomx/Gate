@@ -34,7 +34,7 @@ class GpioPin(IntEnum):
     PIN_03 = 2
     PIN_05 = 3
     PIN_07 = 4
-    PIN_08 = 13
+    PIN_08 = 14
     PIN_10 = 15
     PIN_11 = 17
     PIN_12 = 18

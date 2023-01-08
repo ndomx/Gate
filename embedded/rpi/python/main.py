@@ -38,7 +38,7 @@ if __name__ == '__main__':
     gpio = load_gpio_from_json()
 
     state_machine = StateMachine(gpio[GPIO_OUTPUT_CONTROLLER])
-    gpio[GPIO_INPUT_CONTROLLER].when_active = state_machine.set_flag
+    gpio[GPIO_INPUT_CONTROLLER].when_pressed = state_machine.set_flag
 
     mqtt_client.connect(lambda msg: state_machine.set_flag())
 
