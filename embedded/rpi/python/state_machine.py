@@ -1,6 +1,6 @@
 import time
 
-from gpio_manager import DigitalOutputHandler
+from gpiozero import DigitalOutputDevice as digital_output
 
 STATE_IDLE = 0
 STATE_ACTIVE = 1
@@ -14,13 +14,10 @@ class StateMachine:
     __action_flag = False
     __stopwatch = 0
 
-    __active_timeout = 0
-    __disabled_timeout = 0
-
-    def __init__(self, handler: DigitalOutputHandler, active_timeout_ms: int = DEFAULT_TIMEOUT_MS, disabled_timeout_ms: int = DEFAULT_TIMEOUT_MS):
+    def __init__(self, output: digital_output, active_timeout_ms: int = DEFAULT_TIMEOUT_MS, disabled_timeout_ms: int = DEFAULT_TIMEOUT_MS):
         self.__active_timeout = active_timeout_ms * 0.001
         self.__disabled_timeout = disabled_timeout_ms * 0.001
-        self.__handler = handler
+        self.__output_controller = output
 
         self.__set_state_idle()
 
@@ -46,19 +43,19 @@ class StateMachine:
 
     def __set_state_active(self):
         self.__state = STATE_ACTIVE
-        self.__handler(True)
+        self.__output_controller.on()
 
         self.__stopwatch = time.time()
 
     def __set_state_disabled(self):
         self.__state = STATE_DISABLED
-        self.__handler(False)
+        self.__output_controller.off()
         
         self.__stopwatch = time.time()
 
     def __set_state_error(self):
         self.__state = STATE_ERROR
-        self.__handler(False)
+        self.__output_controller.off()
         self.__action_flag = False
 
     def __on_state_idle(self):
