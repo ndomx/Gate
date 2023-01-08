@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from embedded.rpi.python.pin_table import pin_to_bcm
+from pin_table import pin_to_bcm
 from mqtt_client import MqttClient
 from state_machine import StateMachine
 
