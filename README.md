@@ -9,4 +9,4 @@ This repo contains all the necessary code to implement a remote gate controller.
 Each app contains its own `README.md` explaining how to get that specific app running.
 - `/server/` contains the server side app
 - `/embedded/` contains the embedded app, this directory is split into multiple child directories depending on the hardware and language. Regardless, each of these directories should contain a different implementation for the same program
-- `/clients/android/` contains the Android app. Future releases will contain parallel directories to support other platforms, and frameworks
+- `/clients/` contains the source code for apps that interface with the server, i.e. mobile apps.
