@@ -1,16 +1,16 @@
-# flutter_client
+# Gate
 
-A new Flutter project.
+This folder contains the source code for the Flutter version of the Gate app. This version is compatible with both, Android and iOS devices.
+> Note: a OSX machine is required to build for iOS devices
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+1. Install the dependencies
+```bash
+flutter pub get
+```
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+2. Run the app
+```bash
+flutter run
+```
