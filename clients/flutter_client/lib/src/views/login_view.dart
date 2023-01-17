@@ -60,8 +60,8 @@ class LoginView extends StatelessWidget {
               controller: serverController,
               decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Enter your name',
-                  label: Text('Username')),
+                  hintText: 'Enter the server name',
+                  label: Text('Server')),
               autocorrect: false,
               keyboardType: TextInputType.url,
             ),
