@@ -10,8 +10,6 @@ class DevicesController {
       return [];
     }
     
-    await Future.delayed(const Duration(seconds: 2));
-
     final nodes = await _devicesService.getStoredNodes();
     if (nodes == null) {
       return [];
