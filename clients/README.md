@@ -5,4 +5,5 @@ This directory contains all the apps the user interacts with. That is, mobile ap
 ~~~
 /clients/
 |- android: Native android Gate Client implementation
+|- flutter_client: Flutter implementation. This app is compatible with both Android, and iOS devices.
 ~~~
