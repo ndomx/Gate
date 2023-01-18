@@ -12,9 +12,19 @@ class SettingsController with ChangeNotifier {
   late bool _requireAuth;
   bool get requireAuth => _requireAuth;
 
+  late String _appName;
+  String get appName => _appName;
+
+  late String _appVersion;
+  String get appVersion => _appVersion;
+
   Future<void> loadSettings() async {
     _themeMode = await _settingsService.themeMode();
     _requireAuth = await _settingsService.requireAuth();
+
+    final packageInfo = await _settingsService.packageInfo();
+    _appName = packageInfo.appName;
+    _appVersion = packageInfo.version;
 
     notifyListeners();
   }
