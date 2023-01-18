@@ -43,8 +43,8 @@ class SettingsView extends StatelessWidget {
             onTap: () {
               showAboutDialog(
                   context: context,
-                  applicationName: 'Gate',
-                  applicationVersion: '1.0.0',
+                  applicationName: controller.appName,
+                  applicationVersion: controller.appVersion,
                   children: [
                     const Text(
                       'This app is fully open source. Check the Github repository '

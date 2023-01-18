@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_client/src/db/gate_database.dart';
 import 'package:flutter_client/src/services/prefs_service.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsService {
   Future<ThemeMode> themeMode() async {
@@ -16,6 +17,10 @@ class SettingsService {
     final isRequired =
         await PrefsService.load<bool>(PrefsService.requireAuthKey);
     return ((isRequired == null) || isRequired);
+  }
+
+  Future<PackageInfo> packageInfo() {
+    return PackageInfo.fromPlatform();
   }
 
   Future<void> updateThemeMode(ThemeMode mode) async {
