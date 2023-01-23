@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+# Secret files
+lib/wifi/credentials.h
