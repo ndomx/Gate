@@ -31,6 +31,9 @@
 *.out
 *.app
 
+# Build directory
+build/
+
 # Private files
 lib/wifi/credentials.h
 private.mk
