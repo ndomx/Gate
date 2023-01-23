@@ -6,3 +6,7 @@ SpaceAfterCStyleCast: true
 PointerAlignment: Left
 BitFieldColonSpacing: None
 BreakBeforeBraces: Allman
+
+Language: Cpp
+AccessModifierOffset: 0
+NamespaceIndentation: All
