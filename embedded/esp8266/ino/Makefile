@@ -1,10 +1,24 @@
 include private.mk
 
+PORT=
+
 BOARD_NAME := esp8266:esp8266:generic
 
 LIBS := ./lib
 SKETCH := ./main
 BUILD_DIR := ./build
 
-build:
-	$(ARDUINO_CLI) compile -b $(BOARD_NAME) --library $(LIBS) -v --build-path $(BUILD_DIR) $(SKETCH)
+TARGET := main.ino
+
+.PHONY: build upload clean_upload
+
+build: $(BUILD_DIR)/$(TARGET).bin
+
+upload:
+	$(ARDUINO_CLI) upload -b $(BOARD_NAME) -p $(PORT) -i $(BUILD_DIR)/$(TARGET).bin
+
+$(BUILD_DIR)/$(TARGET).bin: $(SKETCH)/$(TARGET)
+	$(ARDUINO_CLI) compile -b $(BOARD_NAME) --libraries $(LIBS) -v --build-path $(BUILD_DIR) $(SKETCH)
+
+clean_upload:
+	$(ARDUINO_CLI) upload -b $(BOARD_NAME) -p $(PORT) $(SKETCH)
