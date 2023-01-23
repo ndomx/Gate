@@ -1,2 +1,2 @@
 # installation path to arduino-cli
-ARDUINO_CLI := 
+ARDUINO_CLI := arduino-cli
