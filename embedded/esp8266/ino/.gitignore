@@ -31,5 +31,6 @@
 *.out
 *.app
 
-# Secret files
+# Private files
 lib/wifi/credentials.h
+private.mk
