@@ -7,7 +7,7 @@ struct MqttPacket
 {
     char* topic;
     uint8_t* payload;
-    unsigned int length;
+    size_t length;
 };
 
 #endif // LIB_MQTT_PACKET_H
