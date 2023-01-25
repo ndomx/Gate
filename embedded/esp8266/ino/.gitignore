@@ -35,5 +35,5 @@
 build/
 
 # Private files
-lib/wifi/credentials.h
+lib/**/credentials.h
 private.mk
