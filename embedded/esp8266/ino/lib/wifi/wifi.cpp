@@ -19,4 +19,10 @@ namespace wifi
     {
         return (WiFi.status() == WL_CONNECTED);
     }
+
+    size_t get_mac_addr(uint8_t* mac)
+    {
+        WiFi.macAddress(mac);
+        return MAC_ADDR_SIZE;
+    }
 } // namespace wifi
