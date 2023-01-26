@@ -1,10 +1,7 @@
 #ifndef LIB_MQTT_MQTT_H
 #define LIB_MQTT_MQTT_H
 
-#include <PubSubClient.h>
-#include <WiFiClient.h>
-
-#include "mqtt_packet.h"
+#include <Arduino.h>
 
 namespace mqtt
 {

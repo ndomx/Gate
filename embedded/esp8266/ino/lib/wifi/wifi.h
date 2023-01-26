@@ -3,9 +3,6 @@
 
 #include <Arduino.h>
 
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-
 #define MAC_ADDR_SIZE (6)
 
 namespace wifi

@@ -1,5 +1,7 @@
-#include "wifi.h"
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
 
+#include "wifi.h"
 #include "credentials.h"
 
 namespace wifi
