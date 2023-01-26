@@ -57,6 +57,8 @@ namespace mqtt
         mqtt_client.setServer(mqtt_broker_url, mqtt_broker_port);
         mqtt_client.setCallback(on_message);
 
+        mqtt_callback = callback;
+
         return true;
     }
 
