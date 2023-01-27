@@ -1,10 +1,10 @@
 #include <mqtt.h>
-#include <state_machine.h>
+#include <io_state_machine.h>
 #include <wifi.h>
 
 #include "global_defs.h"
 
-StateMachine state_machine(OUTPUT_PIN);
+IO_StateMachine state_machine(OUTPUT_PIN);
 
 void setup_error(const char* message)
 {

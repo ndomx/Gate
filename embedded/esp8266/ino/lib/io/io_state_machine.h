@@ -1,16 +1,16 @@
-#ifndef LIB_STATEMACHINE_STATEMACHINE_H
-#define LIB_STATEMACHINE_STATEMACHINE_H
+#ifndef LIB_IO_STATEMACHINE_H
+#define LIB_IO_STATEMACHINE_H
 
 #include <Arduino.h>
 
-#include "states.h"
+#include "io_states.h"
 
-class StateMachine
+class IO_StateMachine
 {
     public:
-    StateMachine(const uint8_t output_pin, uint32_t active_timeout_ms, uint32_t disabled_timeout_ms);
-    StateMachine(const uint8_t output_pin, uint32_t active_timeout_ms);
-    StateMachine(const uint8_t output_pin);
+    IO_StateMachine(const uint8_t output_pin, uint32_t active_timeout_ms, uint32_t disabled_timeout_ms);
+    IO_StateMachine(const uint8_t output_pin, uint32_t active_timeout_ms);
+    IO_StateMachine(const uint8_t output_pin);
 
     void init(void);
     void set_flag(void);
@@ -19,7 +19,7 @@ class StateMachine
     private:
     uint8_t _output_pin;
 
-    States _state = STATE_IDLE;
+    IO_States _state = IO_STATE_IDLE;
     bool _action_flag = false;
     uint32_t _stopwatch = 0;
 
@@ -37,4 +37,4 @@ class StateMachine
     void _on_state_error(void);
 };
 
-#endif // LIB_STATEMACHINE_STATEMACHINE_H
+#endif // LIB_IO_STATEMACHINE_H
