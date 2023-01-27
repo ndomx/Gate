@@ -1,4 +1,4 @@
-include private.mk
+include user.mk
 
 BOARD_NAME := esp8266:esp8266:generic
 
@@ -13,7 +13,7 @@ TARGET := main.ino
 
 SRCS := $(shell python $(SCRIPTS)/find_files.py $(LIBS) cpp)
 
-.PHONY: build upload clean
+.PHONY: build upload clean rebuild
 
 build: $(BUILD_DIR)/$(TARGET).bin
 
@@ -25,3 +25,5 @@ $(BUILD_DIR)/$(TARGET).bin: $(SKETCH)/$(TARGET) $(SRCS)
 
 clean:
 	$(RM) $(BUILD_DIR)
+
+rebuild: clean build
