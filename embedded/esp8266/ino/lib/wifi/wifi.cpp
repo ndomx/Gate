@@ -2,7 +2,7 @@
 #include <WiFiClient.h>
 
 #include "wifi.h"
-#include "credentials.h"
+#include "../credentials.h"
 
 namespace wifi
 {

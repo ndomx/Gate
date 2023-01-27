@@ -3,9 +3,9 @@
 #include <PubSubClient.h>
 #include <WiFiClient.h>
 
-#include "credentials.h"
 #include "mqtt.h"
 #include "mqtt_packet.h"
+#include "../credentials.h"
 
 #define MQTT_CLIENT_ID_SIZE (23)
 #define ID_HEADER "esp8266-"
