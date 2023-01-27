@@ -7,7 +7,7 @@ StateMachine::StateMachine(const uint8_t output_pin, uint32_t active_timeout_ms,
     _active_timeout = active_timeout_ms;
     _disabled_timeout = disabled_timeout_ms;
 
-    _init_gpio(output_pin);
+    _output_pin = output_pin;
 }
 
 StateMachine::StateMachine(const uint8_t output_pin, uint32_t active_timeout_ms)
@@ -15,7 +15,7 @@ StateMachine::StateMachine(const uint8_t output_pin, uint32_t active_timeout_ms)
     _active_timeout = active_timeout_ms;
     _disabled_timeout = DEFAULT_TIMEOUT_MS;
 
-    _init_gpio(output_pin);
+    _output_pin = output_pin;
 }
 
 StateMachine::StateMachine(const uint8_t output_pin)
@@ -23,7 +23,13 @@ StateMachine::StateMachine(const uint8_t output_pin)
     _active_timeout = DEFAULT_TIMEOUT_MS;
     _disabled_timeout = DEFAULT_TIMEOUT_MS;
 
-    _init_gpio(output_pin);
+    _output_pin = output_pin;
+}
+
+void StateMachine::init(void)
+{
+    pinMode(_output_pin, OUTPUT);
+    digitalWrite(_output_pin, LOW);
 }
 
 void StateMachine::set_flag(void)
@@ -41,14 +47,6 @@ void StateMachine::run(void)
         case STATE_ERROR: _on_state_error(); break;
         default: _set_state_error(); break;
     }
-}
-
-void StateMachine::_init_gpio(const uint8_t output_pin)
-{
-    _output_pin = output_pin;
-
-    pinMode(output_pin, OUTPUT);
-    digitalWrite(output_pin, LOW);
 }
 
 void StateMachine::_set_state_idle(void)

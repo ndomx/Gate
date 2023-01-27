@@ -2,7 +2,6 @@
 #define LIB_STATEMACHINE_STATEMACHINE_H
 
 #include <Arduino.h>
-#include <stdint.h>
 
 #include "states.h"
 
@@ -13,6 +12,7 @@ class StateMachine
     StateMachine(const uint8_t output_pin, uint32_t active_timeout_ms);
     StateMachine(const uint8_t output_pin);
 
+    void init(void);
     void set_flag(void);
     void run(void);
 
@@ -25,8 +25,6 @@ class StateMachine
 
     uint32_t _active_timeout;
     uint32_t _disabled_timeout;
-
-    void _init_gpio(const uint8_t output_pin);
 
     void _set_state_idle(void);
     void _set_state_active(void);
