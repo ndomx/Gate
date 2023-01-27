@@ -19,6 +19,3 @@ upload:
 
 $(BUILD_DIR)/$(TARGET).bin: $(SKETCH)/$(TARGET)
 	$(ARDUINO_CLI) compile -b $(BOARD_NAME) --libraries $(LIBS) -v --build-path $(BUILD_DIR) $(SKETCH)
-
-clean_upload:
-	$(ARDUINO_CLI) upload -b $(BOARD_NAME) -p $(PORT) $(SKETCH)
