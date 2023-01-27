@@ -36,4 +36,4 @@ build/
 
 # Private files
 lib/**/credentials.h
-private.mk
+user.mk

@@ -1,7 +1,5 @@
 include private.mk
 
-PORT=
-
 BOARD_NAME := esp8266:esp8266:generic
 
 SCRIPTS := ./tools/scripts
