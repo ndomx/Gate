@@ -4,13 +4,16 @@ PORT=
 
 BOARD_NAME := esp8266:esp8266:generic
 
+SCRIPTS := ./tools/scripts
+RM := python $(SCRIPTS)/remove_files.py
+
 LIBS := ./lib
 SKETCH := ./main
 BUILD_DIR := ./build
 
 TARGET := main.ino
 
-.PHONY: build upload clean_upload
+.PHONY: build upload clean
 
 build: $(BUILD_DIR)/$(TARGET).bin
 
@@ -19,3 +22,6 @@ upload:
 
 $(BUILD_DIR)/$(TARGET).bin: $(SKETCH)/$(TARGET)
 	$(ARDUINO_CLI) compile -b $(BOARD_NAME) --libraries $(LIBS) -v --build-path $(BUILD_DIR) $(SKETCH)
+
+clean:
+	$(RM) $(BUILD_DIR)
