@@ -23,7 +23,7 @@ void setup()
     }
 
     wifi::connect_blocking();
-    state_machine.init_gpio();
+    state_machine.init();
 
     bool success = mqtt::init([]() { state_machine.set_flag(); });
     if (!success)
