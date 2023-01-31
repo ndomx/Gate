@@ -1,0 +1,6 @@
+#ifndef MAIN_GLOBALDEFS_H
+#define MAIN_GLOBALDEFS_H
+
+#define OUTPUT_PIN 2
+
+#endif // MAIN_GLOBALDEFS_H

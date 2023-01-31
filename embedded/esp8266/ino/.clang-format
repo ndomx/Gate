@@ -1,0 +1,12 @@
+BasedOnStyle: Microsoft
+IndentCaseLabels: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+SpaceAfterCStyleCast: true
+PointerAlignment: Left
+BitFieldColonSpacing: None
+BreakBeforeBraces: Allman
+
+Language: Cpp
+AccessModifierOffset: 0
+NamespaceIndentation: All
