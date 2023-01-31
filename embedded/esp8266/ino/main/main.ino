@@ -1,43 +1,42 @@
-#include <mqtt.h>
+#include <errors.h>
 #include <io_state_machine.h>
+#include <logger.h>
+#include <mqtt.h>
 #include <wifi.h>
 
 #include "global_defs.h"
 
-IO_StateMachine state_machine(OUTPUT_PIN);
+#define TAG "main"
 
-void setup_error(const char* message)
-{
-    Serial.println(message);
-    while (true)
-    {
-    }
-}
+IO_StateMachine state_machine(OUTPUT_PIN);
 
 void setup()
 {
-    // debug serial
-    Serial.begin(115200);
-    while (!Serial)
-    {
-    }
+    logger::init();
+
+    logger::log_info(TAG, "connecting to wifi");
 
     wifi::connect_blocking();
     state_machine.init();
 
+    logger::log_info(TAG, "connected to wifi");
+
     bool success = mqtt::init([]() { state_machine.set_flag(); });
     if (!success)
     {
-        setup_error("Error initializing mqtt, please try again");
+        throw_blocking(TAG, "Error initializing mqtt, please try again");
     }
+
+    logger::log_info(TAG, "mqtt initialized");
 
     success = mqtt::connect();
     if (!success)
     {
-        setup_error("Error connecting to mqtt server");
+        throw_blocking(TAG, "Error connecting to mqtt server");
     }
 
-    Serial.println("Setup success");
+    logger::log_info(TAG, "mqtt connected to server");
+    logger::log_info(TAG, "Setup success");
 }
 
 void loop()
