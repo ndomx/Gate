@@ -49,7 +49,7 @@ namespace logger
 
     void log_debug(const char* tag, const char* message)
     {
-        if (_log_level <= LOG_DEBUG)
+        if (_log_level >= LOG_DEBUG)
         {
             log_message("DEBUG", tag, message);
         }
@@ -57,7 +57,7 @@ namespace logger
 
     void log_warning(const char* tag, const char* message)
     {
-        if (_log_level <= LOG_WARN)
+        if (_log_level >= LOG_WARN)
         {
             log_message("WARNING", tag, message);
         }
@@ -65,7 +65,7 @@ namespace logger
 
     void log_error(const char* tag, const char* message)
     {
-        if (_log_level <= LOG_ERROR)
+        if (_log_level >= LOG_ERROR)
         {
             log_message("ERROR", tag, message);
         }
