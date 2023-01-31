@@ -5,4 +5,4 @@ ARDUINO_CLI := arduino-cli
 PORT := /dev/ttyUSB0
 
 # Uncomment to activate serial debugging
-# DEBUG := 1
+# BUILD_TYPE := DEBUG
