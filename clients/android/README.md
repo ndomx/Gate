@@ -1,5 +1,5 @@
 # Android Gate Client
-> This app was tested on `Android Studio Chipmunk | 2021.2.1 Patch 2`
+> :warning: This app is deprecated. Its current status is not up to date, and further development will focus on the flutter client app
 
 ## Get Started
 Android Studio should recognize this folder as an Android Studio Project. No additional dependencies are required
