@@ -10,3 +10,5 @@ BreakBeforeBraces: Allman
 Language: Cpp
 AccessModifierOffset: 0
 NamespaceIndentation: All
+AlignAfterOpenBracket: BlockIndent
+BreakConstructorInitializers: BeforeColon
