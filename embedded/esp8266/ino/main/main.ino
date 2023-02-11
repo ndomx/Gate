@@ -8,7 +8,7 @@
 
 #define TAG "main"
 
-IO_StateMachine state_machine(OUTPUT_PIN);
+IO_StateMachine state_machine(OUTPUT_PIN, INVERT_LOGIC);
 
 void setup()
 {
