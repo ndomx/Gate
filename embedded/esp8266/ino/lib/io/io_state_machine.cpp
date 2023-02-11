@@ -2,6 +2,10 @@
 
 #define DEFAULT_TIMEOUT_MS 1000
 
+#define OUTPUT_OFF (HIGH)
+#define OUTPUT_ON (LOW)
+#define INITIAL_STATE (OUTPUT_OFF)
+
 IO_StateMachine::IO_StateMachine(const uint8_t output_pin, uint32_t active_timeout_ms, uint32_t disabled_timeout_ms)
 {
     _active_timeout = active_timeout_ms;
@@ -29,7 +33,7 @@ IO_StateMachine::IO_StateMachine(const uint8_t output_pin)
 void IO_StateMachine::init(void)
 {
     pinMode(_output_pin, OUTPUT);
-    digitalWrite(_output_pin, LOW);
+    digitalWrite(_output_pin, INITIAL_STATE);
 }
 
 void IO_StateMachine::set_flag(void)
@@ -58,7 +62,7 @@ void IO_StateMachine::_set_state_idle(void)
 void IO_StateMachine::_set_state_active(void)
 {
     _state = IO_STATE_ACTIVE;
-    digitalWrite(_output_pin, HIGH);
+    digitalWrite(_output_pin, OUTPUT_ON);
 
     _stopwatch = millis();
 }
@@ -66,7 +70,7 @@ void IO_StateMachine::_set_state_active(void)
 void IO_StateMachine::_set_state_disabled(void)
 {
     _state = IO_STATE_DISABLED;
-    digitalWrite(_output_pin, LOW);
+    digitalWrite(_output_pin, OUTPUT_OFF);
 
     _stopwatch = millis();
 }
@@ -74,7 +78,7 @@ void IO_StateMachine::_set_state_disabled(void)
 void IO_StateMachine::_set_state_error(void)
 {
     _state = IO_STATE_ERROR;
-    digitalWrite(_output_pin, LOW);
+    digitalWrite(_output_pin, OUTPUT_OFF);
     _action_flag = false;
 }
 
