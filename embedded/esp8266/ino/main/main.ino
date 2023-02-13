@@ -21,7 +21,7 @@ void setup()
 
     logger::log_info(TAG, "connected to wifi");
 
-    bool success = mqtt::init([]() { state_machine.set_flag(); });
+    bool success = mqtt::init([]() { state_machine.set_flag(); }, MQTT_RECONNECT_ASYNC);
     if (!success)
     {
         throw_blocking(TAG, "Error initializing mqtt, please try again");
