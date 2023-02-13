@@ -38,6 +38,11 @@ In the file `lib/common/logger.cpp` you will find two macros that are only defin
 - `SERIAL_BAUDRATE`: sets the baud rate for the serial communication. Defaults to 115200
 - `WAIT_BEFORE_START`: specifies an amount of time (in milliseconds) that the processor should wait before printing the first log message. Defaults to 1000
 
+A MQTT reconnection policy can be specified in the main program (`main/main.ino`) when the MQTT lib is initiated. The possible values are defined in `lib/mqtt/mqtt_defs.h`:
+- `MQTT_NO_RECONNECT`: don't try to reconnect. Note that a reset will be required to reconnect the device if connection is lost
+- `MQTT_RECONNECT_ASYNC`: try to reconnect only after asserting there is a WiFi connection available
+- `MQTT_RECONNECT_BLOCKING`: stop the program execution until the device is reconnected
+
 By default, the app sets the MQTT client ID to `esp8266-<device-mac-address>`. If this convention doesn't suit your needs, you will have to overwrite the function `generate_client_id`, that is located exclusively in `lib/mqtt/mqtt.cpp` (this function is not exposed to other modules).
 
 The class `IO_State_Machine` takes 3 parameters:
@@ -45,4 +50,4 @@ The class `IO_State_Machine` takes 3 parameters:
 - `active_timeout`: the amount of time the digital output is set after being triggered. This parameter is optional and defaults to 1000 (milliseconds)
 - `disabled_timeout`: the amount of time the state machine is disabled before receiving another trigger. This parameter is optional and defaults to 1000 (milliseconds)
 
-In `main/main.ino` this class is called using both default values, but you adjust the active and disabled time with any `uint32_t` value (_0 ms_ up to _~4,000,000,000 ms_).
+In `main/main.ino` this class is called using both default values, but you can adjust the active and disabled time with any `uint32_t` value (_0 ms_ up to _~4,000,000,000 ms_).

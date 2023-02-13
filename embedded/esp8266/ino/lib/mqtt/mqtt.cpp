@@ -3,9 +3,9 @@
 #include <PubSubClient.h>
 #include <WiFiClient.h>
 
+#include "../credentials.h"
 #include "mqtt.h"
 #include "mqtt_packet.h"
-#include "../credentials.h"
 
 #define MQTT_CLIENT_ID_SIZE (23)
 #define ID_HEADER "esp8266-"
@@ -14,9 +14,12 @@ namespace mqtt
 {
     static WiFiClient wifi_client;
     static PubSubClient mqtt_client;
+
     static callback_t mqtt_callback;
 
     static String mqtt_client_id;
+
+    static uint8_t reconnection_strategy;
 
     static void on_message(char* topic, uint8_t* payload, size_t length)
     {
@@ -46,7 +49,7 @@ namespace mqtt
         return true;
     }
 
-    bool init(callback_t callback)
+    bool init(callback_t callback, const uint8_t reconnection)
     {
         if (!wifi::is_connected())
         {
@@ -58,6 +61,7 @@ namespace mqtt
         mqtt_client.setCallback(on_message);
 
         mqtt_callback = callback;
+        reconnection_strategy = reconnection;
 
         return true;
     }
@@ -65,9 +69,34 @@ namespace mqtt
     bool connect(void)
     {
         bool success;
-        
+
         success = generate_client_id();
         if (!success)
+        {
+            return false;
+        }
+
+        success = mqtt_client.connect(mqtt_client_id.c_str(), mqtt_username, mqtt_password);
+        if (!success)
+        {
+            return false;
+        }
+
+        success = mqtt_client.subscribe(mqtt_topic);
+        return success;
+    }
+
+    static bool reconnect(void)
+    {
+        bool success;
+
+        bool blocking = (reconnection_strategy == MQTT_RECONNECT_BLOCKING);
+        while (blocking && !wifi::is_connected())
+        {
+            delay(500);
+        }
+
+        if (!wifi::is_connected())
         {
             return false;
         }
@@ -86,6 +115,11 @@ namespace mqtt
     {
         if (!mqtt_client.connected())
         {
+            if (reconnection_strategy != MQTT_NO_RECONNECT)
+            {
+                reconnect();
+            }
+
             return;
         }
 
