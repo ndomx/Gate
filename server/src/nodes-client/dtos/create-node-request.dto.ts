@@ -2,6 +2,7 @@ import { Expose, Type } from 'class-transformer';
 import {
   IsDefined,
   IsMongoId,
+  IsOptional,
   IsString,
   Matches,
   ValidateNested,
@@ -15,12 +16,19 @@ export class CreateNodeRequestDto {
   rootId: string;
 
   @IsString()
+  @IsDefined()
   @Matches(/^([a-zA-Z0-9_-]+\/?)+$/)
   path: string;
 
   @IsString()
+  @IsDefined()
   @Matches(/^[a-zA-Z0-9_-]+$/)
   name: string;
+
+  @IsString()
+  @IsOptional()
+  @Expose({ name: 'display_name' })
+  displayName: string;
 
   @Type(() => NodeInfoDto)
   @ValidateNested()

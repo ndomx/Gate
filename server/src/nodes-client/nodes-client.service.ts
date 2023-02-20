@@ -71,13 +71,18 @@ export class NodesClientService {
       });
     }
 
+    
+    const displayName = request.displayName
+    ? request.displayName
+    : request.name;
+    
     const parent = await this.#getNodeFromPath(request.path);
-
     const node = this.nodesService.createOne({
       name: request.name,
       nodeInfo: request.nodeInfo,
       parent: parent.nodeId,
       rootId: request.rootId,
+      displayName,
     });
 
     if (!node) {

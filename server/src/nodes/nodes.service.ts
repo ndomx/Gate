@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { CreateNodeDto } from './dtos/create-node.dto';
 import { NodeDto } from './dtos/node.dto';
 import { UpdateNodeDto } from './dtos/update-node.dto';
-import { Node, NodeDocument } from './schemas/node.shema';
+import { Node, NodeDocument } from './schemas/node.schema';
 
 @Injectable()
 export class NodesService {
@@ -65,6 +65,7 @@ export class NodesService {
     node.parent = nodeDocument.parent;
     node.rootId = nodeDocument.rootId;
     node.nodeInfo = nodeDocument.nodeInfo;
+    node.displayName = nodeDocument.displayName;
     node.nodeId = nodeDocument._id.toHexString();
 
     return node;
