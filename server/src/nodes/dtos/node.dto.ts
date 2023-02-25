@@ -31,13 +31,12 @@ export class NodeDto {
 
   @IsString()
   @IsNotEmpty()
-  @IsDefined()
   @Expose({ name: 'display_name' })
   displayName: string;
 
   @Type(() => NodeInfoDto)
   @ValidateNested()
-  @IsDefined()
+  @IsDefined() 
   @Expose({ name: 'node_info' })
   nodeInfo: NodeInfoDto;
 }

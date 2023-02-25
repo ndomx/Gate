@@ -17,7 +17,7 @@ Creates a user
   | `last` | `string` | ❌ | last name |
   | `username` | `string` | ❌ | username |
   | `password` | `string` | ❌ | password |
-  | `access` | `string[]` | ❌ | user's accessable paths |
+  | `access` | `string[]` | ❌ | user's accessible paths |
   | `roles` | `string[]` | ✅ | user's roles (defaults to `[user]`) |
 
 ### Response
@@ -29,7 +29,7 @@ Creates a user
 |   `name`   |  `string`  |     ❌      | first name              |
 |   `last`   |  `string`  |     ❌      | last name               |
 | `username` |  `string`  |     ❌      | username                |
-|  `access`  | `string[]` |     ❌      | user's accessable paths |
+|  `access`  | `string[]` |     ❌      | user's accessible paths |
 |  `roles`   | `string[]` |     ❌      | user's roles            |
 
 ### Example

@@ -15,6 +15,7 @@ Creates a new node
   | `root_id` | `string` | ❌ | node's root id |
   | `path` | `string` | ❌ | hierarchical loaction of the node |
   | `name` | `string` | ❌ | node's name |
+  | `display_name` | `string` | ✅ | display name for this node |
   | `node_info` | `Object` | ❌ | additional info |
 
   **Node Info**
@@ -24,13 +25,14 @@ Creates a new node
 
 ### Response
 
-|   field    |   type   | is optional | description            |
-| :--------: | :------: | :---------: | :--------------------- |
-|  `nodeId`  | `string` |     ❌      | created node's id      |
-|  `rootId`  | `string` |     ❌      | node's root id         |
-|  `parent`  | `string` |     ❌      | node's parent id       |
-|   `name`   | `string` |     ❌      | node's name            |
-| `nodeInfo` | `Object` |     ❌      | additional information |
+|     field     |   type   | is optional | description            |
+| :-----------: | :------: | :---------: | :--------------------- |
+|   `nodeId`    | `string` |     ❌      | created node's id      |
+|   `rootId`    | `string` |     ❌      | node's root id         |
+|   `parent`    | `string` |     ❌      | node's parent id       |
+|    `name`     | `string` |     ❌      | node's name            |
+| `displayName` | `string` |     ❌      | node's display name    |
+|  `nodeInfo`   | `Object` |     ❌      | additional information |
 
 **Node Info**
 | field | type | is optional | description |
@@ -58,7 +60,8 @@ Creates a new node
     "path": "home/test/door",
     "nodeInfo": {
         "isDevice": true
-    }
+    },
+    "displayName": "door", // displayName defaults to name if not provided
 }
 ```
 
@@ -110,6 +113,7 @@ localhost:3000/nodes-client/638951909c2acdb5e789aa22
   "nodes": [
     {
       "name": "home",
+      "displayName": "Home",
       "parent": "",
       "rootId": "638951909c2acdb5e789aa22",
       "nodeInfo": {
@@ -119,6 +123,7 @@ localhost:3000/nodes-client/638951909c2acdb5e789aa22
     },
     {
       "name": "main-entrance",
+      "displayName": "Entrance",
       "parent": "638951909c2acdb5e789aa22",
       "rootId": "638951909c2acdb5e789aa22",
       "nodeInfo": {
@@ -169,6 +174,7 @@ Find all nodes that are accessable by the user
 | `rootId` | `string` | ❌ | node's root id |
 | `parent` | `string` | ❌ | node's parent id |
 | `name` | `string` | ❌ | node's name |
+| `displayName` | `string` | ❌ | node's display name |
 | `nodeInfo` | `Object` | ❌ | node's additional information |
 
 **Node Info**
@@ -199,6 +205,7 @@ localhost:3000/nodes-client/user?is_device=true
   "nodes": [
     {
       "name": "main-entrance",
+      "displayName": "Entrance",
       "parent": "638951909321fdb5e789aa22",
       "rootId": "638951909321fdb5e789aa22",
       "nodeInfo": {
@@ -208,6 +215,7 @@ localhost:3000/nodes-client/user?is_device=true
     },
     {
       "name": "gate",
+      "name": "Side Door",
       "parent": "63895a2d11f0927f59e02bb7",
       "rootId": "638951909c2acdb5e789aa22",
       "nodeInfo": {
@@ -246,6 +254,7 @@ Find all nodes that match with the provided prefix
 | `rootId` | `string` | ❌ | node's root id |
 | `parent` | `string` | ❌ | node's parent id |
 | `name` | `string` | ❌ | node's name |
+| `displayName` | `string` | ❌ | node's display name |
 | `nodeInfo` | `Object` | ❌ | node's additional information |
 
 **Node Info**
@@ -267,6 +276,7 @@ localhost:3000/nodes-client/match?prefix=home/3rd-floor
   "nodes": [
     {
       "name": "3rd-floor",
+      "displayName": "3rd Floor",
       "parent": "638951909c2acdb5e789aa22",
       "rootId": "638951909c2acdb5e789aa22",
       "nodeInfo": {
@@ -276,6 +286,7 @@ localhost:3000/nodes-client/match?prefix=home/3rd-floor
     },
     {
       "name": "gate",
+      "displayName": "gate",
       "parent": "63895a2d11f0927f59e02bb7",
       "rootId": "638951909c2acdb5e789aa22",
       "nodeInfo": {
@@ -306,6 +317,7 @@ Updates a node
   | `root_id` | `string` | ✅ | node's root id |
   | `parent` | `string` | ✅ | node's parent id |
   | `name` | `string` | ✅ | node's name |
+  | `display_name` | `string` | ✅ | node's display name |
   | `node_info` | `Object` | ✅ | node's additional info |
 
   **Node Info**
@@ -315,13 +327,14 @@ Updates a node
 
 ### Response
 
-|   field    |   type   | is optional | description                                |
-| :--------: | :------: | :---------: | :----------------------------------------- |
-|  `nodeId`  | `string` |     ❌      | node's id                                  |
-|  `rootId`  | `string` |     ❌      | node's root id                             |
-|  `parent`  | `string` |     ❌      | node's parent id                           |
-|   `name`   | `string` |     ❌      | node's name (used for path and MQTT topic) |
-| `nodeInfo` | `Object` |     ❌      | node information                           |
+|     field     |   type   | is optional | description                                |
+| :-----------: | :------: | :---------: | :----------------------------------------- |
+|   `nodeId`    | `string` |     ❌      | node's id                                  |
+|   `rootId`    | `string` |     ❌      | node's root id                             |
+|   `parent`    | `string` |     ❌      | node's parent id                           |
+|    `name`     | `string` |     ❌      | node's name (used for path and MQTT topic) |
+| `displayName` | `string` |     ❌      | node's display name                        |
+|  `nodeInfo`   | `Object` |     ❌      | node information                           |
 
 **Node Info**
 | field | type | is optional | description |
@@ -355,6 +368,7 @@ localhost:3000/nodes-client/63895a3e11f0927f59e02bbc
   "rootId": "636674f1e0ac56ce4ff1949c",
   "parent": "636674f1e0ac56cf4ff1949c",
   "path": "home/test-gate",
+  "displayName": "test-gate",
   "nodeInfo": {
     "isDevice": false
   }
@@ -375,13 +389,14 @@ localhost:3000/nodes-client/63895a3e11f0927f59e02bbc
 
 ### Response
 
-|   field    |   type   | is optional | description                                |
-| :--------: | :------: | :---------: | :----------------------------------------- |
-|  `nodeId`  | `string` |     ❌      | deleted node id                            |
-|  `rootId`  | `string` |     ❌      | node's root id                             |
-|  `parent`  | `string` |     ❌      | node's parent id                           |
-|   `name`   | `string` |     ❌      | node's name (used for path and MQTT topic) |
-| `nodeInfo` | `Object` |     ❌      | node information                           |
+|     field     |   type   | is optional | description                                |
+| :-----------: | :------: | :---------: | :----------------------------------------- |
+|   `nodeId`    | `string` |     ❌      | deleted node id                            |
+|   `rootId`    | `string` |     ❌      | node's root id                             |
+|   `parent`    | `string` |     ❌      | node's parent id                           |
+|    `name`     | `string` |     ❌      | node's name (used for path and MQTT topic) |
+| `displayName` | `string` |     ❌      | node's display name                        |
+|  `nodeInfo`   | `Object` |     ❌      | node information                           |
 
 **Node Info**
 | field | type | is optional | description |
@@ -404,6 +419,7 @@ localhost:3000/nodes-client/6366abf1e0ac56ce4ff1949c
   "rootId": "636674f1e0ac56ce4ff1949c",
   "parent": "636674f1e0ac56cf4ff1949c",
   "name": "test-gate",
+  "displayName": "test-gate",
   "nodeInfo": {
     "isDevice": false
   }

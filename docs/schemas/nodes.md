@@ -9,6 +9,7 @@ Every node has the `nodeInfo.isDevice` field, that tells if the node is a _devic
 ```ts
 {
     name: string,
+    displayName: string,
     rootId: string,
     parent: string,
     nodeInfo: {
@@ -17,7 +18,7 @@ Every node has the `nodeInfo.isDevice` field, that tells if the node is a _devic
 }
 ```
 
-> Note that addionally to the fields shown above, MongoDB adds a few more fields, like `_id` that will be used later in this document
+> Note that additionally to the fields shown above, MongoDB adds a few more fields, like `_id` that will be used later in this document
 
 > Root nodes should have an empty `rootId` field
 
@@ -32,6 +33,7 @@ Consider the following DB
   {
     "id": 0,
     "name": "building",
+    "displayName": "Building",
     "rootId": "",
     "parent": "",
     "nodeInfo": { "isDevice": false }
@@ -39,6 +41,7 @@ Consider the following DB
   {
     "id": 1,
     "name": "3rd-floor",
+    "displayName": "3rd Floor",
     "rootId": 0,
     "parent": 0,
     "nodeInfo": { "isDevice": false }
@@ -46,6 +49,7 @@ Consider the following DB
   {
     "id": 2,
     "name": "main-gate",
+    "displayName": "Building Entrance",
     "rootId": 0,
     "parent": 0,
     "nodeInfo": { "isDevice": true }
@@ -53,6 +57,7 @@ Consider the following DB
   {
     "id": 3,
     "name": "apt31-door",
+    "displayName": "Apt. 31 Door",
     "rootId": 0,
     "parent": 1,
     "nodeInfo": { "isDevice": true }
@@ -60,6 +65,7 @@ Consider the following DB
   {
     "id": 4,
     "name": "5th-floor",
+    "displayName": "5th Floor",
     "rootId": 0,
     "parent": 0,
     "nodeInfo": { "isDevice": false }
@@ -67,6 +73,7 @@ Consider the following DB
   {
     "id": 5,
     "name": "hallway-lights",
+    "displayName": "Hallway Lights",
     "rootId": 0,
     "parent": 4,
     "nodeInfo": { "isDevice": true }
@@ -74,6 +81,7 @@ Consider the following DB
   {
     "id": 6,
     "name": "house",
+    "displayName": "House",
     "rootId": "",
     "parent": "",
     "nodeInfo": { "isDevice": false }
@@ -81,6 +89,7 @@ Consider the following DB
   {
     "id": 7,
     "name": "entrance",
+    "displayName": "Entrance",
     "rootId": 6,
     "parent": 6,
     "nodeInfo": { "isDevice": true }
