@@ -65,8 +65,13 @@ export class NodesService {
     node.parent = nodeDocument.parent;
     node.rootId = nodeDocument.rootId;
     node.nodeInfo = nodeDocument.nodeInfo;
-    node.displayName = nodeDocument.displayName;
     node.nodeId = nodeDocument._id.toHexString();
+
+    if (nodeDocument.displayName) {
+      node.displayName = nodeDocument.displayName;
+    } else {
+      node.displayName = nodeDocument.name;
+    }
 
     return node;
   }
