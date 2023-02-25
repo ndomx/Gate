@@ -48,7 +48,7 @@ class DevicesService {
 
     final db = GateDatabase();
     await db.insertNodes(List.from(
-        res.nodes.map((node) => NodeEntity(id: node.id, name: node.name))));
+        res.nodes.map((node) => NodeEntity(id: node.id, name: node.displayName))));
 
     return res;
   }

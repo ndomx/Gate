@@ -10,6 +10,9 @@ export class Node {
   name: string;
 
   @Prop({ required: true })
+  displayName: string;
+
+  @Prop({ required: true })
   parent: string;
 
   @Prop({ required: true })
