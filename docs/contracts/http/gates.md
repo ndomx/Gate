@@ -18,20 +18,21 @@ Activates a device
 
 ### Response
 
-|    field    |   type   | is optional | description           |
-| :---------: | :------: | :---------: | :-------------------- |
-| `topic` | `string` |     ❌      | device's mqtt topic |
-| `success` | `boolean` |     ❌      | operation result |
-| `node` | `Object` |     ❌      | device's info |
+|   field   |   type    | is optional | description         |
+| :-------: | :-------: | :---------: | :------------------ |
+|  `topic`  | `string`  |     ❌      | device's mqtt topic |
+| `success` | `boolean` |     ❌      | operation result    |
+|  `node`   | `Object`  |     ❌      | device's info       |
 
 **Node**
-|   field    |   type   | is optional | description            |
+| field | type | is optional | description |
 | :--------: | :------: | :---------: | :--------------------- |
-|  `nodeId`  | `string` |     ❌      | created node's id      |
-|  `rootId`  | `string` |     ❌      | node's root id         |
-|  `parent`  | `string` |     ❌      | node's parent id       |
-|   `name`   | `string` |     ❌      | node's name            |
-| `nodeInfo` | `Object` |     ❌      | additional information |
+| `nodeId` | `string` | ❌ | created node's id |
+| `rootId` | `string` | ❌ | node's root id |
+| `parent` | `string` | ❌ | node's parent id |
+| `name` | `string` | ❌ | node's name |
+| `displayName` | `string` | ❌ | node's display name |
+| `nodeInfo` | `Object` | ❌ | additional information |
 
 **Node Info**
 | field | type | is optional | description |
@@ -51,6 +52,7 @@ localhost:3000/activate/63702e9d3c71cb704ab9aa4b
 {
   "node": {
     "name": "main-entrance",
+    "displayName": "Main Entrance",
     "parent": "6389519092341db5e789aa22",
     "rootId": "6389519092341db5e789aa22",
     "nodeInfo": {
