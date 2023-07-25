@@ -1,19 +1,12 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
-import {
-  IsMongoId,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { Exclude, Transform } from 'class-transformer';
+import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Role } from 'src/common/enum/role.enum';
 
 export class UserDto {
   @IsMongoId()
-  @Expose({ name: 'user_id' })
   userId: string;
 
   @IsMongoId()
-  @Expose({ name: 'root_id' })
   rootId: string;
 
   @IsString()

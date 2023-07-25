@@ -1,4 +1,4 @@
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
   IsDefined,
   IsMongoId,
@@ -12,7 +12,6 @@ import { NodeInfoDto } from 'src/nodes/dtos/node-info.dto';
 export class CreateNodeRequestDto {
   @IsMongoId()
   @IsDefined()
-  @Expose({ name: 'root_id' })
   rootId: string;
 
   @IsString()
@@ -33,6 +32,5 @@ export class CreateNodeRequestDto {
   @Type(() => NodeInfoDto)
   @ValidateNested()
   @IsDefined()
-  @Expose({ name: 'node_info' })
   nodeInfo: NodeInfoDto;
 }
