@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { connect, MqttClient } from 'mqtt';
-import { ActivateDeviceDto } from './dtos/activate-device.dto';
+import { ActivateDeviceDto } from '../dtos/activate-device.dto';
 
 let client: MqttClient;
 

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GatesController } from './gates.controller';
-import { GatesService } from './gates.service';
+import { GatesService } from '../services/gates.service';
 
 const gatesServiceMock = {
   activateDevice: jest.fn(),

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateNodeDto } from './dtos/create-node.dto';
-import { NodeDto } from './dtos/node.dto';
-import { UpdateNodeDto } from './dtos/update-node.dto';
-import { Node, NodeDocument } from './schemas/node.schema';
+import { CreateNodeDto } from '../dtos/create-node.dto';
+import { NodeDto } from '../dtos/node.dto';
+import { UpdateNodeDto } from '../dtos/update-node.dto';
+import { Node, NodeDocument } from '../schemas/node.schema';
 
 @Injectable()
 export class NodesService {

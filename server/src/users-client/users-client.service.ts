@@ -1,9 +1,9 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
-import { NodesService } from 'src/nodes/nodes.service';
+import { NodesService } from 'src/nodes/services/nodes.service';
 import { UserDto } from 'src/users/dtos/user.dto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from 'src/users/services/users.service';
 import { CreateUserRequestDto } from './dtos/create-user-request.dto';
 import { PublicUserDto } from './dtos/public-user.dto';
 import { UpdateUserRequestDto } from './dtos/udpate-user-request.dto';

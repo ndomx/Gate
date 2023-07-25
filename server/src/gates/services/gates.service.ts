@@ -4,10 +4,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
-import { MqttService } from 'src/mqtt/mqtt.service';
+import { MqttService } from 'src/mqtt/services/mqtt.service';
 import { NodesClientService } from 'src/nodes-client/nodes-client.service';
 import { UsersClientService } from 'src/users-client/users-client.service';
-import { ActivateDeviceResponseDto } from './dtos/activate-device-response.dto';
+import { ActivateDeviceResponseDto } from '../dtos/activate-device-response.dto';
 
 @Injectable()
 export class GatesService {

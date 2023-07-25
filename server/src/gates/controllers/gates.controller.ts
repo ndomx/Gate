@@ -1,13 +1,7 @@
-import {
-  Controller,
-  Get,
-  Param,
-  UseGuards,
-  Request,
-} from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { ActivateDeviceResponseDto } from './dtos/activate-device-response.dto';
-import { GatesService } from './gates.service';
+import { ActivateDeviceResponseDto } from '../dtos/activate-device-response.dto';
+import { GatesService } from '../services/gates.service';
 
 @Controller('gates')
 export class GatesController {
