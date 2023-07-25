@@ -4,7 +4,7 @@ import { Role } from 'src/common/enum/role.enum';
 
 export class UserDto {
   @IsMongoId()
-  userId: string;
+  id: string;
 
   @IsMongoId()
   rootId: string;
