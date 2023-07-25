@@ -13,12 +13,12 @@ export class UsersService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async createOne(user: CreateUserDto): Promise<UserResponseDto> {
+  async create(user: CreateUserDto): Promise<UserResponseDto> {
     const created = await this.userModel.create(user);
     return this.#mapFromSchema(created);
   }
 
-  async findOne(userId: string): Promise<UserResponseDto> {
+  async findById(userId: string): Promise<UserResponseDto> {
     const user = await this.userModel.findById(userId);
     return this.#mapFromSchema(user);
   }
@@ -28,7 +28,7 @@ export class UsersService {
     return this.#mapFromSchema(user);
   }
 
-  async updateOne(
+  async update(
     userId: string,
     fields: UpdateUserDto,
   ): Promise<UserResponseDto> {
@@ -36,7 +36,7 @@ export class UsersService {
     return this.#mapFromSchema(user);
   }
 
-  async deleteOne(userId: string): Promise<UserResponseDto> {
+  async delete(userId: string): Promise<UserResponseDto> {
     const user = await this.userModel.findByIdAndDelete(userId);
     return this.#mapFromSchema(user);
   }

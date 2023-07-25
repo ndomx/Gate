@@ -25,7 +25,7 @@ export class UsersClientService {
       });
     }
 
-    const user = await this.usersService.createOne({
+    const user = await this.usersService.create({
       ...request,
       password: this.#hashPassword(request.password),
     });
@@ -41,7 +41,7 @@ export class UsersClientService {
   }
 
   async getUser(userId: string): Promise<PublicUserDto> {
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.findById(userId);
     if (!user) {
       throw new BadRequestException({
         error_code: ErrorCodes.USER_NOT_FOUND,
@@ -60,7 +60,7 @@ export class UsersClientService {
       fields.password = this.#hashPassword(fields.password);
     }
 
-    const user = await this.usersService.updateOne(userId, fields);
+    const user = await this.usersService.update(userId, fields);
     if (!user) {
       throw new BadRequestException({
         error_code: ErrorCodes.USER_NOT_FOUND,
@@ -72,7 +72,7 @@ export class UsersClientService {
   }
 
   async deleteUser(userId: string): Promise<PublicUserDto> {
-    const user = await this.usersService.deleteOne(userId);
+    const user = await this.usersService.delete(userId);
     if (!user) {
       throw new BadRequestException({
         error_code: ErrorCodes.USER_NOT_FOUND,

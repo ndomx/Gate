@@ -20,7 +20,7 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, 'jwt-admin') {
   }
 
   async validate(payload: any) {
-    const user = await this.usersService.findOne(payload.sub)
+    const user = await this.usersService.findById(payload.sub)
     if (!user) {
       throw new ForbiddenException({
         error_code: ErrorCodes.ACCESS_DENIED,

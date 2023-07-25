@@ -138,7 +138,7 @@ export class NodesClientService {
     userId: string,
     deviceOnly: boolean = true,
   ): Promise<UserNodesResponseDto> {
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.findById(userId);
     if (!user) {
       throw new BadRequestException({
         error_code: ErrorCodes.USER_NOT_FOUND,
