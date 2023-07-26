@@ -7,7 +7,7 @@ import {
   Matches,
   ValidateNested,
 } from 'class-validator';
-import { NodeInfoDto } from 'src/nodes/dtos/node-info.dto';
+import { NodeInfoDto } from 'src/nodes/dtos/commons/node-info.dto';
 
 export class CreateNodeRequestDto {
   @IsMongoId()

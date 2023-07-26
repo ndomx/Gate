@@ -1,7 +1,7 @@
 import { IsOptional } from 'class-validator';
-import { UpdateNodeDto } from 'src/nodes/dtos/update-node.dto';
+import { UpdateNodeRequestDto } from 'src/nodes/dtos/requests/update-node-request.dto';
 
-export class UpdateNodeRequestDto extends UpdateNodeDto {
+export class UpdateNodeRequestDto extends UpdateNodeRequestDto {
     @IsOptional()
     rootId?: string;
 

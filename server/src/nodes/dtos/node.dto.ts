@@ -6,11 +6,11 @@ import {
   Matches,
   ValidateNested,
 } from 'class-validator';
-import { NodeInfoDto } from './node-info.dto';
+import { NodeInfoDto } from './commons';
 
 export class NodeDto {
   @IsMongoId()
-  nodeId: string;
+  id: string;
 
   @IsMongoId()
   rootId: string;

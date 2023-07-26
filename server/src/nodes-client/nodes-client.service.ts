@@ -40,7 +40,7 @@ export class NodesClientService {
     const rootId = node.rootId;
 
     const nodes = [node.name];
-    while (node.nodeId !== rootId) {
+    while (node.id !== rootId) {
       node = await this.nodesService.findOne(node.parent);
       if (!node) {
         throw new InternalServerErrorException({
@@ -80,7 +80,7 @@ export class NodesClientService {
     const node = this.nodesService.createOne({
       name: request.name,
       nodeInfo: request.nodeInfo,
-      parent: parent.nodeId,
+      parent: parent.id,
       rootId: request.rootId,
       displayName,
     });
@@ -222,7 +222,7 @@ export class NodesClientService {
         });
       }
 
-      parent = next.nodeId;
+      parent = next.id;
     }
 
     return next;
@@ -231,7 +231,7 @@ export class NodesClientService {
   async #findChildren(startNode: NodeDto): Promise<NodeDto[]> {
     let nodes = [startNode];
 
-    const children = await this.nodesService.findChildren(startNode.nodeId);
+    const children = await this.nodesService.findChildren(startNode.id);
     for (const child of children) {
       const childNodes = await this.#findChildren(child);
       nodes = nodes.concat(childNodes);

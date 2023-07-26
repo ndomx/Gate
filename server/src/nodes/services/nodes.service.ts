@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateNodeDto } from '../dtos/create-node.dto';
+import { CreateNodeRequestDto } from '../dtos/requests/create-node-request.dto';
 import { NodeDto } from '../dtos/node.dto';
-import { UpdateNodeDto } from '../dtos/update-node.dto';
+import { UpdateNodeRequestDto } from '../dtos/requests/update-node-request.dto';
 import { Node, NodeDocument } from '../schemas/node.schema';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class NodesService {
     @InjectModel(Node.name) private readonly nodeModel: Model<NodeDocument>,
   ) {}
 
-  async createOne(node: CreateNodeDto): Promise<NodeDto> {
+  async createOne(node: CreateNodeRequestDto): Promise<NodeDto> {
     const created = await this.nodeModel.create(node);
     return this.#mapFromSchema(created);
   }
@@ -44,7 +44,7 @@ export class NodesService {
 
   async updateOne(
     nodeId: string,
-    updateFields: UpdateNodeDto,
+    updateFields: UpdateNodeRequestDto,
   ): Promise<NodeDto> {
     const node = await this.nodeModel.findByIdAndUpdate(nodeId, updateFields);
     return this.#mapFromSchema(node);
@@ -65,7 +65,7 @@ export class NodesService {
     node.parent = nodeDocument.parent;
     node.rootId = nodeDocument.rootId;
     node.nodeInfo = nodeDocument.nodeInfo;
-    node.nodeId = nodeDocument._id.toHexString();
+    node.id = nodeDocument._id.toHexString();
 
     if (nodeDocument.displayName) {
       node.displayName = nodeDocument.displayName;
