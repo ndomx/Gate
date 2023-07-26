@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersCrudService } from './users-crud.service';
-import { NodesService } from 'src/nodes/services/nodes.service';
+import { NodesCrudService } from 'src/nodes/services/nodes-crud.service';
 import { CreateUserRequestDto, UpdateUserRequestDto } from '../dtos/requests';
 import { UserResponseDto } from '../dtos/responses';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
@@ -10,7 +10,7 @@ import { hashPassword } from 'src/utils/crypto';
 export class UsersService {
   constructor(
     private readonly usersCrudService: UsersCrudService,
-    private readonly nodesService: NodesService,
+    private readonly nodesService: NodesCrudService,
   ) {}
 
   async createUser(request: CreateUserRequestDto): Promise<UserResponseDto> {

@@ -7,7 +7,7 @@ import { instanceToPlain, plainToInstance } from 'class-transformer';
 import mongoose from 'mongoose';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { NodeDto } from 'src/nodes/dtos/node.dto';
-import { NodesService } from 'src/nodes/services/nodes.service';
+import { NodesCrudService } from 'src/nodes/services/nodes-crud.service';
 import { PublicUserDto } from 'src/users-client/dtos/public-user.dto';
 import { UserDto } from 'src/users/dtos/user.dto';
 import { UsersCrudService } from 'src/users/services/users-crud.service';
@@ -19,7 +19,7 @@ import { UserNodesResponseDto } from './dtos/user-nodes-response.dto';
 @Injectable()
 export class NodesClientService {
   constructor(
-    private readonly nodesService: NodesService,
+    private readonly nodesService: NodesCrudService,
     private readonly usersService: UsersCrudService,
   ) {}
 
@@ -36,12 +36,12 @@ export class NodesClientService {
   }
 
   async getPathForNode(nodeId: string): Promise<string> {
-    let node = await this.nodesService.findOne(nodeId);
+    let node = await this.nodesService.findById(nodeId);
     const rootId = node.rootId;
 
     const nodes = [node.name];
     while (node.id !== rootId) {
-      node = await this.nodesService.findOne(node.parent);
+      node = await this.nodesService.findById(node.parent);
       if (!node) {
         throw new InternalServerErrorException({
           error_code: ErrorCodes.DATABASE_ERROR,
@@ -55,7 +55,7 @@ export class NodesClientService {
   }
 
   async createNode(request: CreateNodeRequestDto): Promise<NodeDto> {
-    const root = await this.nodesService.findOne(request.rootId);
+    const root = await this.nodesService.findById(request.rootId);
     if (!root) {
       throw new BadRequestException({
         error_code: ErrorCodes.ROOT_NOT_FOUND,
@@ -71,13 +71,13 @@ export class NodesClientService {
       });
     }
 
-    
     const displayName = request.displayName
-    ? request.displayName
-    : request.name;
-    
+      ? request.displayName
+      : request.name;
+
     const parent = await this.#getNodeFromPath(request.path);
-    const node = this.nodesService.createOne({
+
+    const node = this.nodesService.create({
       name: request.name,
       nodeInfo: request.nodeInfo,
       parent: parent.id,
@@ -120,7 +120,7 @@ export class NodesClientService {
       });
     }
 
-    const startNode = await this.nodesService.findOne(nodeId);
+    const startNode = await this.nodesService.findById(nodeId);
     if (!startNode) {
       throw new BadRequestException({
         error_code: ErrorCodes.NODE_NOT_FOUND,
@@ -136,7 +136,7 @@ export class NodesClientService {
 
   async getUserNodes(
     userId: string,
-    deviceOnly: boolean = true,
+    deviceOnly = true,
   ): Promise<UserNodesResponseDto> {
     const user = await this.usersService.findById(userId);
     if (!user) {
@@ -179,7 +179,7 @@ export class NodesClientService {
       }
     }
 
-    const node = await this.nodesService.updateOne(nodeId, fields);
+    const node = await this.nodesService.update(nodeId, fields);
     if (!node) {
       throw new InternalServerErrorException({
         error_code: ErrorCodes.DATABASE_ERROR,
@@ -191,7 +191,7 @@ export class NodesClientService {
   }
 
   async deleteNode(nodeId: string): Promise<NodeDto> {
-    const node = await this.nodesService.deleteOne(nodeId);
+    const node = await this.nodesService.delete(nodeId);
     if (!node) {
       throw new InternalServerErrorException({
         error_code: ErrorCodes.DATABASE_ERROR,
