@@ -10,7 +10,7 @@ import { NodeDto } from 'src/nodes/dtos/node.dto';
 import { NodesService } from 'src/nodes/services/nodes.service';
 import { PublicUserDto } from 'src/users-client/dtos/public-user.dto';
 import { UserDto } from 'src/users/dtos/user.dto';
-import { UsersService } from 'src/users/services/users.service';
+import { UsersCrudService } from 'src/users/services/users-crud.service';
 import { CreateNodeRequestDto } from './dtos/create-node-request.dto';
 import { GetNodesResponseDto } from './dtos/get-nodes-response.dto';
 import { UpdateNodeRequestDto } from './dtos/update-node-request.dto';
@@ -20,7 +20,7 @@ import { UserNodesResponseDto } from './dtos/user-nodes-response.dto';
 export class NodesClientService {
   constructor(
     private readonly nodesService: NodesService,
-    private readonly usersService: UsersService,
+    private readonly usersService: UsersCrudService,
   ) {}
 
   async getNodeInRoot(nodeId: string, rootId: string): Promise<NodeDto> {

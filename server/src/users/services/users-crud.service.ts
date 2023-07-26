@@ -7,7 +7,7 @@ import { UserResponseDto } from '../dtos/responses';
 import { CreateUserRequestDto, UpdateUserRequestDto } from '../dtos/requests';
 
 @Injectable()
-export class UsersService {
+export class UsersCrudService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}

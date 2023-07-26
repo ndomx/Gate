@@ -3,7 +3,7 @@ import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { NodesService } from 'src/nodes/services/nodes.service';
 import { UserDto } from 'src/users/dtos/user.dto';
-import { UsersService } from 'src/users/services/users.service';
+import { UsersCrudService } from 'src/users/services/users-crud.service';
 import { CreateUserRequestDto } from './dtos/create-user-request.dto';
 import { PublicUserDto } from './dtos/public-user.dto';
 import { UpdateUserRequestDto } from './dtos/udpate-user-request.dto';
@@ -12,7 +12,7 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersClientService {
   constructor(
-    private readonly usersService: UsersService,
+    private readonly usersService: UsersCrudService,
     private readonly nodesService: NodesService,
   ) {}
 

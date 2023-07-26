@@ -4,13 +4,13 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { Role } from 'src/common/enum/role.enum';
-import { UsersService } from 'src/users/services/users.service';
+import { UsersCrudService } from 'src/users/services/users-crud.service';
 
 @Injectable()
 export class JwtAdminStrategy extends PassportStrategy(Strategy, 'jwt-admin') {
   constructor(
     private readonly configService: ConfigService,
-    private readonly usersService: UsersService,
+    private readonly usersService: UsersCrudService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -20,7 +20,7 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, 'jwt-admin') {
   }
 
   async validate(payload: any) {
-    const user = await this.usersService.findById(payload.sub)
+    const user = await this.usersService.findById(payload.sub);
     if (!user) {
       throw new ForbiddenException({
         error_code: ErrorCodes.ACCESS_DENIED,
