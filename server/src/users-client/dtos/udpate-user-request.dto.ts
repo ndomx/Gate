@@ -1,3 +1,3 @@
-import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
+import { UpdateUserRequestDto } from 'src/users/dtos/requests/update-user-request.dto';
 
-export class UpdateUserRequestDto extends UpdateUserDto {}
+export class UpdateUserRequestDto extends UpdateUserRequestDto {}

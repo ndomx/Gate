@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateUserDto } from '../dtos/create-user.dto';
-import { UpdateUserDto } from '../dtos/update-user.dto';
 import { User, UserDocument } from '../schemas/user.schema';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from '../dtos/responses';
+import { CreateUserRequestDto, UpdateUserRequestDto } from '../dtos/requests';
 
 @Injectable()
 export class UsersService {
@@ -13,7 +12,7 @@ export class UsersService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async create(user: CreateUserDto): Promise<UserResponseDto> {
+  async create(user: CreateUserRequestDto): Promise<UserResponseDto> {
     const created = await this.userModel.create(user);
     return this.#mapFromSchema(created);
   }
@@ -30,7 +29,7 @@ export class UsersService {
 
   async update(
     userId: string,
-    fields: UpdateUserDto,
+    fields: UpdateUserRequestDto,
   ): Promise<UserResponseDto> {
     const user = await this.userModel.findByIdAndUpdate(userId, fields);
     return this.#mapFromSchema(user);

@@ -1,5 +1,12 @@
-import { Exclude, Transform } from 'class-transformer';
-import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsArray,
+  IsDefined,
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Role } from 'src/common/enum/role.enum';
 
 export class UserDto {
@@ -26,9 +33,10 @@ export class UserDto {
 
   @IsString()
   @IsNotEmpty()
-  @Exclude({ toPlainOnly: true })
   password: string;
 
+  @IsArray()
+  @IsDefined()
   access: string[];
 
   @IsOptional()
