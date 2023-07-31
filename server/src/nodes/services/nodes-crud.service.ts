@@ -68,6 +68,21 @@ export class NodesCrudService {
     return this.#mapFromSchema(node);
   }
 
+  async findByNameAndRoot(
+    name: string,
+    rootId: string,
+  ): Promise<NodeResponseDto> {
+    const node = await this.nodeModel.findOne({ rootId, name });
+    if (!node) {
+      throw new NotFoundException({
+        errorCode: ErrorCodes.NODE_NOT_FOUND,
+        message: 'could not find node',
+      });
+    }
+
+    return this.#mapFromSchema(node);
+  }
+
   async findChildren(nodeId: string): Promise<NodeResponseDto[]> {
     const nodes = await this.nodeModel.find({ parent: nodeId });
     if (!nodes) {
