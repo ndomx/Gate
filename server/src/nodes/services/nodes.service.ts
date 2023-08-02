@@ -1,4 +1,3 @@
-import { UsersCrudService } from 'src/users/services/users-crud.service';
 import { NodesCrudService } from './nodes-crud.service';
 import {
   BadRequestException,
@@ -9,18 +8,17 @@ import { NodeResponseDto } from '../dtos/responses';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { CreateNodeRequestDto, UpdateNodeRequestDto } from '../dtos/requests';
 import { NodeDto } from '../dtos/node.dto';
-import { UserNodesResponseDto } from 'src/common/dtos/responses/user-nodes-response.dto';
-import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class NodesService {
-  constructor(
-    private readonly nodesCrudService: NodesCrudService,
-    private readonly usersCrudService: UsersCrudService,
-  ) {}
+  constructor(private readonly nodesCrudService: NodesCrudService) {}
 
   findInRoot(nodeId: string, rootId: string): Promise<NodeResponseDto> {
     return this.nodesCrudService.findInRoot(nodeId, rootId);
+  }
+
+  findRoot(nodeId: string): Promise<NodeResponseDto> {
+    return this.nodesCrudService.findRoot(nodeId);
   }
 
   async getPathById(nodeId: string): Promise<string> {
@@ -69,26 +67,6 @@ export class NodesService {
   async findChildrenById(nodeId: string): Promise<NodeResponseDto[]> {
     const startNode = await this.nodesCrudService.findById(nodeId);
     return this.#findChildren(startNode);
-  }
-
-  async findByUserId(
-    userId: string,
-    deviceOnly = true,
-  ): Promise<UserNodesResponseDto> {
-    const user = await this.usersCrudService.findById(userId);
-
-    const nodes = [];
-    for (const prefix of user.access) {
-      const children = await this.findByPrefix(prefix);
-      const filtered = deviceOnly
-        ? children.filter((node) => node.nodeInfo.isDevice)
-        : children;
-
-      nodes.push(...filtered);
-    }
-
-    const response: UserNodesResponseDto = { user, nodes };
-    return plainToInstance(UserNodesResponseDto, response);
   }
 
   async update(

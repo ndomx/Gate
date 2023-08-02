@@ -10,6 +10,8 @@ import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from '../dtos/responses';
 import { CreateUserRequestDto, UpdateUserRequestDto } from '../dtos/requests';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
+import { UserDto } from '../dtos/user.dto';
+import { UserWithPasswordResponseDto } from 'src/common/dtos/responses/user-with-password-response.dto';
 
 @Injectable()
 export class UsersCrudService {
@@ -51,6 +53,20 @@ export class UsersCrudService {
     }
 
     return this.#mapFromSchema(user);
+  }
+
+  async findByUsernameWithPassword(
+    username: string,
+  ): Promise<UserWithPasswordResponseDto> {
+    const user = await this.userModel.findOne({ username });
+    if (!user) {
+      throw new NotFoundException({
+        errorCode: ErrorCodes.USER_NOT_FOUND,
+        message: 'could not find user',
+      });
+    }
+
+    return this.#mapFullUserFromSchema(user);
   }
 
   async update(
@@ -95,5 +111,20 @@ export class UsersCrudService {
     };
 
     return plainToInstance(UserResponseDto, dto);
+  }
+
+  #mapFullUserFromSchema(userDocument: UserDocument): UserDto {
+    const dto: UserDto = {
+      id: userDocument._id.toHexString(),
+      name: userDocument.name,
+      last: userDocument.last,
+      username: userDocument.username,
+      password: userDocument.password,
+      access: userDocument.access,
+      rootId: userDocument.rootId,
+      roles: userDocument.roles,
+    };
+
+    return plainToInstance(UserDto, dto);
   }
 }

@@ -25,7 +25,7 @@ export class UsersController {
 
   @Get(':id')
   findById(@Param('id') userId: string): Promise<UserResponseDto> {
-    return this.usersService.findUserById(userId);
+    return this.usersService.findById(userId);
   }
 
   @Patch(':id')
