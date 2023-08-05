@@ -4,21 +4,25 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { NodeResponseDto } from '../dtos/responses';
+import { NodeResponseDto, RootResponseDto } from '../dtos/responses';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { CreateNodeRequestDto, UpdateNodeRequestDto } from '../dtos/requests';
 import { NodeDto } from '../dtos/node.dto';
+import { RootsCrudService } from './roots-crud.service';
 
 @Injectable()
 export class NodesService {
-  constructor(private readonly nodesCrudService: NodesCrudService) {}
+  constructor(
+    private readonly nodesCrudService: NodesCrudService,
+    private readonly rootsCrudService: RootsCrudService,
+  ) {}
 
   findInRoot(nodeId: string, rootId: string): Promise<NodeResponseDto> {
     return this.nodesCrudService.findInRoot(nodeId, rootId);
   }
 
-  findRoot(nodeId: string): Promise<NodeResponseDto> {
-    return this.nodesCrudService.findRoot(nodeId);
+  findRoot(rootId: string): Promise<RootResponseDto> {
+    return this.rootsCrudService.findById(rootId);
   }
 
   async getPathById(nodeId: string): Promise<string> {
@@ -41,13 +45,19 @@ export class NodesService {
   }
 
   async create(request: CreateNodeRequestDto): Promise<NodeResponseDto> {
-    const root = await this.nodesCrudService.findById(request.rootId);
-    const _parent = await this.nodesCrudService.findInRoot(
-      root.id,
-      request.parent,
-    );
+    const root = await this.rootsCrudService.findById(request.rootId);
 
-    return this.nodesCrudService.create(request);
+    let parentId = root.id;
+    if (request.parent) {
+      const parent = await this.nodesCrudService.findInRoot(
+        request.parent,
+        root.id,
+      );
+
+      parentId = parent.id;
+    }
+
+    return this.nodesCrudService.create({ ...request, parent: parentId });
   }
 
   async findByPrefix(prefix: string): Promise<NodeResponseDto[]> {

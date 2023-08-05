@@ -95,18 +95,6 @@ export class NodesCrudService {
     return nodes.map((node) => this.#mapFromSchema(node));
   }
 
-  async findRoot(rootId: string): Promise<NodeResponseDto> {
-    const root = await this.nodeModel.findOne({ _id: rootId, parent: '' });
-    if (!root) {
-      throw new NotFoundException({
-        errorCode: ErrorCodes.ROOT_NOT_FOUND,
-        message: 'could not find root',
-      });
-    }
-
-    return this.#mapFromSchema(root);
-  }
-
   async update(
     nodeId: string,
     fields: UpdateNodeRequestDto,
