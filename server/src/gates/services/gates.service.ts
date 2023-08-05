@@ -50,13 +50,13 @@ export class GatesService {
       action: 'open',
     });
 
-    // response
-    const response = new ActivateDeviceResponseDto();
-    response.node = node;
-    response.success = true;
-    response.topic = path;
+    const response: ActivateDeviceResponseDto = {
+      node,
+      success: true,
+      topic: path,
+    };
 
-    return response;
+    return plainToInstance(ActivateDeviceResponseDto, response);
   }
 
   async findUserNodes(

@@ -1,9 +1,5 @@
 import { NodesCrudService } from './nodes-crud.service';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { NodeResponseDto, RootResponseDto } from '../dtos/responses';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { CreateNodeRequestDto, UpdateNodeRequestDto } from '../dtos/requests';
@@ -30,14 +26,8 @@ export class NodesService {
     const rootId = node.rootId;
 
     const nodes = [node.name];
-    while (node.id !== rootId) {
+    while (node.parent !== rootId) {
       node = await this.nodesCrudService.findById(node.parent);
-      if (!node) {
-        throw new InternalServerErrorException({
-          errorCode: ErrorCodes.DATABASE_ERROR,
-        });
-      }
-
       nodes.push(node.name);
     }
 
