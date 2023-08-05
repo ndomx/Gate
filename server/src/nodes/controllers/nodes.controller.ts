@@ -29,9 +29,12 @@ export class NodesController {
     return this.nodesService.findChildrenById(nodeId);
   }
 
-  @Get('match')
-  findByPrefix(@Query('prefix') prefix: string): Promise<NodeResponseDto[]> {
-    return this.nodesService.findByPrefix(prefix);
+  @Get(':rootId/match')
+  findByPrefix(
+    @Param('rootId') rootId: string,
+    @Query('prefix') prefix: string,
+  ): Promise<NodeResponseDto[]> {
+    return this.nodesService.findByPrefix(prefix, rootId);
   }
 
   @Patch(':id')

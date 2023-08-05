@@ -60,7 +60,10 @@ export class NodesService {
     return this.nodesCrudService.create({ ...request, parent: parentId });
   }
 
-  async findByPrefix(prefix: string): Promise<NodeResponseDto[]> {
+  async findByPrefix(
+    prefix: string,
+    rootId: string,
+  ): Promise<NodeResponseDto[]> {
     if (!prefix.match(/^\/?([-\w]+\/?)*$/)) {
       throw new BadRequestException({
         errorCode: ErrorCodes.INVALID_REQUEST,
@@ -69,7 +72,7 @@ export class NodesService {
     }
 
     const path = this.#processPath(prefix);
-    const startNode = await this.#findNodeFromPath(path);
+    const startNode = await this.#findNodeFromPath(path, rootId);
 
     return this.#findChildren(startNode);
   }
@@ -101,9 +104,12 @@ export class NodesService {
     return path.trim().replace(/^\/+/, '').replace(/\/+$/, '');
   }
 
-  async #findNodeFromPath(path: string): Promise<NodeResponseDto> {
+  async #findNodeFromPath(
+    path: string,
+    rootId: string,
+  ): Promise<NodeResponseDto> {
     const nodeNames = this.#processPath(path).split('/');
-    if (nodeNames.length <= 1) {
+    if (nodeNames.length < 1) {
       throw new BadRequestException({
         errorCode: ErrorCodes.PATH_ERROR,
         message: 'invalid path',
@@ -111,7 +117,7 @@ export class NodesService {
     }
 
     let next: NodeResponseDto;
-    let parentId = '';
+    let parentId = rootId;
 
     for (const nodeName of nodeNames) {
       next = await this.nodesCrudService.findByNameAndParent(

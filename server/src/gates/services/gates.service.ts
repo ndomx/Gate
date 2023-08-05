@@ -67,7 +67,11 @@ export class GatesService {
 
     const nodes = [];
     for (const prefix of user.access) {
-      const children = await this.nodesService.findByPrefix(prefix);
+      const children = await this.nodesService.findByPrefix(
+        prefix,
+        user.rootId,
+      );
+
       const filtered = deviceOnly
         ? children.filter((node) => node.nodeInfo.isDevice)
         : children;
