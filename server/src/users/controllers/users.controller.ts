@@ -28,6 +28,13 @@ export class UsersController {
     return this.usersService.findById(userId);
   }
 
+  @Get('username/:username')
+  findByUsername(
+    @Param('username') username: string,
+  ): Promise<UserResponseDto> {
+    return this.usersService.findByUsername(username);
+  }
+
   @Patch(':id')
   update(
     @Param('id') userId: string,

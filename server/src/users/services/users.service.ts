@@ -26,6 +26,10 @@ export class UsersService {
     return this.usersCrudService.findById(userId);
   }
 
+  findByUsername(username: string): Promise<UserResponseDto> {
+    return this.usersCrudService.findByUsername(username);
+  }
+
   findByUsernameWithPassword(
     username: string,
   ): Promise<UserWithPasswordResponseDto> {
