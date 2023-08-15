@@ -13,7 +13,7 @@ export class Node {
   displayName: string;
 
   @Prop({ required: true })
-  parent: string;
+  parentId: string;
 
   @Prop({ required: true })
   rootId: string;

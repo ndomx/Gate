@@ -57,7 +57,7 @@ export class NodesCrudService {
     parentId: string,
     name: string,
   ): Promise<NodeResponseDto> {
-    const node = await this.nodeModel.findOne({ parent: parentId, name });
+    const node = await this.nodeModel.findOne({ parentId, name });
     if (!node) {
       throw new NotFoundException({
         errorCode: ErrorCodes.NODE_NOT_FOUND,
@@ -84,7 +84,7 @@ export class NodesCrudService {
   }
 
   async findChildren(nodeId: string): Promise<NodeResponseDto[]> {
-    const nodes = await this.nodeModel.find({ parent: nodeId });
+    const nodes = await this.nodeModel.find({ parentId: nodeId });
     if (!nodes) {
       throw new InternalServerErrorException({
         errorCode: ErrorCodes.NODE_NOT_FOUND,
@@ -129,7 +129,7 @@ export class NodesCrudService {
     const response: NodeResponseDto = {
       id: nodeDocument._id.toHexString(),
       name: nodeDocument.name,
-      parent: nodeDocument.parent,
+      parentId: nodeDocument.parentId,
       rootId: nodeDocument.rootId,
       nodeInfo: nodeDocument.nodeInfo,
       displayName: nodeDocument.displayName,

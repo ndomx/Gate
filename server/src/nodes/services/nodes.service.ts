@@ -26,8 +26,8 @@ export class NodesService {
     const rootId = node.rootId;
 
     const nodes = [node.name];
-    while (node.parent !== rootId) {
-      node = await this.nodesCrudService.findById(node.parent);
+    while (node.parentId !== rootId) {
+      node = await this.nodesCrudService.findById(node.parentId);
       nodes.push(node.name);
     }
 
@@ -38,16 +38,16 @@ export class NodesService {
     const root = await this.rootsCrudService.findById(request.rootId);
 
     let parentId = root.id;
-    if (request.parent) {
+    if (request.parentId) {
       const parent = await this.nodesCrudService.findInRoot(
-        request.parent,
+        request.parentId,
         root.id,
       );
 
       parentId = parent.id;
     }
 
-    return this.nodesCrudService.create({ ...request, parent: parentId });
+    return this.nodesCrudService.create({ ...request, parentId });
   }
 
   async findByPrefix(
@@ -76,9 +76,9 @@ export class NodesService {
     nodeId: string,
     fields: UpdateNodeRequestDto,
   ): Promise<NodeResponseDto> {
-    if (fields.parent && fields.rootId) {
+    if (fields.parentId && fields.rootId) {
       const _parent = await this.nodesCrudService.findInRoot(
-        fields.parent,
+        fields.parentId,
         fields.rootId,
       );
     }

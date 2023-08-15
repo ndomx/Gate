@@ -4,10 +4,10 @@ import { IsMongoId, IsOptional, IsString } from 'class-validator';
 
 export class CreateNodeRequestDto extends OmitType(NodeDto, [
   'id',
-  'parent',
+  'parentId',
 ] as const) {
   @IsString()
   @IsMongoId()
   @IsOptional()
-  parent?: string;
+  parentId?: string;
 }

@@ -16,7 +16,7 @@ export class NodeDto {
   rootId: string;
 
   @IsMongoId()
-  parent: string;
+  parentId: string;
 
   @IsString()
   @Matches(/^[a-zA-Z0-9-_]+$/)
