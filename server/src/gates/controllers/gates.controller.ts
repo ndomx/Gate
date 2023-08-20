@@ -6,11 +6,13 @@ import {
   Request,
   Post,
   Query,
+  Body,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { ActivateDeviceResponseDto } from '../dtos/activate-device-response.dto';
+import { ActivateDeviceResponseDto } from '../dtos/responses/activate-device-response.dto';
 import { GatesService } from '../services/gates.service';
 import { UserNodesResponseDto } from 'src/common/dtos/responses/user-nodes-response.dto';
+import { ActivateDeviceRequestDto } from '../dtos/requests/activate-device-request.dto';
 
 @Controller('gates')
 @UseGuards(JwtAuthGuard)
@@ -20,9 +22,14 @@ export class GatesController {
   @Post(':deviceId/activate')
   activateDevice(
     @Param('deviceId') deviceId: string,
+    @Body() activateDeviceRequest: ActivateDeviceRequestDto,
     @Request() req,
   ): Promise<ActivateDeviceResponseDto> {
-    return this.gatesService.activateDevice(deviceId, req.user.userId);
+    return this.gatesService.activateDevice(
+      deviceId,
+      req.user.userId,
+      activateDeviceRequest,
+    );
   }
 
   @Get('user')

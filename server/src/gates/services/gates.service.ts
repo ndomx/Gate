@@ -5,11 +5,12 @@ import {
 } from '@nestjs/common';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { MqttService } from 'src/mqtt/services/mqtt.service';
-import { ActivateDeviceResponseDto } from '../dtos/activate-device-response.dto';
+import { ActivateDeviceResponseDto } from '../dtos/responses/activate-device-response.dto';
 import { NodesService } from 'src/nodes/services/nodes.service';
 import { UsersService } from 'src/users/services/users.service';
 import { UserNodesResponseDto } from 'src/common/dtos/responses/user-nodes-response.dto';
 import { plainToInstance } from 'class-transformer';
+import { ActivateDeviceRequestDto } from '../dtos/requests/activate-device-request.dto';
 
 @Injectable()
 export class GatesService {
@@ -22,6 +23,7 @@ export class GatesService {
   async activateDevice(
     deviceId: string,
     userId: string,
+    _request: ActivateDeviceRequestDto,
   ): Promise<ActivateDeviceResponseDto> {
     // verify user
     const user = await this.usersService.findById(userId);
