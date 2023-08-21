@@ -1,18 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { connect, MqttClient } from 'mqtt';
-import { ActivateDeviceDto } from '../dtos/activate-device.dto';
+import { IActionable } from 'src/common/interfaces/actionable.interface';
+import { ActivateMqttDeviceRequestDto } from '../dtos/requests/activate-mqtt-device-request.dto';
+import { NodeResponseDto } from 'src/nodes/dtos/responses';
 
 let client: MqttClient;
 
 @Injectable()
-export class MqttService {
+export class MqttService implements IActionable {
   constructor(private readonly configService: ConfigService) {
     this.#clientSetup();
   }
 
-  activateDevice(topic: string, payload: ActivateDeviceDto) {
-    client.publish(topic, JSON.stringify(payload));
+  async activateDevice(
+    node: NodeResponseDto,
+    activateRequest: ActivateMqttDeviceRequestDto,
+  ): Promise<void> {
+    const topic = `${node.rootId}/${activateRequest.topic}`;
+    const payload = {
+      action: activateRequest.action,
+      body: activateRequest.actionDetails,
+    };
+
+    await client.publish(topic, JSON.stringify(payload));
   }
 
   #clientSetup() {

@@ -5,5 +5,5 @@ export class NodeInfo {
   isDevice: boolean;
 
   @Prop({ required: true })
-  supportedActions: string[];
+  actionCode: string;
 }

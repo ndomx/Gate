@@ -5,12 +5,13 @@ import {
 } from '@nestjs/common';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { MqttService } from 'src/mqtt/services/mqtt.service';
-import { ActivateDeviceResponseDto } from '../dtos/responses/activate-device-response.dto';
 import { NodesService } from 'src/nodes/services/nodes.service';
 import { UsersService } from 'src/users/services/users.service';
 import { UserNodesResponseDto } from 'src/common/dtos/responses/user-nodes-response.dto';
 import { plainToInstance } from 'class-transformer';
-import { ActivateDeviceRequestDto } from '../dtos/requests/activate-device-request.dto';
+import { ActivateDeviceRequestDto } from '../../common/dtos/requests/activate-device-request.dto';
+import { NodeActionCode } from 'src/utils/types';
+import { IActionable } from 'src/common/interfaces/actionable.interface';
 
 @Injectable()
 export class GatesService {
@@ -23,8 +24,8 @@ export class GatesService {
   async activateDevice(
     deviceId: string,
     userId: string,
-    _request: ActivateDeviceRequestDto,
-  ): Promise<ActivateDeviceResponseDto> {
+    request: ActivateDeviceRequestDto,
+  ): Promise<void> {
     // verify user
     const user = await this.usersService.findById(userId);
 
@@ -43,22 +44,12 @@ export class GatesService {
     const path = await this.nodesService.getPathById(deviceId);
     const hasAccess = user.access.some((prefix) => path.startsWith(prefix));
     if (!hasAccess) {
-      throw new UnauthorizedException({ error_code: ErrorCodes.ACCESS_DENIED });
+      throw new UnauthorizedException({ errorCode: ErrorCodes.ACCESS_DENIED });
     }
 
     // grant access
-    const topic = `${node.rootId}/${path}`;
-    this.mqttService.activateDevice(topic, {
-      action: 'open',
-    });
-
-    const response: ActivateDeviceResponseDto = {
-      node,
-      success: true,
-      topic: path,
-    };
-
-    return plainToInstance(ActivateDeviceResponseDto, response);
+    const handler = this.#mapActionToHandler(node.nodeInfo.actionCode);
+    await handler.activateDevice(node, request);
   }
 
   async findUserNodes(
@@ -83,5 +74,19 @@ export class GatesService {
 
     const response: UserNodesResponseDto = { user, nodes };
     return plainToInstance(UserNodesResponseDto, response);
+  }
+
+  #mapActionToHandler(actionCode: NodeActionCode): IActionable {
+    const handlerMap: Record<NodeActionCode, IActionable> = {
+      'on/off': this.mqttService,
+      'phone-call': undefined,
+    };
+
+    const handler = handlerMap[actionCode];
+    if (!handler) {
+      throw new BadRequestException('action code not yet supported');
+    }
+
+    return handler;
   }
 }

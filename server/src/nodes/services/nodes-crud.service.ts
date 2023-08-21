@@ -134,9 +134,7 @@ export class NodesCrudService {
       rootId: nodeDocument.rootId,
       nodeInfo: {
         ...nodeDocument.nodeInfo,
-        supportedActions: nodeDocument.nodeInfo.supportedActions.map(
-          (actionCode) => actionCode as NodeActionCode,
-        ),
+        actionCode: nodeDocument.nodeInfo.actionCode as NodeActionCode,
       },
       displayName: nodeDocument.displayName,
     };
