@@ -1,5 +1,6 @@
 import { IsBoolean, IsDefined } from 'class-validator';
-import { NODE_ACTION_CODES, NodeActionCode } from 'src/utils/constants';
+import { NODE_ACTION_CODES } from 'src/utils/constants';
+import { NodeActionCode } from 'src/utils/types';
 import { AreAllIn } from 'src/utils/validators';
 
 export class NodeInfoDto {

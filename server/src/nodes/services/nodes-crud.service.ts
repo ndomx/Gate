@@ -10,6 +10,7 @@ import { NodeResponseDto } from '../dtos/responses';
 import { plainToInstance } from 'class-transformer';
 import { CreateNodeRequestDto, UpdateNodeRequestDto } from '../dtos/requests';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
+import { NodeActionCode } from 'src/utils/types';
 
 @Injectable()
 export class NodesCrudService {
@@ -131,7 +132,12 @@ export class NodesCrudService {
       name: nodeDocument.name,
       parentId: nodeDocument.parentId,
       rootId: nodeDocument.rootId,
-      nodeInfo: nodeDocument.nodeInfo,
+      nodeInfo: {
+        ...nodeDocument.nodeInfo,
+        supportedActions: nodeDocument.nodeInfo.supportedActions.map(
+          (actionCode) => actionCode as NodeActionCode,
+        ),
+      },
       displayName: nodeDocument.displayName,
     };
 

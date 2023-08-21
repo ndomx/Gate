@@ -1,8 +1,11 @@
 import { IsIn, IsString } from 'class-validator';
-import { NODE_ACTION_CODES, NodeActionCode } from 'src/utils/constants';
+import { DEVICE_ACTIONS } from 'src/utils/constants';
+import { DeviceAction } from 'src/utils/types';
 
 export class ActivateDeviceRequestDto {
   @IsString()
-  @IsIn(NODE_ACTION_CODES)
-  action: NodeActionCode;
+  @IsIn(DEVICE_ACTIONS)
+  action: DeviceAction;
+
+  actionDetails?: Record<string, unknown>;
 }
