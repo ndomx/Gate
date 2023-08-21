@@ -47,8 +47,11 @@ export class GatesService {
       throw new UnauthorizedException({ errorCode: ErrorCodes.ACCESS_DENIED });
     }
 
-    // grant access
+    // validate payload
     const handler = this.#mapActionToHandler(node.nodeInfo.actionCode);
+    handler.validatePayload(request);
+
+    // grant access
     await handler.activateDevice(node, request);
   }
 

@@ -4,6 +4,7 @@ import { connect, MqttClient } from 'mqtt';
 import { IActionable } from 'src/common/interfaces/actionable.interface';
 import { ActivateMqttDeviceRequestDto } from '../dtos/requests/activate-mqtt-device-request.dto';
 import { NodeResponseDto } from 'src/nodes/dtos/responses';
+import { ActivateDeviceRequestDto } from 'src/common/dtos/requests/activate-device-request.dto';
 
 let client: MqttClient;
 
@@ -24,6 +25,10 @@ export class MqttService implements IActionable {
     };
 
     await client.publish(topic, JSON.stringify(payload));
+  }
+
+  validatePayload(_activateRequest: ActivateDeviceRequestDto) {
+    return;
   }
 
   #clientSetup() {

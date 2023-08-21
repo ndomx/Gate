@@ -6,4 +6,6 @@ export interface IActionable {
     node: NodeResponseDto,
     activateRequest: ActivateDeviceRequestDto,
   ): Promise<void>;
+
+  validatePayload(activateRequest: ActivateDeviceRequestDto);
 }
