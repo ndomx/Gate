@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { connect, MqttClient } from 'mqtt';
 import { IActionable } from 'src/common/interfaces/actionable.interface';
@@ -10,6 +10,8 @@ let client: MqttClient;
 
 @Injectable()
 export class MqttService implements IActionable {
+  private logger = new Logger();
+
   constructor(private readonly configService: ConfigService) {
     this.#clientSetup();
   }
@@ -40,7 +42,7 @@ export class MqttService implements IActionable {
     });
 
     client.on('connect', () => {
-      console.log('connected to MQTT broker');
+      this.logger.log('connected to MQTT broker', 'MqttService');
     });
   }
 }

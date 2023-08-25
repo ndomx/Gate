@@ -30,5 +30,6 @@ module.exports = {
         "destructuredArrayIgnorePattern": "^_"
       }
     ],
+    "no-console": "error"
   },
 };
