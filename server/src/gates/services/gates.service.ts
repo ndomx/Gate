@@ -9,7 +9,7 @@ import { NodesService } from 'src/nodes/services/nodes.service';
 import { UsersService } from 'src/users/services/users.service';
 import { UserNodesResponseDto } from 'src/common/dtos/responses/user-nodes-response.dto';
 import { plainToInstance } from 'class-transformer';
-import { ActivateDeviceRequestDto } from '../../common/dtos/requests/activate-device-request.dto';
+import { ActivateDeviceRequestDto } from '../dtos/requests/activate-device-request.dto';
 import { NodeActionCode } from 'src/utils/types';
 import { IActionable } from 'src/common/interfaces/actionable.interface';
 import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';

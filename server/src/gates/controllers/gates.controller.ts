@@ -13,7 +13,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GatesService } from '../services/gates.service';
 import { UserNodesResponseDto } from 'src/common/dtos/responses/user-nodes-response.dto';
-import { ActivateDeviceRequestDto } from '../../common/dtos/requests/activate-device-request.dto';
+import { ActivateDeviceRequestDto } from '../dtos/requests/activate-device-request.dto';
 
 @Controller('gates')
 @UseGuards(JwtAuthGuard)
