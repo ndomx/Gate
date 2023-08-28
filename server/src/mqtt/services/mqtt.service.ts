@@ -2,15 +2,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { connect, MqttClient } from 'mqtt';
 import { IActionable } from 'src/common/interfaces/actionable.interface';
-import { ActivateMqttDeviceRequestDto } from '../dtos/requests/activate-mqtt-device-request.dto';
 import { NodeResponseDto } from 'src/nodes/dtos/responses';
-import { ActivateDeviceRequestDto } from 'src/common/dtos/requests/activate-device-request.dto';
-
-let client: MqttClient;
+import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';
 
 @Injectable()
 export class MqttService implements IActionable {
   private logger = new Logger();
+  private client: MqttClient;
 
   constructor(private readonly configService: ConfigService) {
     this.#clientSetup();
@@ -18,31 +16,36 @@ export class MqttService implements IActionable {
 
   async activateDevice(
     node: NodeResponseDto,
-    activateRequest: ActivateMqttDeviceRequestDto,
+    params: ActionableHandlerDto,
   ): Promise<void> {
-    const topic = `${node.rootId}/${activateRequest.topic}`;
+    const topic = `${node.rootId}/${params.path}`;
     const payload = {
-      action: activateRequest.action,
-      body: activateRequest.actionDetails,
+      action: params.action,
+      body: params.body,
     };
 
-    await client.publish(topic, JSON.stringify(payload));
-  }
-
-  validatePayload(_activateRequest: ActivateDeviceRequestDto) {
-    return;
+    this.logger.debug(`[${topic}] ${payload}`, 'MqttService');
+    await this.#publish(topic, payload);
   }
 
   #clientSetup() {
-    client = connect(this.configService.get('MQTT_SERVER_URL'), {
+    this.client = connect(this.configService.get('MQTT_SERVER_URL'), {
       username: this.configService.get('MQTT_USER'),
       password: this.configService.get('MQTT_PASS'),
       port: +this.configService.get('MQTT_PORT'),
       protocol: 'tcp',
     });
 
-    client.on('connect', () => {
+    this.client.on('connect', () => {
       this.logger.log('connected to MQTT broker', 'MqttService');
     });
+  }
+
+  async #publish(topic: string, payload: object) {
+    if (!this.client) {
+      this.#clientSetup();
+    }
+
+    await this.client.publish(topic, JSON.stringify(payload));
   }
 }

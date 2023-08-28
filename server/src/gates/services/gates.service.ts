@@ -12,6 +12,7 @@ import { plainToInstance } from 'class-transformer';
 import { ActivateDeviceRequestDto } from '../../common/dtos/requests/activate-device-request.dto';
 import { NodeActionCode } from 'src/utils/types';
 import { IActionable } from 'src/common/interfaces/actionable.interface';
+import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';
 
 @Injectable()
 export class GatesService {
@@ -47,12 +48,16 @@ export class GatesService {
       throw new UnauthorizedException({ errorCode: ErrorCodes.ACCESS_DENIED });
     }
 
-    // validate payload
+    // get handler and params
     const handler = this.#mapActionToHandler(node.nodeInfo.actionCode);
-    handler.validatePayload(request);
+    const params: ActionableHandlerDto = {
+      action: request.action,
+      body: request.actionDetails,
+      path,
+    };
 
     // grant access
-    await handler.activateDevice(node, request);
+    await handler.activateDevice(node, params);
   }
 
   async findUserNodes(

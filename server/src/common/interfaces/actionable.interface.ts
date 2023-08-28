@@ -1,11 +1,9 @@
 import { NodeResponseDto } from 'src/nodes/dtos/responses';
-import { ActivateDeviceRequestDto } from '../dtos/requests/activate-device-request.dto';
+import { ActionableHandlerDto } from '../dtos/commons/actionable-handler.dto';
 
 export interface IActionable {
   activateDevice(
     node: NodeResponseDto,
-    activateRequest: ActivateDeviceRequestDto,
+    body: ActionableHandlerDto,
   ): Promise<void>;
-
-  validatePayload(activateRequest: ActivateDeviceRequestDto);
 }
