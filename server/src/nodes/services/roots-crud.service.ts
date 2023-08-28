@@ -8,8 +8,8 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { UpdateRootRequestDto } from '../dtos/requests/update-root-request.dto';
+import { ERROR_CODES } from 'src/common/constants';
 
 export class RootsCrudService {
   constructor(
@@ -21,7 +21,7 @@ export class RootsCrudService {
 
     if (!created) {
       throw new InternalServerErrorException({
-        errorCode: ErrorCodes.DATABASE_ERROR,
+        errorCode: ERROR_CODES.DATABASE_ERROR,
         message: 'could not create resource',
       });
     }
@@ -33,7 +33,7 @@ export class RootsCrudService {
     const root = await this.rootModel.findById(rootId);
     if (!root) {
       throw new NotFoundException({
-        errorCode: ErrorCodes.ROOT_NOT_FOUND,
+        errorCode: ERROR_CODES.ROOT_NOT_FOUND,
         message: 'could not find root',
       });
     }
@@ -51,7 +51,7 @@ export class RootsCrudService {
 
     if (!root) {
       throw new InternalServerErrorException({
-        errorCode: ErrorCodes.DATABASE_ERROR,
+        errorCode: ERROR_CODES.DATABASE_ERROR,
         message: 'could not modify resource',
       });
     }
@@ -63,7 +63,7 @@ export class RootsCrudService {
     const root = await this.rootModel.findByIdAndDelete(rootId);
     if (!root) {
       throw new NotFoundException({
-        errorCode: ErrorCodes.ROOT_NOT_FOUND,
+        errorCode: ERROR_CODES.ROOT_NOT_FOUND,
         message: 'could not find root',
       });
     }

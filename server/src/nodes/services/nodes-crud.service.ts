@@ -9,8 +9,8 @@ import { Node, NodeDocument } from '../schemas/node.schema';
 import { NodeResponseDto } from '../dtos/responses';
 import { plainToInstance } from 'class-transformer';
 import { CreateNodeRequestDto, UpdateNodeRequestDto } from '../dtos/requests';
-import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { NodeActionCode } from 'src/utils/types';
+import { ERROR_CODES } from 'src/common/constants';
 
 @Injectable()
 export class NodesCrudService {
@@ -22,7 +22,7 @@ export class NodesCrudService {
     const created = await this.nodeModel.create(node);
     if (!created) {
       throw new InternalServerErrorException({
-        errorCode: ErrorCodes.DATABASE_ERROR,
+        errorCode: ERROR_CODES.DATABASE_ERROR,
         message: 'could not create resource',
       });
     }
@@ -34,7 +34,7 @@ export class NodesCrudService {
     const node = await this.nodeModel.findById(nodeId);
     if (!node) {
       throw new NotFoundException({
-        errorCode: ErrorCodes.NODE_NOT_FOUND,
+        errorCode: ERROR_CODES.NODE_NOT_FOUND,
         message: 'could not find node',
       });
     }
@@ -46,7 +46,7 @@ export class NodesCrudService {
     const node = await this.nodeModel.findOne({ _id: nodeId, rootId });
     if (!node) {
       throw new NotFoundException({
-        errorCode: ErrorCodes.NODE_NOT_FOUND,
+        errorCode: ERROR_CODES.NODE_NOT_FOUND,
         message: 'could not find node',
       });
     }
@@ -61,7 +61,7 @@ export class NodesCrudService {
     const node = await this.nodeModel.findOne({ parentId, name });
     if (!node) {
       throw new NotFoundException({
-        errorCode: ErrorCodes.NODE_NOT_FOUND,
+        errorCode: ERROR_CODES.NODE_NOT_FOUND,
         message: 'could not find node',
       });
     }
@@ -76,7 +76,7 @@ export class NodesCrudService {
     const node = await this.nodeModel.findOne({ rootId, name });
     if (!node) {
       throw new NotFoundException({
-        errorCode: ErrorCodes.NODE_NOT_FOUND,
+        errorCode: ERROR_CODES.NODE_NOT_FOUND,
         message: 'could not find node',
       });
     }
@@ -88,7 +88,7 @@ export class NodesCrudService {
     const nodes = await this.nodeModel.find({ parentId: nodeId });
     if (!nodes) {
       throw new InternalServerErrorException({
-        errorCode: ErrorCodes.NODE_NOT_FOUND,
+        errorCode: ERROR_CODES.NODE_NOT_FOUND,
         message: 'resource not found',
       });
     }
@@ -106,7 +106,7 @@ export class NodesCrudService {
 
     if (!node) {
       throw new InternalServerErrorException({
-        errorCode: ErrorCodes.DATABASE_ERROR,
+        errorCode: ERROR_CODES.DATABASE_ERROR,
         message: 'could not modify resource',
       });
     }
@@ -118,7 +118,7 @@ export class NodesCrudService {
     const node = await this.nodeModel.findByIdAndDelete(nodeId);
     if (!node) {
       throw new NotFoundException({
-        errorCode: ErrorCodes.NODE_NOT_FOUND,
+        errorCode: ERROR_CODES.NODE_NOT_FOUND,
         message: 'could not find node',
       });
     }

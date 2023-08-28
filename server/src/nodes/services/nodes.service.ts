@@ -1,10 +1,10 @@
 import { NodesCrudService } from './nodes-crud.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { NodeResponseDto, RootResponseDto } from '../dtos/responses';
-import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { CreateNodeRequestDto, UpdateNodeRequestDto } from '../dtos/requests';
 import { NodeDto } from '../dtos/node.dto';
 import { RootsCrudService } from './roots-crud.service';
+import { ERROR_CODES } from 'src/common/constants';
 
 @Injectable()
 export class NodesService {
@@ -56,7 +56,7 @@ export class NodesService {
   ): Promise<NodeResponseDto[]> {
     if (!prefix.match(/^\/?([-\w]+\/?)*$/)) {
       throw new BadRequestException({
-        errorCode: ErrorCodes.INVALID_REQUEST,
+        errorCode: ERROR_CODES.INVALID_REQUEST,
         message: 'path should match /^\\/?([-w]+\\/?)*$/',
       });
     }
@@ -101,7 +101,7 @@ export class NodesService {
     const nodeNames = this.#processPath(path).split('/');
     if (nodeNames.length < 1) {
       throw new BadRequestException({
-        errorCode: ErrorCodes.PATH_ERROR,
+        errorCode: ERROR_CODES.PATH_ERROR,
         message: 'invalid path',
       });
     }
@@ -117,7 +117,7 @@ export class NodesService {
 
       if (!next) {
         throw new BadRequestException({
-          errorCode: ErrorCodes.PATH_ERROR,
+          errorCode: ERROR_CODES.PATH_ERROR,
           message: 'invalid path',
         });
       }

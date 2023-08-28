@@ -3,7 +3,6 @@ import {
   BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { MqttService } from 'src/mqtt/services/mqtt.service';
 import { NodesService } from 'src/nodes/services/nodes.service';
 import { UsersService } from 'src/users/services/users.service';
@@ -13,6 +12,7 @@ import { ActivateDeviceRequestDto } from '../dtos/requests/activate-device-reque
 import { NodeActionCode } from 'src/utils/types';
 import { IActionable } from 'src/common/interfaces/actionable.interface';
 import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';
+import { ERROR_CODES } from 'src/common/constants';
 
 @Injectable()
 export class GatesService {
@@ -36,7 +36,7 @@ export class GatesService {
     // is device node
     if (!node.nodeInfo.isDevice) {
       throw new BadRequestException({
-        error_code: ErrorCodes.NOT_DEVICE,
+        errorCode: ERROR_CODES.NOT_DEVICE,
         message: 'node is not a device',
       });
     }
@@ -45,7 +45,7 @@ export class GatesService {
     const path = await this.nodesService.getPathById(deviceId);
     const hasAccess = user.access.some((prefix) => path.startsWith(prefix));
     if (!hasAccess) {
-      throw new UnauthorizedException({ errorCode: ErrorCodes.ACCESS_DENIED });
+      throw new UnauthorizedException({ errorCode: ERROR_CODES.ACCESS_DENIED });
     }
 
     // get handler and params

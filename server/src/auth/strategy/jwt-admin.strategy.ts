@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { ErrorCodes } from 'src/common/enum/error-codes.enum';
+import { ERROR_CODES } from 'src/common/constants';
 import { UsersService } from 'src/users/services/users.service';
 
 @Injectable()
@@ -22,14 +22,14 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, 'jwt-admin') {
     const user = await this.usersService.findById(payload.sub);
     if (!user) {
       throw new ForbiddenException({
-        error_code: ErrorCodes.ACCESS_DENIED,
+        errorCode: ERROR_CODES.ACCESS_DENIED,
         message: 'cannot find user in db',
       });
     }
 
     if (!user.roles?.includes('admin')) {
       throw new ForbiddenException({
-        error_code: ErrorCodes.ACCESS_DENIED,
+        errorCode: ERROR_CODES.ACCESS_DENIED,
         message: 'admin credentials are needed for this operation',
       });
     }

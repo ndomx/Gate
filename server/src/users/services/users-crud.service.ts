@@ -9,10 +9,10 @@ import { User, UserDocument } from '../schemas/user.schema';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from '../dtos/responses';
 import { CreateUserRequestDto, UpdateUserRequestDto } from '../dtos/requests';
-import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { UserDto } from '../dtos/user.dto';
 import { UserWithPasswordResponseDto } from 'src/common/dtos/responses/user-with-password-response.dto';
 import { AccessRole } from 'src/common/types';
+import { ERROR_CODES } from 'src/common/constants';
 
 @Injectable()
 export class UsersCrudService {
@@ -24,7 +24,7 @@ export class UsersCrudService {
     const created = await this.userModel.create(user);
     if (!created) {
       throw new InternalServerErrorException({
-        errorCode: ErrorCodes.DATABASE_ERROR,
+        errorCode: ERROR_CODES.DATABASE_ERROR,
         message: 'could not create resource',
       });
     }
@@ -36,7 +36,7 @@ export class UsersCrudService {
     const user = await this.userModel.findById(userId);
     if (!user) {
       throw new NotFoundException({
-        errorCode: ErrorCodes.USER_NOT_FOUND,
+        errorCode: ERROR_CODES.USER_NOT_FOUND,
         message: 'could not find user',
       });
     }
@@ -48,7 +48,7 @@ export class UsersCrudService {
     const user = await this.userModel.findOne({ username });
     if (!user) {
       throw new NotFoundException({
-        errorCode: ErrorCodes.USER_NOT_FOUND,
+        errorCode: ERROR_CODES.USER_NOT_FOUND,
         message: 'could not find user',
       });
     }
@@ -62,7 +62,7 @@ export class UsersCrudService {
     const user = await this.userModel.findOne({ username });
     if (!user) {
       throw new NotFoundException({
-        errorCode: ErrorCodes.USER_NOT_FOUND,
+        errorCode: ERROR_CODES.USER_NOT_FOUND,
         message: 'could not find user',
       });
     }
@@ -80,7 +80,7 @@ export class UsersCrudService {
 
     if (!user) {
       throw new InternalServerErrorException({
-        errorCode: ErrorCodes.DATABASE_ERROR,
+        errorCode: ERROR_CODES.DATABASE_ERROR,
         message: 'could not modify resource',
       });
     }
@@ -92,7 +92,7 @@ export class UsersCrudService {
     const user = await this.userModel.findByIdAndDelete(userId);
     if (!user) {
       throw new NotFoundException({
-        errorCode: ErrorCodes.USER_NOT_FOUND,
+        errorCode: ERROR_CODES.USER_NOT_FOUND,
         message: 'could not find user',
       });
     }
