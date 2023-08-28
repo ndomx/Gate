@@ -14,7 +14,7 @@ export class MqttService implements IActionable {
     this.#clientSetup();
   }
 
-  async activateDevice(
+  activateDevice(
     node: NodeResponseDto,
     params: ActionableHandlerDto,
   ): Promise<void> {
@@ -25,7 +25,7 @@ export class MqttService implements IActionable {
     };
 
     this.logger.debug(`[${topic}] ${payload}`, 'MqttService');
-    await this.#publish(topic, payload);
+    return this.#publish(topic, payload);
   }
 
   #clientSetup() {
@@ -41,11 +41,27 @@ export class MqttService implements IActionable {
     });
   }
 
-  async #publish(topic: string, payload: object) {
+  #publish(topic: string, payload: object): Promise<void> {
     if (!this.client) {
       this.#clientSetup();
     }
 
-    await this.client.publish(topic, JSON.stringify(payload));
+    return new Promise(async (resolve, reject) => {
+      this.client.publish(
+        topic,
+        JSON.stringify(payload),
+        {
+          qos: 1,
+        },
+        (err, packet) => {
+          if (err) {
+            this.logger.error(`error sending ${packet}`, 'MqttService');
+            reject(err);
+          } else {
+            resolve();
+          }
+        },
+      );
+    });
   }
 }
