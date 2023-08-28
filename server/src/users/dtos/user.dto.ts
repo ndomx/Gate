@@ -7,7 +7,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Role } from 'src/common/enum/role.enum';
+import { AccessRole } from 'src/common/types';
 
 export class UserDto {
   @IsMongoId()
@@ -39,6 +39,7 @@ export class UserDto {
   @IsDefined()
   access: string[];
 
+  @IsArray()
   @IsOptional()
-  roles?: Role[];
+  roles?: AccessRole[];
 }

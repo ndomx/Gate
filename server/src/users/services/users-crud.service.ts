@@ -12,6 +12,7 @@ import { CreateUserRequestDto, UpdateUserRequestDto } from '../dtos/requests';
 import { ErrorCodes } from 'src/common/enum/error-codes.enum';
 import { UserDto } from '../dtos/user.dto';
 import { UserWithPasswordResponseDto } from 'src/common/dtos/responses/user-with-password-response.dto';
+import { AccessRole } from 'src/common/types';
 
 @Injectable()
 export class UsersCrudService {
@@ -107,7 +108,7 @@ export class UsersCrudService {
       username: userDocument.username,
       access: userDocument.access,
       rootId: userDocument.rootId,
-      roles: userDocument.roles,
+      roles: userDocument.roles.map((role) => role as AccessRole),
     };
 
     return plainToInstance(UserResponseDto, dto);
@@ -122,7 +123,7 @@ export class UsersCrudService {
       password: userDocument.password,
       access: userDocument.access,
       rootId: userDocument.rootId,
-      roles: userDocument.roles,
+      roles: userDocument.roles.map((role) => role as AccessRole),
     };
 
     return plainToInstance(UserDto, dto);
