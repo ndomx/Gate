@@ -3,7 +3,7 @@
 #include <PubSubClient.h>
 #include <WiFiClient.h>
 
-#include "../../relay-controller/credentials.h"
+#include "../../apps/relay-controller/credentials.h"
 #include "mqtt.h"
 #include "mqtt_packet.h"
 

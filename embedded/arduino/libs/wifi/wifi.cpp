@@ -2,7 +2,7 @@
 #include <WiFiClient.h>
 
 #include "wifi.h"
-#include "../../relay-controller/credentials.h"
+#include "../../apps/relay-controller/credentials.h"
 
 namespace wifi
 {

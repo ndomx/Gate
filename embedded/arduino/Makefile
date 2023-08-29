@@ -2,16 +2,18 @@ ifndef PROJECT_NAME
 $(error PROJECT_NAME is not defined. Usage: make <rule> PROJECT_NAME=<project_name>.)
 endif
 
+APP_DIR := apps/$(PROJECT_NAME)
+
 $(info running make on $(PROJECT_NAME))
-include $(PROJECT_NAME)/build-params.mk
+include $(APP_DIR)/build-params.mk
 
 SCRIPTS := ./tools/scripts
 RM := python $(SCRIPTS)/remove_files.py
 
 LIBS := ./libs
-BUILD_DIR := ./$(PROJECT_NAME)/build
+BUILD_DIR := $(APP_DIR)/build
 
-TARGET := $(PROJECT_NAME)/$(PROJECT_NAME).ino
+TARGET := $(PROJECT_NAME).ino
 
 SRCS := $(shell python $(SCRIPTS)/find_files.py $(LIBS) cpp)
 
@@ -27,8 +29,8 @@ build: $(BUILD_DIR)/$(TARGET).bin
 upload:
 	$(ARDUINO_CLI) upload -b $(BOARD_NAME) -p $(PORT) -i $(BUILD_DIR)/$(TARGET).bin
 
-$(BUILD_DIR)/$(TARGET).bin: $(TARGET) $(SRCS)
-	$(ARDUINO_CLI) compile -b $(BOARD_NAME) --libraries $(LIBS) --build-path $(BUILD_DIR) $(BUILD_FLAGS) $(PROJECT_NAME)
+$(BUILD_DIR)/$(TARGET).bin: $(APP_DIR)/$(TARGET) $(SRCS)
+	$(ARDUINO_CLI) compile -b $(BOARD_NAME) --libraries $(LIBS) --build-path $(BUILD_DIR) $(BUILD_FLAGS) $(APP_DIR)
 
 clean:
 	$(RM) $(BUILD_DIR)
