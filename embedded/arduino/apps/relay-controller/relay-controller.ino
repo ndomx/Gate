@@ -4,6 +4,7 @@
 #include <mqtt.h>
 #include <wifi.h>
 
+#include "credentials.h"
 #include "global_defs.h"
 
 #define TAG "main"
@@ -16,12 +17,18 @@ void setup()
 
     logger::log_info(TAG, "connecting to wifi");
 
-    wifi::connect_blocking();
+    wifi::connect_blocking(ssid, pass);
     state_machine.init();
 
     logger::log_info(TAG, "connected to wifi");
 
-    bool success = mqtt::init([]() { state_machine.set_flag(); }, MQTT_RECONNECT_ASYNC);
+    const mqtt::ConnectionParams params = {
+        .url = mqtt_broker_url, 
+        .port = mqtt_broker_port, 
+        .callback = []() { state_machine.set_flag(); }
+    };
+
+    bool success = mqtt::init(params, MQTT_RECONNECT_ASYNC);
     if (!success)
     {
         throw_blocking(TAG, "Error initializing mqtt, please try again");
@@ -29,7 +36,7 @@ void setup()
 
     logger::log_info(TAG, "mqtt initialized");
 
-    success = mqtt::connect();
+    success = mqtt::connect(mqtt_username, mqtt_password, mqtt_topic);
     if (!success)
     {
         throw_blocking(TAG, "Error connecting to mqtt server");

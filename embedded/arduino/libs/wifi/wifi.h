@@ -7,7 +7,7 @@
 
 namespace wifi
 {
-    void connect_blocking(void);
+    void connect_blocking(const char* ssid, const char* pass);
     bool is_connected(void);
     size_t get_mac_addr(uint8_t* mac);
 } // namespace wifi

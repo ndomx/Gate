@@ -2,11 +2,10 @@
 #include <WiFiClient.h>
 
 #include "wifi.h"
-#include "../../apps/relay-controller/credentials.h"
 
 namespace wifi
 {
-    void connect_blocking(void)
+    void connect_blocking(const char* ssid, const char* pass)
     {
         WiFi.mode(WIFI_STA);
         WiFi.begin(ssid, pass);

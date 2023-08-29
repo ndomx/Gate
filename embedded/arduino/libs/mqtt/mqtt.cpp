@@ -3,7 +3,6 @@
 #include <PubSubClient.h>
 #include <WiFiClient.h>
 
-#include "../../apps/relay-controller/credentials.h"
 #include "mqtt.h"
 #include "mqtt_packet.h"
 
@@ -20,6 +19,10 @@ namespace mqtt
     static String mqtt_client_id;
 
     static uint8_t reconnection_strategy;
+
+    static String _username;
+    static String _password;
+    static String _topic;
 
     static void on_message(char* topic, uint8_t* payload, size_t length)
     {
@@ -49,7 +52,7 @@ namespace mqtt
         return true;
     }
 
-    bool init(callback_t callback, const uint8_t reconnection)
+    bool init(ConnectionParams params, const uint8_t reconnection)
     {
         if (!wifi::is_connected())
         {
@@ -57,16 +60,16 @@ namespace mqtt
         }
 
         mqtt_client.setClient(wifi_client);
-        mqtt_client.setServer(mqtt_broker_url, mqtt_broker_port);
+        mqtt_client.setServer(params.url, params.port);
         mqtt_client.setCallback(on_message);
 
-        mqtt_callback = callback;
+        mqtt_callback = params.callback;
         reconnection_strategy = reconnection;
 
         return true;
     }
 
-    bool connect(void)
+    bool connect(const char* username, const char* password, const char* topic)
     {
         bool success;
 
@@ -76,14 +79,23 @@ namespace mqtt
             return false;
         }
 
-        success = mqtt_client.connect(mqtt_client_id.c_str(), mqtt_username, mqtt_password);
+        success = mqtt_client.connect(mqtt_client_id.c_str(), username, password);
         if (!success)
         {
             return false;
         }
 
-        success = mqtt_client.subscribe(mqtt_topic);
-        return success;
+        success = mqtt_client.subscribe(topic);
+        if (!success)
+        {
+            return false;
+        }
+
+        _username = String(username);
+        _password = String(password);
+        _topic = String(topic);
+
+        return true;
     }
 
     static bool reconnect(void)
@@ -101,13 +113,17 @@ namespace mqtt
             return false;
         }
 
-        success = mqtt_client.connect(mqtt_client_id.c_str(), mqtt_username, mqtt_password);
+        const char *username = _username.c_str();
+        const char *password = _username.c_str();
+        const char *topic = _username.c_str();
+
+        success = mqtt_client.connect(mqtt_client_id.c_str(), username, password);
         if (!success)
         {
             return false;
         }
 
-        success = mqtt_client.subscribe(mqtt_topic);
+        success = mqtt_client.subscribe(topic);
         return success;
     }
 
