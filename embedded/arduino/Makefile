@@ -1,10 +1,10 @@
-ifndef PROJECT_NAME
-$(error PROJECT_NAME is not defined. Usage: make <rule> PROJECT_NAME=<project_name>.)
+ifndef APP_NAME
+$(error APP_NAME is not defined. Usage: make <rule> APP_NAME=<app_name>.)
 endif
 
-APP_DIR := apps/$(PROJECT_NAME)
+APP_DIR := apps/$(APP_NAME)
 
-$(info running make on $(PROJECT_NAME))
+$(info running make on $(APP_NAME))
 include $(APP_DIR)/build-params.mk
 
 SCRIPTS := ./tools/scripts
@@ -13,7 +13,7 @@ RM := python $(SCRIPTS)/remove_files.py
 LIBS := ./libs
 BUILD_DIR := $(APP_DIR)/build
 
-TARGET := $(PROJECT_NAME).ino
+TARGET := $(APP_NAME).ino
 
 SRCS := $(shell python $(SCRIPTS)/find_files.py $(LIBS) cpp)
 
