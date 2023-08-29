@@ -1,15 +1,18 @@
 include user.mk
 
-BOARD_NAME := esp8266:esp8266:generic
+# BOARD_NAME := esp8266:esp8266:generic
+BOARD_NAME := rp2040:rp2040:rpipicow
 
-SCRIPTS := ./tools/scripts
+SCRIPTS := ../tools/scripts
 RM := python $(SCRIPTS)/remove_files.py
 
-LIBS := ./lib
-SKETCH := ./main
+PROJECT_NAME = relay-controller
+
+LIBS := ../libs
+SKETCH := ./
 BUILD_DIR := ./build
 
-TARGET := main.ino
+TARGET := $(PROJECT_NAME).ino
 
 SRCS := $(shell python $(SCRIPTS)/find_files.py $(LIBS) cpp)
 

@@ -9,8 +9,8 @@ static const char* mqtt_broker_url = "broker.hivemq.com";
 static const int mqtt_broker_port = 1883;
 
 // Leave NULL if not used
-static const char* mqtt_username = NULL;
-static const char* mqtt_password = NULL;
+static const char* mqtt_username;
+static const char* mqtt_password;
 
 static const char* mqtt_topic = "<root-id>/path/to/device";
 

@@ -33,7 +33,3 @@
 
 # Build directory
 build/
-
-# Private files
-lib/**/credentials.h
-user.mk
