@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from types import FunctionType
 
 class DigitalIOController(ABC):
     def __init__(self, initial_state: bool) -> None:

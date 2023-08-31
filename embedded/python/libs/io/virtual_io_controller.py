@@ -1,4 +1,4 @@
-from digital_io_controller import DigitalIOController
+from libs.io.digital_io_controller import DigitalIOController
 
 class VirtualIOController(DigitalIOController):
     def __init__(self, initial_state: bool) -> None:

@@ -6,13 +6,11 @@ class MqttClient:
     client = mqtt.Client()
 
     def connect(self, callback: FunctionType):
-        self.__load_secrets()
-
         self.client.on_connect = lambda client, userdata, flags, rc: self.__on_connect()
         self.client.on_message = lambda client, userdata, msg: self.__on_message(msg, callback)
 
-        url = os.environ.get('MQTT_BROKER_URL')
-        port = int(os.environ.get('MQTT_BROKER_PORT'))
+        url = os.getenv('MQTT_BROKER_URL')
+        port = int(os.getenv('MQTT_BROKER_PORT'))
 
         self.client.connect(url, port)
         self.client.loop_start()
@@ -20,7 +18,7 @@ class MqttClient:
     def __on_connect(self):
         print('connected to server')
         
-        topic = os.environ.get('MQTT_TOPiC', '')
+        topic = os.getenv('MQTT_TOPIC', '')
         if topic == '':
             self.client.disconnect()
             print('invalid topic')
