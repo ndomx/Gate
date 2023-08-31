@@ -66,5 +66,5 @@ def bcm_to_pin(bcm: int)->int:
     return GpioBcm[f'GPIO_{bcm:02d}'].value
 
 def load_bcm(pin_key: str)->int:
-    pin = int(os.environ.get(pin_key))
+    pin = int(os.getenv(pin_key))
     return pin_to_bcm(pin)
