@@ -18,7 +18,7 @@ class UserDto {
 
   factory UserDto.fromJson(Map<String, dynamic> json) {
     return UserDto(
-        id: json['userId'],
+        id: json['id'],
         rootId: json['rootId'],
         name: json['name'],
         last: json['last'],
@@ -29,7 +29,7 @@ class UserDto {
 
   Map<String, dynamic> toJson() {
     return {
-      'userId': id,
+      'id': id,
       'rootId': rootId,
       'name': name,
       'last': last,

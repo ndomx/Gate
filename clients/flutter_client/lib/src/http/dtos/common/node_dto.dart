@@ -7,7 +7,7 @@ class NodeDto {
   final String name;
   final String displayName;
   final NodeInfoDto nodeInfo;
-
+  
   const NodeDto({
     required this.id,
     required this.rootId,
@@ -19,9 +19,9 @@ class NodeDto {
 
   factory NodeDto.fromJson(Map<String, dynamic> json) {
     return NodeDto(
-        id: json['nodeId'],
+        id: json['id'],
         rootId: json['rootId'],
-        parentId: json['parent'],
+        parentId: json['parentId'],
         name: json['name'],
         displayName: json['displayName'],
         nodeInfo: NodeInfoDto.fromJson(json['nodeInfo']));
@@ -29,9 +29,9 @@ class NodeDto {
 
   Map<String, dynamic> toJson() {
     return {
-      'nodeId': id,
+      'id': id,
       'rootId': rootId,
-      'parent': parentId,
+      'parentId': parentId,
       'name': name,
       'displayName': displayName,
       'nodeInfo': nodeInfo.toJson(),
