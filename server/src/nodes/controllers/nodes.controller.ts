@@ -15,7 +15,7 @@ import { CreateNodeRequestDto, UpdateNodeRequestDto } from '../dtos/requests';
 import { NodeResponseDto } from '../dtos/responses';
 
 @Controller('nodes')
-// @UseGuards(JwtAdminAuthGuard)
+@UseGuards(JwtAdminAuthGuard)
 export class NodesController {
   constructor(private readonly nodesService: NodesService) {}
 

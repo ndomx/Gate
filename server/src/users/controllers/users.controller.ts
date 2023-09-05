@@ -14,7 +14,7 @@ import { CreateUserRequestDto, UpdateUserRequestDto } from '../dtos/requests';
 import { UserResponseDto } from '../dtos/responses';
 
 @Controller('users')
-// @UseGuards(JwtAdminAuthGuard)
+@UseGuards(JwtAdminAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
