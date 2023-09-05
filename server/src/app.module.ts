@@ -13,7 +13,7 @@ import { MqttModule } from './mqtt/mqtt.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         uri: configService.get('MONGO_DB_URI'),
       }),
     }),

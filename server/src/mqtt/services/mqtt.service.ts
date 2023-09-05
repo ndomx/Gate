@@ -46,7 +46,7 @@ export class MqttService implements IActionable {
       this.#clientSetup();
     }
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       this.client.publish(
         topic,
         JSON.stringify(payload),
