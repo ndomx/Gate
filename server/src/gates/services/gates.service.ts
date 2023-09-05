@@ -13,6 +13,7 @@ import { NodeActionCode } from 'src/utils/types';
 import { IActionable } from 'src/common/interfaces/actionable.interface';
 import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';
 import { ERROR_CODES } from 'src/common/constants';
+import { ActivateDeviceResponseDto } from '../dtos/responses/activate-device-response.dto';
 
 @Injectable()
 export class GatesService {
@@ -26,7 +27,7 @@ export class GatesService {
     deviceId: string,
     userId: string,
     request: ActivateDeviceRequestDto,
-  ): Promise<void> {
+  ): Promise<ActivateDeviceResponseDto> {
     // verify user
     const user = await this.usersService.findById(userId);
 
@@ -58,6 +59,14 @@ export class GatesService {
 
     // grant access
     await handler.activateDevice(node, params);
+
+    const response: ActivateDeviceResponseDto = {
+      node,
+      action: request.action,
+      success: true,
+    };
+
+    return plainToInstance(ActivateDeviceResponseDto, response);
   }
 
   async findUserNodes(
