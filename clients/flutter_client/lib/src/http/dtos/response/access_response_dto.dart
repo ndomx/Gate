@@ -2,23 +2,23 @@ import 'package:flutter_client/src/http/dtos/common/node_dto.dart';
 
 class AccessResponseDto {
   final NodeDto node;
-  final String topic;
+  final String action;
   final bool success;
 
   const AccessResponseDto(
-      {required this.node, required this.topic, required this.success});
+      {required this.node, required this.action, required this.success});
 
   factory AccessResponseDto.fromJson(Map<String, dynamic> json) {
     return AccessResponseDto(
         node: NodeDto.fromJson(json['node']),
-        topic: json['topic'],
+        action: json['action'],
         success: json['success']);
   }
 
   Map<String, dynamic> toJson() {
     return {
       'node': node.toJson(),
-      'topic': topic,
+      'action': action,
       'success': success,
     };
   }

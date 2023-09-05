@@ -28,7 +28,7 @@ class GateClient {
       return null;
     }
 
-    if (res.statusCode != 204) {
+    if (res.statusCode != 200) {
       return null;
     }
 
