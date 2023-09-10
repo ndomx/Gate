@@ -4,7 +4,7 @@ import sys
 sys.path.append(os.path.abspath(Path()))
 
 import dotenv
-from apps.rpi.libs.common.pin_table import load_bcm
+from libs.rpi.common.pin_table import load_bcm
 from state_machine import StateMachine
 from libs.mqtt.mqtt_client import MqttClient
 
