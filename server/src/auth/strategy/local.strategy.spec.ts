@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../services/auth.service';
 import { LocalStrategy } from './local.strategy';
 
 const authServiceMock = {

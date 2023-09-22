@@ -1,19 +1,19 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
+  IsArray,
+  IsDefined,
   IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Role } from 'src/common/enum/role.enum';
+import { AccessRole } from 'src/common/types';
 
 export class UserDto {
   @IsMongoId()
-  @Expose({ name: 'user_id' })
-  userId: string;
+  id: string;
 
   @IsMongoId()
-  @Expose({ name: 'root_id' })
   rootId: string;
 
   @IsString()
@@ -33,11 +33,13 @@ export class UserDto {
 
   @IsString()
   @IsNotEmpty()
-  @Exclude({ toPlainOnly: true })
   password: string;
 
+  @IsArray()
+  @IsDefined()
   access: string[];
 
+  @IsArray()
   @IsOptional()
-  roles?: Role[];
+  roles?: AccessRole[];
 }

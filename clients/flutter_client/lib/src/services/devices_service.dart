@@ -1,5 +1,6 @@
 import 'package:flutter_client/src/db/entities/node_entity.dart';
 import 'package:flutter_client/src/db/gate_database.dart';
+import 'package:flutter_client/src/http/dtos/requests/activate_device_request_dto.dart';
 import 'package:flutter_client/src/http/dtos/response/access_response_dto.dart';
 import 'package:flutter_client/src/http/dtos/response/user_nodes_response_dto.dart';
 import 'package:flutter_client/src/http/gate_client.dart';
@@ -47,8 +48,8 @@ class DevicesService {
     }
 
     final db = GateDatabase();
-    await db.insertNodes(List.from(
-        res.nodes.map((node) => NodeEntity(id: node.id, name: node.displayName))));
+    await db.insertNodes(List.from(res.nodes
+        .map((node) => NodeEntity(id: node.id, name: node.displayName))));
 
     return res;
   }
@@ -71,8 +72,10 @@ class DevicesService {
       return null;
     }
 
+    const request = ActivateDeviceRequestDto(action: 'on');
+
     final client = GateClient();
-    return client.requestAccess(host, token, deviceId);
+    return client.requestAccess(host, token, deviceId, request);
   }
 
   Future<bool> _authenticate() async {

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { MqttService } from './mqtt.service';
+import { MqttService } from './services/mqtt.service';
 
 @Module({
   providers: [MqttService],

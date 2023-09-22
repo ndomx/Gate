@@ -4,9 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { NodesModule } from './nodes/nodes.module';
-import { NodesClientModule } from './nodes-client/nodes-client.module';
 import { GatesModule } from './gates/gates.module';
-import { UsersClientModule } from './users-client/users-client.module';
 import { MqttModule } from './mqtt/mqtt.module';
 
 @Module({
@@ -15,16 +13,14 @@ import { MqttModule } from './mqtt/mqtt.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         uri: configService.get('MONGO_DB_URI'),
       }),
     }),
     AuthModule,
     UsersModule,
     NodesModule,
-    NodesClientModule,
     GatesModule,
-    UsersClientModule,
     MqttModule,
   ],
   controllers: [],

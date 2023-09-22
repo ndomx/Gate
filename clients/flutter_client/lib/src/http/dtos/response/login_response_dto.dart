@@ -4,10 +4,10 @@ class LoginResponseDto {
   const LoginResponseDto({required this.token});
 
   factory LoginResponseDto.fromJson(Map<String, dynamic> json) {
-    return LoginResponseDto(token: json['access_token']);
+    return LoginResponseDto(token: json['accessToken']);
   }
 
   Map<String, dynamic> toJson() {
-    return {'access_token': token};
+    return {'accessToken': token};
   }
 }
