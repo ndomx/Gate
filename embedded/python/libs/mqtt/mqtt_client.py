@@ -5,13 +5,17 @@ from typing import Callable
 import paho.mqtt.client as mqtt
 
 from libs.common.command import Command
+from libs.io.digital_io_handler import DigitalIOHandler
 
 class MqttClient:
     client = mqtt.Client()
 
-    def connect(self, callback: FunctionType):
+    def __init__(self, handler: DigitalIOHandler):
+        self.handler = handler
+
+    def connect(self):
         self.client.on_connect = lambda client, userdata, flags, rc: self.__on_connect()
-        self.client.on_message = lambda client, userdata, msg: self.__on_message(msg, callback)
+        self.client.on_message = lambda client, userdata, msg: self.__on_message(msg)
 
         url = os.getenv('MQTT_BROKER_URL')
         port = int(os.getenv('MQTT_BROKER_PORT'))
@@ -31,7 +35,7 @@ class MqttClient:
         
         self.client.subscribe(topic)
 
-    def __on_message(self, msg: mqtt.MQTTMessage, callback: Callable[[Command], None]):
+    def __on_message(self, msg: mqtt.MQTTMessage):
         print(f'receiving msg on {msg.topic}')
 
         payload = msg.payload.decode('utf-8')
@@ -45,5 +49,4 @@ class MqttClient:
             print('[WARN] could not parse json into command')
             return
 
-        if callback:
-            callback(command)
+        self.handler.execute_command(command)
