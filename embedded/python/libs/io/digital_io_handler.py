@@ -1,11 +1,11 @@
 from threading import Timer
 from libs.common.command import Command
-from libs.io.virtual_io_controller import VirtualIOController
+from libs.io.digital_io_controller import DigitalIOController
 
 
-class IOHandler:
-    def __init__(self):
-        self.controller = VirtualIOController(initial_state=False)
+class DigitalIOHandler():
+    def __init__(self, controller: DigitalIOController):
+        self.controller = controller
 
     def execute_command(self, command: Command):
         timeout = 0
@@ -24,7 +24,7 @@ class IOHandler:
         elif command.action == 'toggle':
             action = self.controller.toggle
         else:
-            print(f'[WARN] invalid action {command.action}')
+            print(f'[WARN] invalid action "{command.action}"')
 
         if action is not None:
             action()
