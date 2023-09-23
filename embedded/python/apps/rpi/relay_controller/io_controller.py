@@ -7,7 +7,7 @@ from gpiozero import Button as button
 
 class IOController(DigitalIOController):
     def __init__(self, output_pin: int, initial_state: bool):
-        super.__init__(initial_state)
+        super().__init__(initial_state)
 
         self.output = digital_output(output_pin, initial_value=initial_state)
 
