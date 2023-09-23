@@ -1,21 +1,22 @@
+import dotenv
 import os
-from pathlib import Path
 import sys
+
+from pathlib import Path
+
 sys.path.append(os.path.abspath(Path()))
 
-import dotenv
-from libs.io.virtual_io_controller import VirtualIOController
-from state_machine import StateMachine
+from apps.virtual_device.relay_controller.io_handler import IOHandler
 from libs.mqtt.mqtt_client import MqttClient
+
 
 if __name__ == '__main__':
     dotenv.load_dotenv()
 
-    output_controller = VirtualIOController(initial_state=False)
-    state_machine = StateMachine(output_controller)
+    io_handler = IOHandler()
 
     mqtt_client = MqttClient()
-    mqtt_client.connect(lambda msg: state_machine.set_flag())
+    mqtt_client.connect(lambda command: io_handler.execute_command(command))
 
     while True:
-        state_machine.run()
+        pass
