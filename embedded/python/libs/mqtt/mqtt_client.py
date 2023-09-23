@@ -1,6 +1,10 @@
+import json
 import os
 from types import FunctionType
+from typing import Callable
 import paho.mqtt.client as mqtt
+
+from libs.common.command import Command
 
 class MqttClient:
     client = mqtt.Client()
@@ -27,8 +31,19 @@ class MqttClient:
         
         self.client.subscribe(topic)
 
-    def __on_message(self, msg: mqtt.MQTTMessage, callback: FunctionType):
-        message = msg.payload.decode('utf-8')
-        print(f'{msg.topic}: {message}')
+    def __on_message(self, msg: mqtt.MQTTMessage, callback: Callable[[Command], None]):
+        print(f'receiving msg on {msg.topic}')
+
+        payload = msg.payload.decode('utf-8')
+        try:
+            parsed = json.loads(payload)
+            command = Command.from_json(parsed)
+        except json.decoder.JSONDecodeError:
+            print('payload is not a json')
+            return
+        except ValueError as e:
+            print('[WARN] could not parse json into command')
+            return
+
         if callback:
-            callback(message)
+            callback(command)
