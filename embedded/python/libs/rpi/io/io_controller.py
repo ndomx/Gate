@@ -1,8 +1,6 @@
-from libs.common.command import Command
 from libs.io.digital_io_controller import DigitalIOController
 
 from gpiozero import DigitalOutputDevice as digital_output
-from gpiozero import Button as button
 
 
 class IOController(DigitalIOController):
