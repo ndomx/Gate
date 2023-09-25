@@ -14,7 +14,7 @@ namespace mqtt
     static WiFiClient wifi_client;
     static PubSubClient mqtt_client;
 
-    static callback_t mqtt_callback;
+    static GpioHandler* _handler;
 
     static String mqtt_client_id;
 
@@ -26,10 +26,7 @@ namespace mqtt
 
     static void on_message(char* topic, uint8_t* payload, size_t length)
     {
-        if (mqtt_callback != nullptr)
-        {
-            mqtt_callback();
-        }
+        _handler->execute_command();
     }
 
     static bool generate_client_id(void)
@@ -52,7 +49,7 @@ namespace mqtt
         return true;
     }
 
-    bool init(ConnectionParams params, const uint8_t reconnection)
+    bool init(const char* url, const int port, GpioHandler* handler, const uint8_t reconnection)
     {
         if (!wifi::is_connected())
         {
@@ -60,10 +57,10 @@ namespace mqtt
         }
 
         mqtt_client.setClient(wifi_client);
-        mqtt_client.setServer(params.url, params.port);
+        mqtt_client.setServer(url, port);
         mqtt_client.setCallback(on_message);
 
-        mqtt_callback = params.callback;
+        _handler = handler;
         reconnection_strategy = reconnection;
 
         return true;
