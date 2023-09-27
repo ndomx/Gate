@@ -4,32 +4,22 @@
 
 Timer* TimersHandler::_timer = nullptr;
 
-TimersHandler::TimersHandler(EventsHandler* event_handler)
-{
-    _event_handler = event_handler;
-}
-
 void TimersHandler::update(void)
 {
     if (test_timer())
     {
-        Event event = {
-            .callback = [](uint32_t id, void* t) { ((Timer*) t)->on_event(millis()); },
-            .executor = (void*) _timer,
-        };
-
-        _event_handler->push_event(event);
+        _timer->event.execute();
     }
 }
 
-bool TimersHandler::set_timer(bool cyclic, uint32_t period, timer_event on_event)
+bool TimersHandler::set_timer(uint32_t delay_ms, Event event)
 {
     if (_timer != nullptr)
     {
         return false;
     }
 
-    _timer = new Timer(cyclic, period, on_event);
+    _timer = new Timer(delay_ms, event);
     return true;
 }
 
@@ -50,18 +40,5 @@ bool TimersHandler::test_timer(void)
     }
 
     uint32_t now = millis();
-    return (now > _timer->period + _timer->elapsed());
-}
-
-void TimersHandler::reset(void)
-{
-    if (_timer == nullptr)
-    {
-        return;
-    }
-
-    if (_timer->cyclic)
-    {
-        _timer->reset();
-    }
+    return (now > _timer->delay_ms + _timer->elapsed());
 }

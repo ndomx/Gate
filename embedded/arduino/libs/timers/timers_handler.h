@@ -3,16 +3,14 @@
 
 #include <stdint.h>
 
-#include "../events/events_handler.h"
+#include "../events/events.h"
 #include "timer.h"
 
 class TimersHandler
 {
     public:
-    TimersHandler(EventsHandler* event_handler);
-
     void update(void);
-    bool set_timer(bool cyclic, uint32_t period, timer_event on_event);
+    bool set_timer(uint32_t delay_ms, Event event);
     void stop_timer(void);
 
     inline bool in_use(void) const
@@ -21,11 +19,9 @@ class TimersHandler
     }
 
     private:
-    EventsHandler* _event_handler;
     static Timer* _timer;
 
     bool test_timer(void);
-    void reset(void);
 };
 
 #endif // LIBS_TIMER_TIMERS_HANDLER_H

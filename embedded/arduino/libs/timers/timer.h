@@ -2,23 +2,20 @@
 #define LIBS_TIMERS_TIMER_H
 
 #include <Arduino.h>
-
 #include <stdint.h>
 
-typedef void (*timer_event)(uint32_t);
+#include "../events/event.h"
 
 struct Timer
 {
     public:
-    Timer(bool cyclic, uint32_t period, timer_event on_event) : cyclic(cyclic), period(period)
+    Timer(uint32_t delay_ms, Event event) : delay_ms(delay_ms), event(event)
     {
-        this->on_event = on_event;
         _elapsed = millis();
     }
 
-    const bool cyclic;
-    const uint32_t period;
-    timer_event on_event;
+    const uint32_t delay_ms;
+    Event event;
 
     inline uint32_t elapsed() const
     {

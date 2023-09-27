@@ -1,6 +1,7 @@
 #include <errors.h>
 #include <io.h>
 #include <logger.h>
+#include <timers.h>
 #include <mqtt.h>
 #include <wifi.h>
 
@@ -8,6 +9,8 @@
 #include "global_defs.h"
 
 #define TAG "main"
+
+TimersHandler timers_handler;
 
 void setup()
 {
@@ -19,7 +22,7 @@ void setup()
     logger::log_info(TAG, "connected to wifi");
 
     GpioController* controller = new GpioController(OUTPUT_PIN, false, INVERT_LOGIC);
-    GpioHandler* handler = new GpioHandler(controller);
+    GpioHandler* handler = new GpioHandler(controller, &timers_handler);
 
     bool success = mqtt::init(mqtt_broker_url, mqtt_broker_port, handler, MQTT_RECONNECT_ASYNC);
     if (!success)
@@ -42,4 +45,5 @@ void setup()
 void loop()
 {
     mqtt::run();
+    timers_handler.update();
 }
