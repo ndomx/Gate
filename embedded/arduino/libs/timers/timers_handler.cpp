@@ -9,6 +9,7 @@ void TimersHandler::update(void)
     if (test_timer())
     {
         _timer->event.execute();
+        delete_timer();
     }
 }
 
@@ -27,8 +28,7 @@ void TimersHandler::stop_timer(void)
 {
     if (_timer != nullptr)
     {
-        delete _timer;
-        _timer = nullptr;
+        delete_timer();
     }
 }
 
@@ -41,4 +41,10 @@ bool TimersHandler::test_timer(void)
 
     uint32_t now = millis();
     return (now > _timer->delay_ms + _timer->elapsed());
+}
+
+void TimersHandler::delete_timer(void)
+{
+    delete _timer;
+    _timer = nullptr;
 }

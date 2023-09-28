@@ -22,6 +22,7 @@ class TimersHandler
     static Timer* _timer;
 
     bool test_timer(void);
+    void delete_timer(void);
 };
 
 #endif // LIBS_TIMER_TIMERS_HANDLER_H
