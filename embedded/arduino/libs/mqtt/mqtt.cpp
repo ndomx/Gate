@@ -2,11 +2,13 @@
 
 #include <PubSubClient.h>
 #include <WiFiClient.h>
+#include <ArduinoJson.h>
 
 #include "mqtt.h"
 #include "mqtt_packet.h"
 
 #define MQTT_CLIENT_ID_SIZE (23)
+#define JSON_DOC_SIZE (128)
 #define ID_HEADER "esp8266-"
 
 namespace mqtt
@@ -24,9 +26,17 @@ namespace mqtt
     static String _password;
     static String _topic;
 
+    static DynamicJsonDocument json(JSON_DOC_SIZE);
+
     static void on_message(char* topic, uint8_t* payload, size_t length)
     {
-        _handler->execute_command();
+        auto error = deserializeJson(json, payload);
+        if (error)
+        {
+            return;
+        }
+
+        _handler->execute_command(json);
     }
 
     static bool generate_client_id(void)
