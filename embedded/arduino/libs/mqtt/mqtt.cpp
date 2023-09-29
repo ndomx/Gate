@@ -2,11 +2,13 @@
 
 #include <PubSubClient.h>
 #include <WiFiClient.h>
+#include <ArduinoJson.h>
 
 #include "mqtt.h"
 #include "mqtt_packet.h"
 
 #define MQTT_CLIENT_ID_SIZE (23)
+#define JSON_DOC_SIZE (128)
 #define ID_HEADER "esp8266-"
 
 namespace mqtt
@@ -14,7 +16,7 @@ namespace mqtt
     static WiFiClient wifi_client;
     static PubSubClient mqtt_client;
 
-    static callback_t mqtt_callback;
+    static GpioHandler* _handler;
 
     static String mqtt_client_id;
 
@@ -24,12 +26,17 @@ namespace mqtt
     static String _password;
     static String _topic;
 
+    static DynamicJsonDocument json(JSON_DOC_SIZE);
+
     static void on_message(char* topic, uint8_t* payload, size_t length)
     {
-        if (mqtt_callback != nullptr)
+        auto error = deserializeJson(json, payload);
+        if (error)
         {
-            mqtt_callback();
+            return;
         }
+
+        _handler->execute_command(json);
     }
 
     static bool generate_client_id(void)
@@ -52,7 +59,7 @@ namespace mqtt
         return true;
     }
 
-    bool init(ConnectionParams params, const uint8_t reconnection)
+    bool init(const char* url, const int port, GpioHandler* handler, const uint8_t reconnection)
     {
         if (!wifi::is_connected())
         {
@@ -60,10 +67,10 @@ namespace mqtt
         }
 
         mqtt_client.setClient(wifi_client);
-        mqtt_client.setServer(params.url, params.port);
+        mqtt_client.setServer(url, port);
         mqtt_client.setCallback(on_message);
 
-        mqtt_callback = params.callback;
+        _handler = handler;
         reconnection_strategy = reconnection;
 
         return true;
