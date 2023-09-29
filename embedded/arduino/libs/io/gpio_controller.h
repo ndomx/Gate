@@ -29,7 +29,9 @@ class GpioController
     const uint8_t _output_pin;
     const bool _invert_logic;
 
-    bool _state;
+    uint8_t _state;
+
+    void write_state(void);
 };
 
 #endif // LIBS_IO_GPIO_CONTROLLER_H

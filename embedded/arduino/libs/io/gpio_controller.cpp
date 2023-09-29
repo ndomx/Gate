@@ -2,17 +2,23 @@
 
 void GpioController::on(void)
 {
-    digitalWrite(_output_pin, (_invert_logic) ? false : true);
-    _state = true;
+    _state = HIGH;
+    write_state();
 }
 
 void GpioController::off(void)
 {
-    digitalWrite(_output_pin, (_invert_logic) ? true : false);
-    _state = false;
+    _state = LOW;
+    write_state();
 }
 
 void GpioController::toggle(void)
 {
-    (_state) ? off() : on();
+    _state ^= 0b1;
+    write_state();
+}
+
+void GpioController::write_state(void)
+{
+    digitalWrite(_output_pin, (_invert_logic) ? !_state : _state);
 }

@@ -16,15 +16,15 @@ void GpioHandler::execute_command(DynamicJsonDocument& json) const
 
     uint32_t timeout = extract_timeout(json);
     String action = json["action"];
-    if (action.compareTo("on"))
+    if (action.equals("on"))
     {
         _controller->on();
     }
-    else if (action.compareTo("off"))
+    else if (action.equals("off"))
     {
         _controller->off();
     }
-    else if (action.compareTo("toggle"))
+    else if (action.equals("toggle"))
     {
         _controller->toggle();
     }
