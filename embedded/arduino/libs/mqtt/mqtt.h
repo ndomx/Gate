@@ -5,10 +5,11 @@
 
 #include "../io/gpio_handler.h"
 #include "mqtt_defs.h"
+#include "connection.h"
 
 namespace mqtt
 {
-    bool init(const char* url, const int port, GpioHandler* handler, const uint8_t reconnection = MQTT_RECONNECT_ASYNC);
+    bool init(connection_t connection, GpioHandler* handler);
     bool connect(const char* username, const char* password, const char* topic);
     void run(void);
 } // namespace mqtt

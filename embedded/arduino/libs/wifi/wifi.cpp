@@ -1,10 +1,11 @@
 #include <ESP8266WiFi.h>
-#include <WiFiClient.h>
 
 #include "wifi.h"
 
 namespace wifi
 {
+    static WiFiClient client;
+
     void connect_blocking(const char* ssid, const char* pass)
     {
         WiFi.mode(WIFI_STA);
@@ -21,9 +22,8 @@ namespace wifi
         return (WiFi.status() == WL_CONNECTED);
     }
 
-    size_t get_mac_addr(uint8_t* mac)
+    WiFiClient& get_client(void)
     {
-        WiFi.macAddress(mac);
-        return MAC_ADDR_SIZE;
+        return client;
     }
 } // namespace wifi

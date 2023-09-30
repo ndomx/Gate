@@ -2,14 +2,13 @@
 #define LIB_WIFI_WIFI_H
 
 #include <Arduino.h>
-
-#define MAC_ADDR_SIZE (6)
+#include <WiFiClient.h>
 
 namespace wifi
 {
     void connect_blocking(const char* ssid, const char* pass);
     bool is_connected(void);
-    size_t get_mac_addr(uint8_t* mac);
+    WiFiClient& get_client(void);
 } // namespace wifi
 
 #endif // LIB_WIFI_WIFI_H

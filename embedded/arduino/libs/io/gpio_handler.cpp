@@ -7,11 +7,11 @@ GpioHandler::GpioHandler(GpioController* controller)
     _controller = controller;
 }
 
-void GpioHandler::execute_command(DynamicJsonDocument& json) const
+uint8_t GpioHandler::execute_command(DynamicJsonDocument& json) const
 {
     if (!is_valid_json(json))
     {
-        return;
+        return COMMAND_INVALID_COMMAND;
     }
 
     uint32_t timeout = extract_timeout(json);
@@ -30,7 +30,7 @@ void GpioHandler::execute_command(DynamicJsonDocument& json) const
     }
     else
     {
-        return;
+        return COMMAND_INVALID_ACTION;
     }
 
     if (timeout > 0)
@@ -39,6 +39,8 @@ void GpioHandler::execute_command(DynamicJsonDocument& json) const
             timeout, [](void* e) { ((GpioController*) e)->toggle(); }, (void*) _controller
         );
     }
+
+    return COMMAND_OK;
 }
 
 bool GpioHandler::is_valid_json(DynamicJsonDocument& json) const
