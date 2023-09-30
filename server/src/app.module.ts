@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { NodesModule } from './nodes/nodes.module';
 import { GatesModule } from './gates/gates.module';
 import { MqttModule } from './mqtt/mqtt.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MqttModule } from './mqtt/mqtt.module';
         uri: configService.get('MONGO_DB_URI'),
       }),
     }),
+    EventEmitterModule.forRoot(),
     AuthModule,
     UsersModule,
     NodesModule,
