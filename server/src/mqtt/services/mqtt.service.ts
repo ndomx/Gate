@@ -21,7 +21,7 @@ export class MqttService implements IActionable {
     const topic = `${node.rootId}/${params.path}`;
     const payload = {
       action: params.action,
-      body: params.body,
+      actionDetails: params.body,
     };
 
     this.logger.debug(`[${topic}] ${payload}`, 'MqttService');
