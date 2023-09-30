@@ -1,9 +1,9 @@
-#include <PubSubClient.h>
 #include <ArduinoJson.h>
+#include <PubSubClient.h>
 
+#include "../wifi/wifi.h"
 #include "mqtt.h"
 #include "mqtt_packet.h"
-#include "../wifi/wifi.h"
 
 #define INPUT_BUF_SIZE (128)
 #define OUTPUT_BUF_SIZE (64)
@@ -108,9 +108,9 @@ namespace mqtt
             return false;
         }
 
-        const char *username = _username.c_str();
-        const char *password = _username.c_str();
-        const char *topic = _username.c_str();
+        const char* username = _username.c_str();
+        const char* password = _username.c_str();
+        const char* topic = _username.c_str();
 
         success = mqtt_client.connect(mqtt_client_id.c_str(), username, password);
         if (!success)
