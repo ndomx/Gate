@@ -1,11 +1,13 @@
 import json
 import os
-from types import FunctionType
-from typing import Callable
+
 import paho.mqtt.client as mqtt
 
 from libs.common.command import Command
+from libs.common.constants import ExecuteCommandResult
 from libs.io.digital_io_handler import DigitalIOHandler
+
+ACK_TOPIC = 'gate/ack'
 
 class MqttClient:
     client = mqtt.Client()
@@ -43,10 +45,19 @@ class MqttClient:
             parsed = json.loads(payload)
             command = Command.from_json(parsed)
         except json.decoder.JSONDecodeError:
-            print('payload is not a json')
+            self.__send_ack(ExecuteCommandResult.INVALID_PAYLOAD)
             return
         except ValueError as e:
-            print('[WARN] could not parse json into command')
+            self.__send_ack(ExecuteCommandResult.INVALID_COMMAND)
             return
 
-        self.handler.execute_command(command)
+        result = self.handler.execute_command(command)
+        self.__send_ack(result)
+
+    def __send_ack(self, result: ExecuteCommandResult):
+        payload = {
+            "deviceId": os.getenv('DEVICE_ID'),
+            "status": int(result)
+        }
+
+        self.client.publish(ACK_TOPIC, json.dumps(payload))
