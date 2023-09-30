@@ -22,7 +22,16 @@ void setup()
     GpioController* controller = new GpioController(OUTPUT_PIN, false, INVERT_LOGIC);
     GpioHandler* handler = new GpioHandler(controller);
 
-    bool success = mqtt::init(mqtt_broker_url, mqtt_broker_port, handler, MQTT_RECONNECT_ASYNC);
+    bool success = mqtt::init(
+        {
+            .url = mqtt_broker_url,
+            .port = mqtt_broker_port,
+            .client_id = device_id,
+            .reconnection = MQTT_RECONNECT_ASYNC,
+        },
+        handler
+    );
+    
     if (!success)
     {
         throw_blocking(TAG, "Error initializing mqtt, please try again");

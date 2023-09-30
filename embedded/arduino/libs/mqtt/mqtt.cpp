@@ -1,19 +1,15 @@
-#include <wifi.h>
-
-#include <PubSubClient.h>
-#include <WiFiClient.h>
 #include <ArduinoJson.h>
+#include <PubSubClient.h>
 
+#include "../wifi/wifi.h"
 #include "mqtt.h"
 #include "mqtt_packet.h"
 
-#define MQTT_CLIENT_ID_SIZE (23)
-#define JSON_DOC_SIZE (128)
-#define ID_HEADER "esp8266-"
+#define INPUT_BUF_SIZE (128)
+#define OUTPUT_BUF_SIZE (64)
 
 namespace mqtt
 {
-    static WiFiClient wifi_client;
     static PubSubClient mqtt_client;
 
     static GpioHandler* _handler;
@@ -26,52 +22,51 @@ namespace mqtt
     static String _password;
     static String _topic;
 
-    static DynamicJsonDocument json(JSON_DOC_SIZE);
+    static DynamicJsonDocument input_json(INPUT_BUF_SIZE);
+    static char* output_buffer;
+
+    static void send_ack(uint8_t status)
+    {
+        const int size = JSON_OBJECT_SIZE(2);
+        StaticJsonDocument<size> json;
+
+        json["deviceId"] = mqtt_client_id.c_str();
+        json["status"] = status;
+
+        serializeJson(json, output_buffer, OUTPUT_BUF_SIZE);
+        mqtt_client.publish("gate/ack", output_buffer);
+    }
 
     static void on_message(char* topic, uint8_t* payload, size_t length)
     {
-        auto error = deserializeJson(json, payload);
+        auto error = deserializeJson(input_json, payload);
         if (error)
         {
+            send_ack(COMMAND_INVALID_PAYLOAD);
             return;
         }
 
-        _handler->execute_command(json);
+        auto result = _handler->execute_command(input_json);
+        send_ack(result);
     }
 
-    static bool generate_client_id(void)
-    {
-        mqtt_client_id = ID_HEADER;
-
-        uint8_t mac[MAC_ADDR_SIZE];
-        size_t length = wifi::get_mac_addr(mac);
-        if (length != MAC_ADDR_SIZE)
-        {
-            // did not write mac address
-            return false;
-        }
-
-        for (size_t i = 0; i < length; i++)
-        {
-            mqtt_client_id += String(mac[i], HEX);
-        }
-
-        return true;
-    }
-
-    bool init(const char* url, const int port, GpioHandler* handler, const uint8_t reconnection)
+    bool init(connection_t connection, GpioHandler* handler)
     {
         if (!wifi::is_connected())
         {
             return false;
         }
 
-        mqtt_client.setClient(wifi_client);
-        mqtt_client.setServer(url, port);
+        mqtt_client.setClient(wifi::get_client());
+        mqtt_client.setServer(connection.url, connection.port);
         mqtt_client.setCallback(on_message);
 
+        mqtt_client_id = String(connection.client_id);
+
         _handler = handler;
-        reconnection_strategy = reconnection;
+        reconnection_strategy = connection.reconnection;
+
+        output_buffer = new char[OUTPUT_BUF_SIZE];
 
         return true;
     }
@@ -79,13 +74,6 @@ namespace mqtt
     bool connect(const char* username, const char* password, const char* topic)
     {
         bool success;
-
-        success = generate_client_id();
-        if (!success)
-        {
-            return false;
-        }
-
         success = mqtt_client.connect(mqtt_client_id.c_str(), username, password);
         if (!success)
         {
@@ -120,9 +108,9 @@ namespace mqtt
             return false;
         }
 
-        const char *username = _username.c_str();
-        const char *password = _username.c_str();
-        const char *topic = _username.c_str();
+        const char* username = _username.c_str();
+        const char* password = _username.c_str();
+        const char* topic = _username.c_str();
 
         success = mqtt_client.connect(mqtt_client_id.c_str(), username, password);
         if (!success)

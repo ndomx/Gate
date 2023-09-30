@@ -2,15 +2,17 @@
 #define LIBS_IO_GPIO_HANDLER_H
 
 #include <ArduinoJson.h>
+#include <stdint.h>
 
+#include "../common/constants.h"
 #include "gpio_controller.h"
 
 class GpioHandler
 {
     public:
     GpioHandler(GpioController* controller);
-    
-    void execute_command(DynamicJsonDocument& json) const;
+
+    uint8_t execute_command(DynamicJsonDocument& json) const;
 
     private:
     GpioController* _controller;
