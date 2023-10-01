@@ -1,10 +1,17 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { connect, MqttClient } from 'mqtt';
 import { IActionable } from 'src/common/interfaces/actionable.interface';
 import { NodeResponseDto } from 'src/nodes/dtos/responses';
 import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { plainToInstance } from 'class-transformer';
+import { DeviceAckDto } from 'src/common/dtos/commons/device-ack.dto';
+import { validateSync } from 'class-validator';
 
 const ackTopic = 'gate/ack';
 
@@ -16,8 +23,7 @@ export class MqttService implements IActionable, OnModuleInit {
   constructor(
     private readonly configService: ConfigService,
     private readonly eventEmitter: EventEmitter2,
-  ) {
-  }
+  ) {}
 
   activateDevice(
     node: NodeResponseDto,
@@ -34,7 +40,7 @@ export class MqttService implements IActionable, OnModuleInit {
   }
 
   onModuleInit() {
-      this.#clientSetup();
+    this.#clientSetup();
   }
 
   #clientSetup() {
@@ -94,6 +100,13 @@ export class MqttService implements IActionable, OnModuleInit {
 
   #onDeviceResponse(payload: Buffer) {
     const json = JSON.parse(payload.toString('utf-8'));
+    const deviceStatus = plainToInstance(DeviceAckDto, json);
+    const errors = validateSync(deviceStatus);
+    if (errors.length > 0) {
+      this.logger.warn('received invalid device ack', 'MqttService');
+      return;
+    }
+
     this.eventEmitter.emit('device.ack', json);
   }
 }
