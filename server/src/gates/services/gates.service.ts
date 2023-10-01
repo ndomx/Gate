@@ -14,9 +14,14 @@ import { IActionable } from 'src/common/interfaces/actionable.interface';
 import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';
 import { ERROR_CODES } from 'src/common/constants';
 import { ActivateDeviceResponseDto } from '../dtos/responses/activate-device-response.dto';
+import { OnEvent } from '@nestjs/event-emitter';
+import { CommandExecutionDto } from '../dtos/commons/command-execution.dto';
+import { DeviceAckDto } from 'src/common/dtos/commons/device-ack.dto';
 
 @Injectable()
 export class GatesService {
+  private pendingCommands = new Map<string, CommandExecutionDto>();
+
   constructor(
     private readonly nodesService: NodesService,
     private readonly usersService: UsersService,
@@ -66,6 +71,11 @@ export class GatesService {
       success: true,
     };
 
+    this.pendingCommands.set(node.id, {
+      state: 'pending',
+      timestamp: Date.now(),
+    });
+
     return plainToInstance(ActivateDeviceResponseDto, response);
   }
 
@@ -105,5 +115,20 @@ export class GatesService {
     }
 
     return handler;
+  }
+
+  @OnEvent('device.ack')
+  onDeviceResponse(response: DeviceAckDto) {
+    const exists = this.pendingCommands.has(response.deviceId);
+    if (!exists) {
+      return;
+    }
+
+    const command = this.pendingCommands.get(response.deviceId);
+    if (response.status === 0) {
+      command['state'] = 'ok';
+    }
+
+    console.log(this.pendingCommands);
   }
 }
