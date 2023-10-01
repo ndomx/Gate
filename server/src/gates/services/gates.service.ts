@@ -72,7 +72,7 @@ export class GatesService {
     };
 
     this.pendingCommands.set(node.id, {
-      state: 'pending',
+      pending: true,
       timestamp: Date.now(),
     });
 
@@ -125,9 +125,8 @@ export class GatesService {
     }
 
     const command = this.pendingCommands.get(response.deviceId);
-    if (response.status === 0) {
-      command['state'] = 'ok';
-    }
+    command.pending = false;
+    command.responseCode = response.status;
 
     console.log(this.pendingCommands);
   }

@@ -1,10 +1,13 @@
-import { Type } from 'class-transformer';
-import { IsDate, IsDefined, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CommandExecutionDto {
-  @IsString()
-  state: string;
+  @IsBoolean()
+  pending: boolean;
 
   @IsNumber()
   timestamp: number;
+
+  @IsInt()
+  @IsOptional()
+  responseCode?: number;
 }
