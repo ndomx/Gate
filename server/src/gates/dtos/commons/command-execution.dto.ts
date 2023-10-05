@@ -5,9 +5,12 @@ export class CommandExecutionDto {
   pending: boolean;
 
   @IsNumber()
-  timestamp: number;
+  startedAt: number;
 
   @IsInt()
   @IsOptional()
   responseCode?: number;
+
+  @IsNumber()
+  timeout: number;
 }

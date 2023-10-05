@@ -4,13 +4,14 @@ import { CommandExecutionDto } from '../dtos/commons/command-execution.dto';
 @Injectable()
 export class TrackingService {
   private readonly activeTasks = new Map<string, CommandExecutionDto>();
-  private readonly logger = new Logger();
+  private readonly logger = new Logger('TrackingService');
 
-  create(deviceId: string) {
+  create(deviceId: string, timeout: number) {
     this.logger.log(`creating new entry for device ${deviceId}`);
     this.activeTasks.set(deviceId, {
       pending: true,
-      timestamp: Date.now(),
+      startedAt: Date.now(),
+      timeout,
     });
   }
 
@@ -31,10 +32,7 @@ export class TrackingService {
     task.pending = false;
     task.responseCode = status;
 
-    this.logger.debug(
-      `set task.pending to false for device ${deviceId}`,
-      'TrackingService',
-    );
+    this.logger.debug(`set task.pending to false for device ${deviceId}`);
   }
 
   delete(deviceId: string) {
@@ -46,10 +44,7 @@ export class TrackingService {
 
   #hasActiveTask(deviceId: string): boolean {
     if (!this.activeTasks.has(deviceId)) {
-      this.logger.warn(
-        'receive request for untracked device',
-        'TrackingService',
-      );
+      this.logger.warn('receive request for untracked device');
 
       return false;
     }

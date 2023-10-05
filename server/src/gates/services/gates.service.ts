@@ -71,7 +71,7 @@ export class GatesService {
       success: true,
     };
 
-    this.trackingService.create(node.id);
+    this.trackingService.create(node.id, 10000);
     return plainToInstance(ActivateDeviceResponseDto, response);
   }
 

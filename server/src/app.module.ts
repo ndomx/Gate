@@ -7,6 +7,7 @@ import { NodesModule } from './nodes/nodes.module';
 import { GatesModule } from './gates/gates.module';
 import { MqttModule } from './mqtt/mqtt.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       }),
     }),
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
     NodesModule,
