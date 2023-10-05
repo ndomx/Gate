@@ -1,5 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CommandExecutionDto } from '../dtos/commons/command-execution.dto';
+import { COMMAND_RESPONSE_CODES } from 'src/common/constants';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class TrackingService {
@@ -40,6 +42,23 @@ export class TrackingService {
     if (!result) {
       this.logger.warn('attempted to delete an unexisting task');
     }
+  }
+
+  @Cron(CronExpression.EVERY_10_SECONDS)
+  updateAll() {
+    this.logger.debug('updating all tasks');
+
+    const now = Date.now();
+    this.activeTasks.forEach((task) => {
+      if (!task.pending) {
+        return;
+      }
+
+      if (now > task.startedAt + task.timeout) {
+        task.responseCode = COMMAND_RESPONSE_CODES.TIMEOUT;
+        task.pending = false;
+      }
+    });
   }
 
   #hasActiveTask(deviceId: string): boolean {
