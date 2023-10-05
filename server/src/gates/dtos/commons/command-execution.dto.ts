@@ -1,4 +1,4 @@
-import { IsBoolean, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsInt, IsNumber, IsOptional } from 'class-validator';
 
 export class CommandExecutionDto {
   @IsBoolean()

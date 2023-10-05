@@ -17,15 +17,15 @@ import { ActivateDeviceResponseDto } from '../dtos/responses/activate-device-res
 import { OnEvent } from '@nestjs/event-emitter';
 import { CommandExecutionDto } from '../dtos/commons/command-execution.dto';
 import { DeviceAckDto } from 'src/common/dtos/commons/device-ack.dto';
+import { TrackingService } from './tracking.service';
 
 @Injectable()
 export class GatesService {
-  private pendingCommands = new Map<string, CommandExecutionDto>();
-
   constructor(
-    private readonly nodesService: NodesService,
-    private readonly usersService: UsersService,
     private readonly mqttService: MqttService,
+    private readonly nodesService: NodesService,
+    private readonly trackingService: TrackingService,
+    private readonly usersService: UsersService,
   ) {}
 
   async activateDevice(
@@ -71,11 +71,7 @@ export class GatesService {
       success: true,
     };
 
-    this.pendingCommands.set(node.id, {
-      pending: true,
-      timestamp: Date.now(),
-    });
-
+    this.trackingService.create(node.id);
     return plainToInstance(ActivateDeviceResponseDto, response);
   }
 
@@ -103,6 +99,19 @@ export class GatesService {
     return plainToInstance(UserNodesResponseDto, response);
   }
 
+  getCommandExecutionStatus(deviceId: string): CommandExecutionDto {
+    const task = this.trackingService.get(deviceId);
+    if (!task) {
+      throw new BadRequestException();
+    }
+
+    if (!task.pending) {
+      this.trackingService.delete(deviceId);
+    }
+
+    return task;
+  }
+
   #mapActionToHandler(actionCode: NodeActionCode): IActionable {
     const handlerMap: Record<NodeActionCode, IActionable> = {
       'on/off': this.mqttService,
@@ -118,16 +127,7 @@ export class GatesService {
   }
 
   @OnEvent('device.ack')
-  onDeviceResponse(response: DeviceAckDto) {
-    const exists = this.pendingCommands.has(response.deviceId);
-    if (!exists) {
-      return;
-    }
-
-    const command = this.pendingCommands.get(response.deviceId);
-    command.pending = false;
-    command.responseCode = response.status;
-
-    console.log(this.pendingCommands);
+  onDeviceResponse({ deviceId, status }: DeviceAckDto) {
+    this.trackingService.update(deviceId, status);
   }
 }
