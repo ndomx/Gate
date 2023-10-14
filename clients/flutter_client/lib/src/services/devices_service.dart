@@ -1,7 +1,6 @@
 import 'package:flutter_client/src/db/entities/node_entity.dart';
 import 'package:flutter_client/src/db/gate_database.dart';
 import 'package:flutter_client/src/http/dtos/requests/activate_device_request_dto.dart';
-import 'package:flutter_client/src/http/dtos/response/access_response_dto.dart';
 import 'package:flutter_client/src/http/dtos/response/user_nodes_response_dto.dart';
 import 'package:flutter_client/src/http/gate_client.dart';
 import 'package:flutter_client/src/services/auth_service.dart';
@@ -22,21 +21,18 @@ class DevicesService {
   }
 
   Future<bool> checkLogin() async {
-    final token = await PrefsService.load<String>(PrefsService.accessTokenKey,
-        encrypted: true);
+    final token = await PrefsService.load<String>(PrefsService.accessTokenKey, encrypted: true);
 
     return (token != null);
   }
 
   Future<UserNodesResponseDto?> fetchAndSaveNodes() async {
-    final host = await PrefsService.load<String>(PrefsService.hostUrlKey,
-        encrypted: true);
+    final host = await PrefsService.load<String>(PrefsService.hostUrlKey, encrypted: true);
     if (host == null) {
       return null;
     }
 
-    final token = await PrefsService.load<String>(PrefsService.accessTokenKey,
-        encrypted: true);
+    final token = await PrefsService.load<String>(PrefsService.accessTokenKey, encrypted: true);
     if (token == null) {
       return null;
     }
@@ -48,28 +44,25 @@ class DevicesService {
     }
 
     final db = GateDatabase();
-    await db.insertNodes(List.from(res.nodes
-        .map((node) => NodeEntity(id: node.id, name: node.displayName))));
+    await db.insertNodes(List.from(res.nodes.map((node) => NodeEntity(id: node.id, name: node.displayName))));
 
     return res;
   }
 
-  Future<AccessResponseDto?> requestAccess(String deviceId) async {
+  Future<bool> requestAccess(String deviceId) async {
     final authResult = await _authenticate();
     if (!authResult) {
-      return null;
+      return false;
     }
 
-    final host = await PrefsService.load<String>(PrefsService.hostUrlKey,
-        encrypted: true);
+    final host = await PrefsService.load<String>(PrefsService.hostUrlKey, encrypted: true);
     if (host == null) {
-      return null;
+      return false;
     }
 
-    final token = await PrefsService.load<String>(PrefsService.accessTokenKey,
-        encrypted: true);
+    final token = await PrefsService.load<String>(PrefsService.accessTokenKey, encrypted: true);
     if (token == null) {
-      return null;
+      return false;
     }
 
     const request = ActivateDeviceRequestDto(action: 'on');

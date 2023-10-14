@@ -25,8 +25,7 @@ class DevicesController {
     return loadDevicesIfLoggedIn();
   }
 
-  Future<bool> requestAccess(DeviceViewModel device) async {
-    final res = await _devicesService.requestAccess(device.node.id);
-    return (res == null) ? false : res.success;
+  Future<bool> requestAccess(DeviceViewModel device) {
+    return _devicesService.requestAccess(device.node.id);
   }
 }
