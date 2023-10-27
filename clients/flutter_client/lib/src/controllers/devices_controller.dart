@@ -9,7 +9,7 @@ class DevicesController {
     if (!isLoggedIn) {
       return [];
     }
-    
+
     final nodes = await _devicesService.getStoredNodes();
     if (nodes == null) {
       return [];
@@ -27,5 +27,10 @@ class DevicesController {
 
   Future<bool> requestAccess(DeviceViewModel device) {
     return _devicesService.requestAccess(device.node.id);
+  }
+
+  Future<int> startPolling(DeviceViewModel device) async {
+    final response = await _devicesService.startStatusPolling(device.node.id);
+    return response?.responseCode ?? 1;
   }
 }

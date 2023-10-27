@@ -1,1 +1,1 @@
-const GITHUB_REPO_URL = 'https://github.com/ndomx/Gate';
+const githubRepoUrl = 'https://github.com/ndomx/Gate';

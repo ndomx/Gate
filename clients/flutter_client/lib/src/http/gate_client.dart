@@ -38,6 +38,16 @@ class GateClient {
     } catch (e) {
       return null;
     }
+
+    final json = jsonDecode(res.body) as Map<String, dynamic>;
+    CommandStatusDto? commandResponse;
+    try {
+      commandResponse = CommandStatusDto.fromJson(json);
+    } catch (e) {
+      commandResponse = null;
+    }
+
+    return commandResponse;
   }
 
   Future<LoginResponseDto?> login(String host, String username, String password) async {

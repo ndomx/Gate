@@ -54,10 +54,10 @@ class SettingsView extends StatelessWidget {
                     ),
                     GestureDetector(
                       child: const Text(
-                        GITHUB_REPO_URL,
+                        githubRepoUrl,
                         style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                       ),
-                      onTap: () => followLink(GITHUB_REPO_URL),
+                      onTap: () => followLink(githubRepoUrl),
                     )
                   ]);
             },

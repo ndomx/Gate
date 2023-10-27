@@ -17,12 +17,10 @@ class LoginView extends StatelessWidget {
     final password = passwordController.text;
     final server = serverController.text;
 
-    final res =
-        await _controller.onLoginButtonPress(username, password, server);
+    final res = await _controller.onLoginButtonPress(username, password, server);
 
     if (res == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Invalid credentials')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid credentials')));
       return;
     }
 
@@ -41,36 +39,30 @@ class LoginView extends StatelessWidget {
             TextField(
               controller: usernameController,
               decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter your name',
-                  label: Text('Username')),
+                  border: OutlineInputBorder(), hintText: 'Enter your name', label: Text('Username')),
               autocorrect: false,
             ),
             const SizedBox(height: 10),
             TextField(
               controller: passwordController,
               decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter your password',
-                  label: Text('Password')),
+                  border: OutlineInputBorder(), hintText: 'Enter your password', label: Text('Password')),
               obscureText: true,
             ),
             const SizedBox(height: 10),
             TextField(
               controller: serverController,
               decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter the server name',
-                  label: Text('Server')),
+                  border: OutlineInputBorder(), hintText: 'Enter the server name', label: Text('Server')),
               autocorrect: false,
               keyboardType: TextInputType.url,
             ),
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () => _onLoginButtonClick(context),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: const [
+                children: [
                   Text(
                     'Login',
                     textAlign: TextAlign.center,
