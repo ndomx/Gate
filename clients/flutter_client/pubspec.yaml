@@ -63,6 +63,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - .env
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -105,6 +107,3 @@ flutter_icons:
   image_path: "assets/icons/app-logo.png"
   android: true
   ios: true
-
-assets:
-  - .env

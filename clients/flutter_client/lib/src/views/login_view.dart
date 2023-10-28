@@ -10,14 +10,12 @@ class LoginView extends StatelessWidget {
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-  final serverController = TextEditingController();
 
   Future<void> _onLoginButtonClick(BuildContext context) async {
     final username = usernameController.text;
     final password = passwordController.text;
-    final server = serverController.text;
 
-    final res = await _controller.onLoginButtonPress(username, password, server);
+    final res = await _controller.onLoginButtonPress(username, password);
 
     if (res == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid credentials')));
@@ -48,14 +46,6 @@ class LoginView extends StatelessWidget {
               decoration: const InputDecoration(
                   border: OutlineInputBorder(), hintText: 'Enter your password', label: Text('Password')),
               obscureText: true,
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: serverController,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(), hintText: 'Enter the server name', label: Text('Server')),
-              autocorrect: false,
-              keyboardType: TextInputType.url,
             ),
             const SizedBox(height: 10),
             ElevatedButton(
