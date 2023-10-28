@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_client/src/http/dtos/requests/activate_device_request_dto.dart';
-import 'package:flutter_client/src/http/dtos/response/access_response_dto.dart';
+import 'package:flutter_client/src/http/dtos/response/command_status_dto.dart';
 import 'package:flutter_client/src/http/dtos/response/login_response_dto.dart';
 import 'package:flutter_client/src/http/dtos/response/user_nodes_response_dto.dart';
 import 'package:http/http.dart' as http;
@@ -16,36 +16,41 @@ class GateClient {
 
   GateClient._internal();
 
-  Future<AccessResponseDto?> requestAccess(String host, String token,
-      String deviceId, ActivateDeviceRequestDto request) async {
+  Future<bool> requestAccess(String host, String token, String deviceId, ActivateDeviceRequestDto request) async {
     final url = _buildUrl(host, '/gates/$deviceId/activate');
 
     http.Response res;
     try {
-      res = await http.post(url,
-          headers: {'Authorization': 'Bearer $token'}, body: request.toJson());
+      res = await http.post(url, headers: _buildHeaders(token), body: request.toJson());
     } catch (e) {
-      return null;
+      return false;
     }
 
-    if (res.statusCode != 200) {
+    return res.statusCode == 204;
+  }
+
+  Future<CommandStatusDto?> getCommandStatus(String host, String token, String deviceId) async {
+    final url = _buildUrl(host, '/gates/$deviceId/status');
+
+    http.Response res;
+    try {
+      res = await http.get(url, headers: _buildHeaders(token));
+    } catch (e) {
       return null;
     }
 
     final json = jsonDecode(res.body) as Map<String, dynamic>;
-    AccessResponseDto? accessResponse;
+    CommandStatusDto? commandResponse;
     try {
-      accessResponse = AccessResponseDto.fromJson(json);
-      return accessResponse;
+      commandResponse = CommandStatusDto.fromJson(json);
     } catch (e) {
-      accessResponse = null;
+      commandResponse = null;
     }
 
-    return accessResponse;
+    return commandResponse;
   }
 
-  Future<LoginResponseDto?> login(
-      String host, String username, String password) async {
+  Future<LoginResponseDto?> login(String host, String username, String password) async {
     final url = _buildUrl(host, '/auth');
 
     http.Response res;
@@ -73,13 +78,12 @@ class GateClient {
     return loginResponse;
   }
 
-  Future<UserNodesResponseDto?> fetchUserNodes(
-      String host, String token) async {
+  Future<UserNodesResponseDto?> fetchUserNodes(String host, String token) async {
     final url = _buildUrl(host, '/gates/user', {'deviceOnly': 'true'});
 
     http.Response res;
     try {
-      res = await http.get(url, headers: {'Authorization': 'Bearer $token'});
+      res = await http.get(url, headers: _buildHeaders(token));
     } catch (e) {
       return null;
     }
@@ -101,5 +105,9 @@ class GateClient {
     } else {
       return Uri.https(host, path, query);
     }
+  }
+
+  Map<String, String> _buildHeaders(String token) {
+    return {'Authorization': 'Bearer $token'};
   }
 }

@@ -28,8 +28,8 @@ class DeviceViewModel {
   Widget get stateIcon {
     switch (state) {
       case DeviceState.waiting:
-        return Stack(
-          children: const [
+        return const Stack(
+          children: [
             Center(
               child: Icon(
                 Icons.lock_outline,

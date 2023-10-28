@@ -13,3 +13,12 @@ export const ERROR_CODES = {
   NODE_NOT_FOUND: 'node not found',
   INVALID_REQUEST: 'invalid request',
 } as const;
+
+export const COMMAND_RESPONSE_CODES = {
+  OK: 0,
+  TIMEOUT: 1,
+  INVALID_PAYLOAD: 2,
+  INVALID_COMMAND: 3,
+  INVALID_ACTION: 4,
+  UNKNOWN_ERROR: 5,
+} as const;

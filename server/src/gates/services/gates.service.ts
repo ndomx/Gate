@@ -13,21 +13,25 @@ import { NodeActionCode } from 'src/utils/types';
 import { IActionable } from 'src/common/interfaces/actionable.interface';
 import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';
 import { ERROR_CODES } from 'src/common/constants';
-import { ActivateDeviceResponseDto } from '../dtos/responses/activate-device-response.dto';
+import { OnEvent } from '@nestjs/event-emitter';
+import { CommandExecutionDto } from '../dtos/commons/command-execution.dto';
+import { DeviceAckDto } from 'src/common/dtos/commons/device-ack.dto';
+import { TrackingService } from './tracking.service';
 
 @Injectable()
 export class GatesService {
   constructor(
-    private readonly nodesService: NodesService,
-    private readonly usersService: UsersService,
     private readonly mqttService: MqttService,
+    private readonly nodesService: NodesService,
+    private readonly trackingService: TrackingService,
+    private readonly usersService: UsersService,
   ) {}
 
   async activateDevice(
     deviceId: string,
     userId: string,
     request: ActivateDeviceRequestDto,
-  ): Promise<ActivateDeviceResponseDto> {
+  ): Promise<void> {
     // verify user
     const user = await this.usersService.findById(userId);
 
@@ -59,14 +63,7 @@ export class GatesService {
 
     // grant access
     await handler.activateDevice(node, params);
-
-    const response: ActivateDeviceResponseDto = {
-      node,
-      action: request.action,
-      success: true,
-    };
-
-    return plainToInstance(ActivateDeviceResponseDto, response);
+    this.trackingService.create(node.id, 10000);
   }
 
   async findUserNodes(
@@ -93,6 +90,19 @@ export class GatesService {
     return plainToInstance(UserNodesResponseDto, response);
   }
 
+  getCommandExecutionStatus(deviceId: string): CommandExecutionDto {
+    const task = this.trackingService.get(deviceId);
+    if (!task) {
+      throw new BadRequestException();
+    }
+
+    if (!task.pending) {
+      this.trackingService.delete(deviceId);
+    }
+
+    return task;
+  }
+
   #mapActionToHandler(actionCode: NodeActionCode): IActionable {
     const handlerMap: Record<NodeActionCode, IActionable> = {
       'on/off': this.mqttService,
@@ -105,5 +115,10 @@ export class GatesService {
     }
 
     return handler;
+  }
+
+  @OnEvent('device.ack')
+  onDeviceResponse({ deviceId, status }: DeviceAckDto) {
+    this.trackingService.update(deviceId, status);
   }
 }

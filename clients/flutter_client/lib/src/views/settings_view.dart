@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_client/src/common/constants.dart';
+import 'package:flutter_client/src/common/utils.dart';
 import 'package:flutter_client/src/controllers/settings_controller.dart';
-import 'package:link_text/link_text.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key, required this.controller});
@@ -23,12 +24,9 @@ class SettingsView extends StatelessWidget {
               value: controller.themeMode,
               onChanged: controller.updateThemeMode,
               items: const [
-                DropdownMenuItem(
-                    value: ThemeMode.system, child: Text('System Theme')),
-                DropdownMenuItem(
-                    value: ThemeMode.light, child: Text('Light Theme')),
-                DropdownMenuItem(
-                    value: ThemeMode.dark, child: Text('Dark Theme')),
+                DropdownMenuItem(value: ThemeMode.system, child: Text('System Theme')),
+                DropdownMenuItem(value: ThemeMode.light, child: Text('Light Theme')),
+                DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark Theme')),
               ],
             ),
           ),
@@ -54,7 +52,13 @@ class SettingsView extends StatelessWidget {
                     const SizedBox(
                       height: 10,
                     ),
-                    const LinkText('https://github.com/ndomx/Gate')
+                    GestureDetector(
+                      child: const Text(
+                        githubRepoUrl,
+                        style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                      ),
+                      onTap: () => followLink(githubRepoUrl),
+                    )
                   ]);
             },
           )
@@ -62,9 +66,7 @@ class SettingsView extends StatelessWidget {
       ),
       bottomNavigationBar: TextButton(
           onPressed: () => _onLogoutPress(context),
-          style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all(Theme.of(context).cardColor)),
+          style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Theme.of(context).cardColor)),
           child: const Text(
             'Log out',
             style: TextStyle(color: Colors.redAccent, fontSize: 24),
@@ -77,14 +79,13 @@ class SettingsView extends StatelessWidget {
         context: context,
         builder: ((context) => AlertDialog(
               title: const Text('Log out?'),
-              content: Column(mainAxisSize: MainAxisSize.min, children: [
-                const Text(
-                    'This will log you out of the platform and delete all data'),
-                const SizedBox(
+              content: const Column(mainAxisSize: MainAxisSize.min, children: [
+                Text('This will log you out of the platform and delete all data'),
+                SizedBox(
                   height: 10,
                 ),
                 Row(
-                  children: const [
+                  children: [
                     Icon(
                       Icons.warning_amber_outlined,
                       color: Colors.amberAccent,
@@ -92,8 +93,7 @@ class SettingsView extends StatelessWidget {
                     SizedBox(
                       width: 5,
                     ),
-                    Expanded(
-                        child: Text('Warning: this action cannot be undone'))
+                    Expanded(child: Text('Warning: this action cannot be undone'))
                   ],
                 )
               ]),
@@ -106,10 +106,8 @@ class SettingsView extends StatelessWidget {
                 TextButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      controller.logout().then((value) =>
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Deleted all user data'))));
+                      controller.logout().then((value) => ScaffoldMessenger.of(context)
+                          .showSnackBar(const SnackBar(content: Text('Deleted all user data'))));
                     },
                     child: const Text(
                       'Confirm',

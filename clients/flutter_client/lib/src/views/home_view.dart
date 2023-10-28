@@ -36,9 +36,7 @@ class _HomeViewState extends State<HomeView> {
       appBar: AppBar(
         title: const Text('Gate'),
         actions: [
-          IconButton(
-              onPressed: () => _onRefresh(context),
-              icon: const Icon(Icons.refresh)),
+          IconButton(onPressed: () => _onRefresh(context), icon: const Icon(Icons.refresh)),
           PopupMenuButton(
             itemBuilder: ((context) => const [
                   PopupMenuItem<MenuItem>(
@@ -109,8 +107,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Future<void> _goToLoginScreen(BuildContext context) async {
-    final refresh = await Navigator.push<bool?>(
-        context, MaterialPageRoute(builder: (context) => LoginView()));
+    final refresh = await Navigator.push<bool?>(context, MaterialPageRoute(builder: (context) => LoginView()));
 
     if ((refresh == true) && mounted) {
       ScaffoldMessenger.of(context)
@@ -141,35 +138,45 @@ class _HomeViewState extends State<HomeView> {
   Future<void> _onDeviceTap(BuildContext context, int index) async {
     List<DeviceViewModel> devices;
 
-    devices = await _devices;
-    devices[index].state = DeviceState.waiting;
-
-    setState(() {
-      _devices = Future.value(devices);
-    });
+    devices = await _setDeviceState(index, DeviceState.waiting);
 
     final accessGranted = await _controller.requestAccess(devices[index]);
-
-    Duration duration;
     if (accessGranted) {
-      devices[index].state = DeviceState.success;
-      duration =
-          const Duration(seconds: DeviceViewModel.successAnimationDuration);
+      await _onRequestAccessSuccess(index);
     } else {
-      devices[index].state = DeviceState.failure;
-      duration =
-          const Duration(seconds: DeviceViewModel.failureAnimationDuration);
+      await _onRequestAccessFailure(index);
+    }
+  }
+
+  Future<void> _onRequestAccessSuccess(int index) async {
+    final devices = await _devices;
+    final responseCode = await _controller.startPolling(devices[index]);
+  
+    if (responseCode != 0) {
+      return _onRequestAccessFailure(index);
     }
 
+    await _setDeviceState(index, DeviceState.success);
+    await Future.delayed(const Duration(seconds: DeviceViewModel.successAnimationDuration));
+
+    await _setDeviceState(index, DeviceState.idle);
+  }
+
+  Future<void> _onRequestAccessFailure(int index) async {
+    await _setDeviceState(index, DeviceState.failure);
+    await Future.delayed(const Duration(seconds: DeviceViewModel.failureAnimationDuration));
+
+    await _setDeviceState(index, DeviceState.idle);
+  }
+
+  Future<List<DeviceViewModel>> _setDeviceState(int index, DeviceState state) async {
+    final devices = await _devices;
+    devices[index].state = state;
+
     setState(() {
       _devices = Future.value(devices);
     });
 
-    await Future.delayed(duration);
-
-    devices[index].state = DeviceState.idle;
-    setState(() {
-      _devices = Future.value(devices);
-    });
+    return devices;
   }
 }

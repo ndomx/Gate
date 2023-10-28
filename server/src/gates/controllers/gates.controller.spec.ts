@@ -32,7 +32,7 @@ describe('GatesController', () => {
     const userId = '123as';
 
     it('calls service.activateDevice', async () => {
-      const result = await controller.activateDevice(deviceId, userId);
+      await controller.activateDevice(deviceId, { action: 'on' }, userId);
       expect(gatesServiceMock.activateDevice).toHaveBeenCalledWith(
         deviceId,
         userId,
