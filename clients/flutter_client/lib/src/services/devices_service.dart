@@ -37,7 +37,7 @@ class DevicesService {
     }
 
     final client = GateClient();
-    final res = await client.fetchUserNodes(attrs.host, attrs.token);
+    final res = await client.fetchUserNodes(attrs.token);
     if (res == null) {
       return null;
     }
@@ -62,7 +62,7 @@ class DevicesService {
     }
 
     final client = GateClient();
-    return client.requestAccess(attrs.host, attrs.token, deviceId, request);
+    return client.requestAccess(attrs.token, deviceId, request);
   }
 
   Future<CommandStatusDto?> startStatusPolling(String deviceId) async {
@@ -83,7 +83,7 @@ class DevicesService {
     CommandStatusDto? response;
 
     while (retries++ < maxRetries && response?.responseCode == null) {
-      response = await client.getCommandStatus(attrs.host, attrs.token, deviceId);
+      response = await client.getCommandStatus(attrs.token, deviceId);
       await Future.delayed(const Duration(seconds: 1));
     }
 
@@ -101,16 +101,11 @@ class DevicesService {
   }
 
   Future<ServerAttributes?> _loadServerAttributes() async {
-    final host = await PrefsService.load<String>(PrefsService.hostUrlKey, encrypted: true);
-    if (host == null) {
-      return null;
-    }
-
     final token = await PrefsService.load<String>(PrefsService.accessTokenKey, encrypted: true);
     if (token == null) {
       return null;
     }
 
-    return ServerAttributes(host: host, token: token);
+    return ServerAttributes(token: token);
   }
 }

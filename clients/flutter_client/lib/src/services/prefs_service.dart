@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefsService {
   static const String accessTokenKey = 'key_access_token';
-  static const String hostUrlKey = 'key_host_url';
   static const String themeKey = 'key_theme';
   static const String requireAuthKey = 'key_require_auth';
 

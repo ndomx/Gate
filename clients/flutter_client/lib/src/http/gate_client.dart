@@ -5,10 +5,12 @@ import 'package:flutter_client/src/http/dtos/requests/activate_device_request_dt
 import 'package:flutter_client/src/http/dtos/response/command_status_dto.dart';
 import 'package:flutter_client/src/http/dtos/response/login_response_dto.dart';
 import 'package:flutter_client/src/http/dtos/response/user_nodes_response_dto.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class GateClient {
   static final GateClient _instance = GateClient._internal();
+  static final String _host = dotenv.get('GATE_BASE_URL');
 
   factory GateClient() {
     return _instance;
@@ -16,8 +18,8 @@ class GateClient {
 
   GateClient._internal();
 
-  Future<bool> requestAccess(String host, String token, String deviceId, ActivateDeviceRequestDto request) async {
-    final url = _buildUrl(host, '/gates/$deviceId/activate');
+  Future<bool> requestAccess(String token, String deviceId, ActivateDeviceRequestDto request) async {
+    final url = _buildUrl('/gates/$deviceId/activate');
 
     http.Response res;
     try {
@@ -29,8 +31,8 @@ class GateClient {
     return res.statusCode == 204;
   }
 
-  Future<CommandStatusDto?> getCommandStatus(String host, String token, String deviceId) async {
-    final url = _buildUrl(host, '/gates/$deviceId/status');
+  Future<CommandStatusDto?> getCommandStatus(String token, String deviceId) async {
+    final url = _buildUrl('/gates/$deviceId/status');
 
     http.Response res;
     try {
@@ -50,8 +52,8 @@ class GateClient {
     return commandResponse;
   }
 
-  Future<LoginResponseDto?> login(String host, String username, String password) async {
-    final url = _buildUrl(host, '/auth');
+  Future<LoginResponseDto?> login(String username, String password) async {
+    final url = _buildUrl('/auth');
 
     http.Response res;
     try {
@@ -78,8 +80,8 @@ class GateClient {
     return loginResponse;
   }
 
-  Future<UserNodesResponseDto?> fetchUserNodes(String host, String token) async {
-    final url = _buildUrl(host, '/gates/user', {'deviceOnly': 'true'});
+  Future<UserNodesResponseDto?> fetchUserNodes(String token) async {
+    final url = _buildUrl('/gates/user', {'deviceOnly': 'true'});
 
     http.Response res;
     try {
@@ -99,11 +101,11 @@ class GateClient {
     return userNodes;
   }
 
-  Uri _buildUrl(String host, String path, [Map<String, dynamic>? query]) {
+  Uri _buildUrl(String path, [Map<String, dynamic>? query]) {
     if (kDebugMode) {
-      return Uri.http(host, path, query);
+      return Uri.http(_host, path, query);
     } else {
-      return Uri.https(host, path, query);
+      return Uri.https(_host, path, query);
     }
   }
 
