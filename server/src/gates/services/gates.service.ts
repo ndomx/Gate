@@ -9,14 +9,14 @@ import { UsersService } from 'src/users/services/users.service';
 import { UserNodesResponseDto } from 'src/common/dtos/responses/user-nodes-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { ActivateDeviceRequestDto } from '../dtos/requests/activate-device-request.dto';
-import { NodeActionCode } from 'src/utils/types';
 import { IActionable } from 'src/common/interfaces/actionable.interface';
 import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';
 import { ERROR_CODES } from 'src/common/constants';
 import { OnEvent } from '@nestjs/event-emitter';
-import { CommandExecutionDto } from '../dtos/commons/command-execution.dto';
 import { DeviceAckDto } from 'src/common/dtos/commons/device-ack.dto';
 import { TrackingService } from './tracking.service';
+import { CommandExecutionDto } from '../dtos';
+import { NodeActionCode } from 'src/common/types';
 
 @Injectable()
 export class GatesService {

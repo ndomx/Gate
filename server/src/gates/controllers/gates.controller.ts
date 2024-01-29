@@ -9,8 +9,7 @@ import {
 } from '@nestjs/common';
 import { GatesService } from '../services/gates.service';
 import { UserNodesResponseDto } from 'src/common/dtos/responses/user-nodes-response.dto';
-import { ActivateDeviceRequestDto } from '../dtos/requests/activate-device-request.dto';
-import { CommandExecutionDto } from '../dtos/commons/command-execution.dto';
+import { ActivateDeviceRequestDto, CommandExecutionDto } from '../dtos';
 
 @Controller('gates')
 export class GatesController {

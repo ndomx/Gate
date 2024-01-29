@@ -1,6 +1,6 @@
 import { IsIn, IsMongoId, IsString, Matches } from 'class-validator';
-import { NODE_ACTION_CODES } from 'src/utils/constants';
-import { NodeActionCode } from 'src/utils/types';
+import { NODE_ACTION_CODES } from 'src/common/constants';
+import { NodeActionCode } from 'src/common/types';
 
 export class NodeDto {
   @IsMongoId()

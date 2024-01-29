@@ -6,4 +6,4 @@ export const SUPPORTED_ACTIONS_BY_CODE: Record<
 > = {
   'on/off': ['off', 'on', 'toggle'],
   'phone-call': ['call'],
-};
+} as const;
