@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { NodeDocument } from '../entities/node.entity';
 import { Node } from '../interfaces/node.interface';
 import { CreateNodeRequestDto, UpdateNodeRequestDto } from '../dtos/requests';
+import { NodeActionCode } from 'src/utils/types';
 
 @Injectable()
 export class NodesService {
@@ -40,7 +41,8 @@ export class NodesService {
       id: document._id.toHexString(),
       name: document.name,
       displayName: document.displayName,
-      actionCode: document.actionCode,
+      actionCode: document.actionCode as NodeActionCode,
+      deviceId: document.deviceId,
     };
   }
 }

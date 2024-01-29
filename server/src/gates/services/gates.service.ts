@@ -32,7 +32,7 @@ export class GatesService {
     request: ActivateDeviceRequestDto,
   ): Promise<void> {
     // verify user
-    const user = await this.usersService.findById(request.userAuthId);
+    const user = await this.usersService.findById(request.userId);
 
     // verify permission
     const hasAccess = user.access.find((id) => nodeId === id);
@@ -44,7 +44,7 @@ export class GatesService {
     const node = await this.nodesService.findById(nodeId);
 
     // get handler and params
-    const handler = this.#mapActionToHandler(node.info.actionCode);
+    const handler = this.#mapActionToHandler(node.actionCode);
     const params: ActionableHandlerDto = {
       action: request.action,
       body: request.actionDetails,
@@ -56,25 +56,11 @@ export class GatesService {
     this.trackingService.create(node.id, 10000);
   }
 
-  async findUserNodes(
-    userId: string,
-    deviceOnly = true,
-  ): Promise<UserNodesResponseDto> {
+  async findUserNodes(userId: string): Promise<UserNodesResponseDto> {
     const user = await this.usersService.findById(userId);
-
-    const nodes = [];
-    for (const prefix of user.access) {
-      const children = await this.nodesService.findByPrefix(
-        prefix,
-        user.rootId,
-      );
-
-      const filtered = deviceOnly
-        ? children.filter((node) => node.nodeInfo.isDevice)
-        : children;
-
-      nodes.push(...filtered);
-    }
+    const nodes = await Promise.all(
+      user.access.map((nodeId) => this.nodesService.findById(nodeId)),
+    );
 
     const response: UserNodesResponseDto = { user, nodes };
     return plainToInstance(UserNodesResponseDto, response);

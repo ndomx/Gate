@@ -2,10 +2,7 @@ import {
   Controller,
   Get,
   Param,
-  UseGuards,
-  Request,
   Post,
-  Query,
   Body,
   HttpStatus,
   HttpCode,
@@ -19,27 +16,26 @@ import { CommandExecutionDto } from '../dtos/commons/command-execution.dto';
 export class GatesController {
   constructor(private readonly gatesService: GatesService) {}
 
-  @Post(':deviceId/activate')
+  @Post(':nodeId/activate')
   @HttpCode(HttpStatus.NO_CONTENT)
   activateDevice(
-    @Param('deviceId') deviceId: string,
+    @Param('nodeId') nodeId: string,
     @Body() activateDeviceRequest: ActivateDeviceRequestDto,
   ): Promise<void> {
-    return this.gatesService.activateDevice(deviceId, activateDeviceRequest);
+    return this.gatesService.activateDevice(nodeId, activateDeviceRequest);
   }
 
-  @Get('user')
+  @Get('user/:userId/nodes')
   findUserNodes(
-    @Request() req,
-    @Query('deviceOnly') deviceOnly?: boolean,
+    @Param('userId') userId: string,
   ): Promise<UserNodesResponseDto> {
-    return this.gatesService.findUserNodes(req.user.userId, deviceOnly);
+    return this.gatesService.findUserNodes(userId);
   }
 
-  @Get(':deviceId/status')
+  @Get(':nodeId/status')
   getCommandExecutionStatus(
-    @Param('deviceId') deviceId: string,
+    @Param('nodeId') nodeId: string,
   ): CommandExecutionDto {
-    return this.gatesService.getCommandExecutionStatus(deviceId);
+    return this.gatesService.getCommandExecutionStatus(nodeId);
   }
 }

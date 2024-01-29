@@ -13,6 +13,9 @@ export class NodeEntity {
 
   @Prop({ required: true })
   actionCode: string;
+
+  @Prop({ required: true })
+  deviceId: string;
 }
 
 export const NodeSchema = SchemaFactory.createForClass(Node);

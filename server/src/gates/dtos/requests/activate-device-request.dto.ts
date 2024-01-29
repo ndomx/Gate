@@ -11,5 +11,5 @@ export class ActivateDeviceRequestDto {
   actionDetails?: Record<string, unknown>;
 
   @IsString()
-  userAuthId: string;
+  userId: string;
 }
