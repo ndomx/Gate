@@ -15,16 +15,10 @@ export class User {
   username: string;
 
   @Prop({ required: true })
-  password: string;
-
-  @Prop({ required: true })
-  rootId: string;
-
-  @Prop({ required: true })
   access: [string];
 
-  @Prop({ default: ['user'] })
-  roles: string[];
+  @Prop({ required: true })
+  authId: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -28,37 +28,27 @@ export class GatesService {
   ) {}
 
   async activateDevice(
-    deviceId: string,
-    userId: string,
+    nodeId: string,
     request: ActivateDeviceRequestDto,
   ): Promise<void> {
     // verify user
-    const user = await this.usersService.findById(userId);
-
-    // verify node
-    const node = await this.nodesService.findInRoot(deviceId, user.rootId);
-
-    // is device node
-    if (!node.nodeInfo.isDevice) {
-      throw new BadRequestException({
-        errorCode: ERROR_CODES.NOT_DEVICE,
-        message: 'node is not a device',
-      });
-    }
+    const user = await this.usersService.findById(request.userAuthId);
 
     // verify permission
-    const path = await this.nodesService.getPathById(deviceId);
-    const hasAccess = user.access.some((prefix) => path.startsWith(prefix));
+    const hasAccess = user.access.find((id) => nodeId === id);
     if (!hasAccess) {
       throw new UnauthorizedException({ errorCode: ERROR_CODES.ACCESS_DENIED });
     }
 
+    // find node
+    const node = await this.nodesService.findById(nodeId);
+
     // get handler and params
-    const handler = this.#mapActionToHandler(node.nodeInfo.actionCode);
+    const handler = this.#mapActionToHandler(node.info.actionCode);
     const params: ActionableHandlerDto = {
       action: request.action,
       body: request.actionDetails,
-      path,
+      deviceId: node.deviceId,
     };
 
     // grant access

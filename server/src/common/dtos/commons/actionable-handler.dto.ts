@@ -8,7 +8,7 @@ export class ActionableHandlerDto {
   action: DeviceAction;
 
   @IsString()
-  path: string;
+  deviceId: string;
 
   @IsObject()
   @IsOptional()

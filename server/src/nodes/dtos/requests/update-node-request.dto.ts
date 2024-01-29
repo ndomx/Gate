@@ -1,5 +1,5 @@
 import { OmitType, PartialType } from '@nestjs/swagger';
-import { NodeDto } from '../node.dto';
+import { NodeDto } from '../common';
 
 class NodeWithoutId extends OmitType(NodeDto, ['id'] as const) {}
 
