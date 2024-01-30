@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { NodeDocument } from '../entities/node.entity';
+import { NodeDocument, NodeEntity } from '../entities/node.entity';
 import { Node } from '../interfaces/node.interface';
 import { CreateNodeRequestDto, UpdateNodeRequestDto } from '../dtos/requests';
 import { NodeActionCode } from 'src/common/types';
@@ -9,7 +9,7 @@ import { NodeActionCode } from 'src/common/types';
 @Injectable()
 export class NodesService {
   constructor(
-    @InjectModel(Node.name) private readonly model: Model<NodeDocument>,
+    @InjectModel(NodeEntity.name) private readonly model: Model<NodeDocument>,
   ) {}
 
   create(node: CreateNodeRequestDto): Promise<Node> {

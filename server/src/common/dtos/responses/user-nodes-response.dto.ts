@@ -1,16 +1,11 @@
-import { Type } from 'class-transformer';
-import { IsDefined, ValidateNested } from 'class-validator';
-import { NodeResponseDto } from 'src/nodes/dtos/responses';
-import { UserResponseDto } from 'src/users/dtos/responses';
+import { IsDefined } from 'class-validator';
+import { Node } from 'src/nodes/interfaces/node.interface';
+import { User } from 'src/users/interfaces/user.interface';
 
 export class UserNodesResponseDto {
-  @ValidateNested()
-  @Type(() => UserResponseDto)
   @IsDefined()
-  user: UserResponseDto;
+  user: User;
 
-  @ValidateNested()
-  @Type(() => UserResponseDto)
   @IsDefined()
-  nodes: NodeResponseDto[];
+  nodes: Node[];
 }

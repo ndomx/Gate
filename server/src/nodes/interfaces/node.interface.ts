@@ -1,4 +1,4 @@
-import { NodeActionCode } from 'src/utils/types';
+import { NodeActionCode } from 'src/common/types';
 
 export interface Node {
   id: string;

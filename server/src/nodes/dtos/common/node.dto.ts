@@ -16,4 +16,7 @@ export class NodeDto {
   @IsString()
   @IsIn(NODE_ACTION_CODES)
   actionCode: NodeActionCode;
+
+  @IsString()
+  deviceId: string;
 }

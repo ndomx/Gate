@@ -1,6 +1,6 @@
 import { IsIn, IsOptional, IsString } from 'class-validator';
-import { DEVICE_ACTIONS } from 'src/utils/constants';
-import { DeviceAction } from 'src/utils/types';
+import { DEVICE_ACTIONS } from 'src/common/constants';
+import { DeviceAction } from 'src/common/types';
 
 export class ActivateDeviceRequestDto {
   @IsString()
