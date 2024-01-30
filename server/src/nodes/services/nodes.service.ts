@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { NodeDocument } from '../entities/node.entity';
 import { Node } from '../interfaces/node.interface';
 import { CreateNodeRequestDto, UpdateNodeRequestDto } from '../dtos/requests';
-import { NodeActionCode } from 'src/utils/types';
+import { NodeActionCode } from 'src/common/types';
 
 @Injectable()
 export class NodesService {

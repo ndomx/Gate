@@ -1,53 +1,46 @@
-import { UsersCrudService } from './users-crud.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateUserRequestDto, UpdateUserRequestDto } from '../dtos/requests';
-import { UserResponseDto } from '../dtos/responses';
-import { hashPassword } from 'src/utils/crypto';
-import { NodesService } from 'src/nodes/services/nodes.service';
-import { Injectable } from '@nestjs/common';
-import { UserWithPasswordResponseDto } from 'src/common/dtos/responses/user-with-password-response.dto';
+import { UserDocument, UserEntity } from '../entities/user.entity';
+import { User } from '../interfaces/user.interface';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly usersCrudService: UsersCrudService,
-    private readonly nodesService: NodesService,
+    @InjectModel(UserEntity.name) private readonly model: Model<UserDocument>,
   ) {}
 
-  async createUser(request: CreateUserRequestDto): Promise<UserResponseDto> {
-    const _root = await this.nodesService.findRoot(request.rootId);
-    const hashedPassword = await hashPassword(request.password);
-    return this.usersCrudService.create({
-      ...request,
-      password: hashedPassword,
-    });
+  create(user: CreateUserRequestDto): Promise<User> {
+    return this.model.create(user).then((u) => this.#mapFromSchema(u));
   }
 
-  findById(userId: string): Promise<UserResponseDto> {
-    return this.usersCrudService.findById(userId);
+  findById(id: string): Promise<User> {
+    return this.model.findById(id).then((u) => this.#mapFromSchema(u));
   }
 
-  findByUsername(username: string): Promise<UserResponseDto> {
-    return this.usersCrudService.findByUsername(username);
+  update(id: string, fields: UpdateUserRequestDto): Promise<User> {
+    return this.model
+      .findByIdAndUpdate(id, fields, { returnDocument: 'after' })
+      .then((u) => this.#mapFromSchema(u));
   }
 
-  findByUsernameWithPassword(
-    username: string,
-  ): Promise<UserWithPasswordResponseDto> {
-    return this.usersCrudService.findByUsernameWithPassword(username);
+  delete(id: string): Promise<User> {
+    return this.model.findByIdAndDelete(id).then((u) => this.#mapFromSchema(u));
   }
 
-  async updateUser(
-    userId: string,
-    fields: UpdateUserRequestDto,
-  ): Promise<UserResponseDto> {
-    if (fields.password) {
-      fields.password = await hashPassword(fields.password);
+  #mapFromSchema(document: UserDocument): User {
+    if (!document) {
+      throw new NotFoundException();
     }
 
-    return this.usersCrudService.update(userId, fields);
-  }
-
-  deleteUser(userId: string): Promise<UserResponseDto> {
-    return this.usersCrudService.delete(userId);
+    return {
+      id: document._id.toHexString(),
+      name: document.name,
+      last: document.last,
+      username: document.username,
+      access: document.access,
+      authId: document.authId,
+    };
   }
 }

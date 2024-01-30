@@ -3,7 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type NodeDocument = HydratedDocument<NodeEntity>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class NodeEntity {
   @Prop({ required: true })
   name: string;
@@ -18,4 +18,4 @@ export class NodeEntity {
   deviceId: string;
 }
 
-export const NodeSchema = SchemaFactory.createForClass(Node);
+export const NodeSchema = SchemaFactory.createForClass(NodeEntity);
