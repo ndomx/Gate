@@ -1,39 +1,46 @@
 import React, { useState } from "react";
-import "./login-form.css";
+import { UserAuth } from "../context/AuthContext";
 
 export default function LoginForm() {
-  const [username, setUsername] = useState("");
+  const auth = UserAuth();
+
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   //   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("do something");
+    let success = true;
+    await auth?.signIn(email, password).catch((_e) => (success = false));
+    console.log("success:", success);
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleLogin}>
-        <label>
-          Username:
+    <div className="max-w-[700px] mx-auto my-16 p-4">
+      <div>
+        <h1 className="text-2xl font-bold py-2">Sign in to your account</h1>
+      </div>
+      <form onSubmit={handleLogin}>
+        <div className="flex flex-col py-2">
+          <label className="py-2 font-medium">Email Address</label>
           <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
+            className="border p-3"
+            type="email"
           />
-        </label>
-        <br />
-        <label>
-          Password:
+        </div>
+        <div className="flex flex-col py-2">
+          <label className="py-2 font-medium">Password</label>
           <input
-            type="password"
-            value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="border p-3"
+            type="password"
           />
-        </label>
-        <br />
-        <button type="submit">Login</button>
+        </div>
+        <button className="border border-blue-500 bg-blue-600 hover:bg-blue-500 w-full p-4 my-2 text-white">
+          Sign In
+        </button>
       </form>
     </div>
   );
