@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
-import LoginForm from "./componentes/LoginForm";
+import LoginForm from "./components/LoginForm";
 import { AuthContextProvider } from "./context/AuthContext";
-import Nodes from "./componentes/Nodes";
+import Nodes from "./components/Nodes";
 
 function App() {
   return (
