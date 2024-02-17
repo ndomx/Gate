@@ -1,9 +1,11 @@
+import LoginForm from "./componentes/LoginForm";
+
 function App() {
   return (
     <>
-    Hello World
+      <LoginForm />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
