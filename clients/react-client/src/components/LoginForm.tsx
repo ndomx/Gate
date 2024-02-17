@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { UserAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
   const auth = UserAuth();
@@ -7,12 +8,17 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate();
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    let success = true;
-    await auth?.signIn(email, password).catch((_e) => (success = false));
-    console.log("success:", success);
+    try {
+      await auth?.signIn(email, password);
+      navigate('/')
+    } catch {
+      console.log('unable to login')
+    }
   };
 
   return (
