@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "./login-form.css";
 
 export default function LoginForm() {
@@ -6,8 +6,9 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   //   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
     console.log("do something");
   };
 

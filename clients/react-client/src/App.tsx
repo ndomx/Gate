@@ -1,9 +1,12 @@
 import LoginForm from "./componentes/LoginForm";
+import { AuthContextProvider } from "./context/AuthContext";
 
 function App() {
   return (
     <>
-      <LoginForm />
+      <AuthContextProvider>
+        <LoginForm />
+      </AuthContextProvider>
     </>
   );
 }
