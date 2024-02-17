@@ -1,5 +1,5 @@
 import {
-  ReactNode,
+    PropsWithChildren,
   createContext,
   useContext,
   useEffect,
@@ -14,7 +14,6 @@ import {
 } from "firebase/auth";
 import { auth } from "../firebase";
 
-type ContextProps = { children: ReactNode };
 type ContextValues = {
   user: User | null;
   signIn: (email: string, password: string) => Promise<UserCredential>;
@@ -23,7 +22,7 @@ type ContextValues = {
 
 const UserContext = createContext<ContextValues | undefined>(undefined);
 
-export function AuthContextProvider({ children }: ContextProps) {
+export function AuthContextProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<User | null>(null);
 
   const signIn = (email: string, password: string) => {
