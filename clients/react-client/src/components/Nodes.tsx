@@ -3,6 +3,7 @@ import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { getUserNodes } from "../utils/gate-client";
 import { GateNode, GateUser } from "../utils/types";
+import NodeCard from "./NodeCard";
 
 export default function Nodes() {
   const [user, setUser] = useState<GateUser>();
@@ -42,7 +43,7 @@ export default function Nodes() {
   }, [auth?.user]);
 
   return (
-    <div className="max-w-[600px] mx-auto my-16 p-4">
+    <div className="max-w-[600px] mx-auto my-16 p-4 container">
       <h1 className="text-2xl font-bold py-4">Account</h1>
       <p>Welcome {user?.name}</p>
 
@@ -50,11 +51,12 @@ export default function Nodes() {
         Logout
       </button>
 
-      <ul>
+      <h1 className="text-3xl font-bold mb-4">Device List</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {nodes?.map((node) => (
-          <li key={node.id}>{node.displayName}</li>
+          <NodeCard node={node} />
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
