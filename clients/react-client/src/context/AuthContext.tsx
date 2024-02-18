@@ -1,5 +1,5 @@
 import {
-    PropsWithChildren,
+  PropsWithChildren,
   createContext,
   useContext,
   useEffect,
@@ -35,7 +35,6 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log(currentUser);
       setUser(currentUser);
     });
     return () => {

@@ -35,7 +35,7 @@ export class GatesController {
   findNodeByAuthId(
     @Param('userId') userId: string,
   ): Promise<UserNodesResponseDto> {
-    return this.gatesService.findUserNodes(userId);
+    return this.gatesService.findNodesByAuthId(userId);
   }
 
   @Get(':nodeId/status')
