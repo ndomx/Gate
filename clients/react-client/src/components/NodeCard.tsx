@@ -1,17 +1,42 @@
+import { useState } from "react";
 import { GateNode } from "../utils/types";
+import { startStatusPolling } from "../utils/gate-client";
 
 type NodeCardProps = {
   node: GateNode;
+  onClick: (nodeId: string) => Promise<void>;
   onSuccess?: () => void;
-  onError?: () => void;
+  onReject?: () => void;
 };
 
-export default function NodeCard({ node }: NodeCardProps) {
+export default function NodeCard({ node, onClick }: NodeCardProps) {
+  const [waiting, setWaiting] = useState(false);
+
+  const handleOnClick = async () => {
+    if (waiting) {
+      return;
+    }
+
+    setWaiting(true);
+
+    try {
+      await onClick(node.id);
+    } catch {
+      setWaiting(false);
+      return;
+    }
+
+    const responseCode = await startStatusPolling(node.id, 1000);
+    console.log(responseCode);
+
+    setWaiting(false);
+  };
+
   return (
     <div
       key={node.id}
       className="bg-white p-4 rounded-md shadow-md flex items-center justify-between cursor-pointer hover:bg-gray-100 transition duration-300"
-      // onClick={() => onClick(node.id)}
+      onClick={handleOnClick}
     >
       <div>
         <h2 className="text-xl font-semibold">{node.displayName}</h2>

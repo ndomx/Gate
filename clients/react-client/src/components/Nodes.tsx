@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { getUserNodes } from "../utils/gate-client";
+import { activateNode, getUserNodes } from "../utils/gate-client";
 import { GateNode, GateUser } from "../utils/types";
 import NodeCard from "./NodeCard";
 import TopBanner from "./TopBanner";
@@ -20,6 +20,14 @@ export default function Nodes() {
     console.log("Logged out");
 
     navigate("/login");
+  };
+
+  const nodeOnClick = async (nodeId: string) => {
+    if (!user) {
+      return;
+    }
+
+    await activateNode(user.id, nodeId);
   };
 
   useEffect(() => {
@@ -53,7 +61,7 @@ export default function Nodes() {
       <h1 className="text-3xl font-bold mb-4">Device List</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {nodes?.map((node) => (
-          <NodeCard node={node} />
+          <NodeCard node={node} onClick={nodeOnClick} />
         ))}
       </div>
     </div>

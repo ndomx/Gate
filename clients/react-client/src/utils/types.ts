@@ -19,3 +19,10 @@ export type UserWithNodes = {
   user: GateUser;
   nodes: GateNode[];
 };
+
+export type CommandStatus = {
+  pending: boolean;
+  startedAt: number;
+  responseCode?: number;
+  timeout: number;
+}
