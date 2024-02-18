@@ -66,6 +66,16 @@ export class GatesService {
     return plainToInstance(UserNodesResponseDto, response);
   }
 
+  async findNodesByAuthId(authId: string): Promise<UserNodesResponseDto> {
+    const user = await this.usersService.findByAuthId(authId);
+    const nodes = await Promise.all(
+      user.access.map((nodeId) => this.nodesService.findById(nodeId)),
+    );
+
+    const response: UserNodesResponseDto = { user, nodes };
+    return plainToInstance(UserNodesResponseDto, response);
+  }
+
   getCommandExecutionStatus(deviceId: string): CommandExecutionDto {
     const task = this.trackingService.get(deviceId);
     if (!task) {

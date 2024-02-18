@@ -19,6 +19,10 @@ export class UsersService {
     return this.model.findById(id).then((u) => this.#mapFromSchema(u));
   }
 
+  findByAuthId(authId: string): Promise<User> {
+    return this.model.findOne({ authId }).then((u) => this.#mapFromSchema(u));
+  }
+
   update(id: string, fields: UpdateUserRequestDto): Promise<User> {
     return this.model
       .findByIdAndUpdate(id, fields, { returnDocument: 'after' })
