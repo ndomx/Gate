@@ -4,13 +4,14 @@ import { startStatusPolling } from "../utils/gate-client";
 import AccessIcon from "./AccessIcon";
 
 type NodeCardProps = {
+  index: number;
   node: GateNode;
   onClick: (nodeId: string) => Promise<void>;
   onSuccess?: () => void;
   onReject?: () => void;
 };
 
-export default function NodeCard({ node, onClick }: NodeCardProps) {
+export default function NodeCard({ index, node, onClick }: NodeCardProps) {
   const [status, setStatus] = useState<NodeStatus>("idle");
 
   const handleOnClick = async () => {
@@ -35,7 +36,7 @@ export default function NodeCard({ node, onClick }: NodeCardProps) {
 
   return (
     <div
-      key={node.id}
+      key={index}
       className="bg-white p-4 rounded-md shadow-md flex items-center justify-between cursor-pointer hover:bg-gray-100 transition duration-300"
       onClick={handleOnClick}
     >

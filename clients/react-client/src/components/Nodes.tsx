@@ -60,8 +60,8 @@ export default function Nodes() {
 
       <h1 className="text-3xl font-bold mb-4">Device List</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {nodes?.map((node) => (
-          <NodeCard node={node} onClick={nodeOnClick} />
+        {nodes?.map((node, index) => (
+          <NodeCard index={index} node={node} onClick={nodeOnClick} />
         ))}
       </div>
     </div>
