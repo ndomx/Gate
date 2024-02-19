@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { GateNode } from "../utils/types";
 import { startStatusPolling } from "../utils/gate-client";
-import { IoIosArrowForward } from "react-icons/io";
+import AccessIcon from "./AccessIcon";
 
 type NodeCardProps = {
   node: GateNode;
@@ -10,27 +10,29 @@ type NodeCardProps = {
   onReject?: () => void;
 };
 
+type NodeStatus = "idle" | "loading" | "access-rejected" | "access-granted";
+
 export default function NodeCard({ node, onClick }: NodeCardProps) {
-  const [waiting, setWaiting] = useState(false);
+  const [status, setStatus] = useState<NodeStatus>("idle");
 
   const handleOnClick = async () => {
-    if (waiting) {
+    if (status !== "idle") {
       return;
     }
 
-    setWaiting(true);
+    setStatus("loading");
 
     try {
       await onClick(node.id);
     } catch {
-      setWaiting(false);
+      setStatus("access-rejected");
       return;
     }
 
     const responseCode = await startStatusPolling(node.id, 1000);
     console.log(responseCode);
 
-    setWaiting(false);
+    setStatus("access-granted");
   };
 
   return (
@@ -43,9 +45,7 @@ export default function NodeCard({ node, onClick }: NodeCardProps) {
         <h2 className="text-xl font-semibold">{node.displayName}</h2>
         <p className="text-gray-500">{node.actionCode}</p>
       </div>
-      <div className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white rounded-full">
-        <IoIosArrowForward size={24} />
-      </div>
+      <AccessIcon status={status} />
     </div>
   );
 }
