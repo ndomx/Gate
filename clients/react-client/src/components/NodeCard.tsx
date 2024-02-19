@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GateNode, NodeStatus } from "../utils/types";
 import { startStatusPolling } from "../utils/gate-client";
 import AccessIcon from "./AccessIcon";
@@ -13,6 +13,14 @@ type NodeCardProps = {
 
 export default function NodeCard({ index, node, onClick }: NodeCardProps) {
   const [status, setStatus] = useState<NodeStatus>("idle");
+
+  useEffect(() => {
+    if (status === "access-granted" || status === "access-rejected") {
+      setTimeout(() => {
+        setStatus("idle");
+      }, 2000);
+    }
+  }, [status]);
 
   const handleOnClick = async () => {
     if (status !== "idle") {
