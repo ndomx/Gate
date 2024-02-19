@@ -37,9 +37,13 @@ export default function NodeCard({ index, node, onClick }: NodeCardProps) {
     }
 
     const responseCode = await startStatusPolling(node.id, 1000);
-    console.log(responseCode);
-
-    setStatus("access-granted");
+    if (responseCode === 0) {
+      // display success toast
+      setStatus("access-granted");
+    } else {
+      // display error toast
+      setStatus("access-rejected");
+    }
   };
 
   return (
