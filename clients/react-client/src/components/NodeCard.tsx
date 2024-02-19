@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { GateNode, NodeStatus } from "../utils/types";
 import { startStatusPolling } from "../utils/gate-client";
 import AccessIcon from "./AccessIcon";
+import { COMMAND_STATUS_RESPONSE_CODE } from "../utils/constants";
+import { toast } from "react-toastify";
 
 type NodeCardProps = {
   index: number;
@@ -37,11 +39,11 @@ export default function NodeCard({ index, node, onClick }: NodeCardProps) {
     }
 
     const responseCode = await startStatusPolling(node.id, 1000);
-    if (responseCode === 0) {
-      // display success toast
+    if (responseCode === COMMAND_STATUS_RESPONSE_CODE.OK) {
+      toast.success("Access granted!");
       setStatus("access-granted");
     } else {
-      // display error toast
+      toast.error(`Access denied (error=${responseCode})`);
       setStatus("access-rejected");
     }
   };

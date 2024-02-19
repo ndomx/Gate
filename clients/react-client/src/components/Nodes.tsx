@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { activateNode, getUserNodes } from "../utils/gate-client";
-import { GateNode, GateUser } from "../utils/types";
+import { GateNode, GateUser, UserWithNodes } from "../utils/types";
 import NodeCard from "./NodeCard";
 import TopBanner from "./TopBanner";
+import { toast } from "react-toastify";
 
 export default function Nodes() {
   const [user, setUser] = useState<GateUser>();
@@ -27,6 +28,7 @@ export default function Nodes() {
       return;
     }
 
+    toast.info("Activating device");
     await activateNode(user.id, nodeId);
   };
 
@@ -37,14 +39,18 @@ export default function Nodes() {
         return;
       }
 
+      let res: UserWithNodes;
       try {
-        const res = await getUserNodes(authId);
-
-        setUser(res.user);
-        setNodes(res.nodes);
-      } catch (e) {
-        console.log(e);
+        res = await getUserNodes(authId);
+      } catch {
+        toast.error("Error loading devices");
+        return;
       }
+
+      toast.info(`Found ${res.nodes.length} devices`);
+
+      setUser(res.user);
+      setNodes(res.nodes);
     }
 
     loadNodes();

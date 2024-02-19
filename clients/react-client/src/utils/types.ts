@@ -1,3 +1,5 @@
+import { COMMAND_STATUS_RESPONSE_CODE } from "./constants";
+
 export type GateUser = {
   id: string;
   name: string;
@@ -20,7 +22,7 @@ export type UserWithNodes = {
   nodes: GateNode[];
 };
 
-export type CommandStatus = {
+export type CommandStatusResponse = {
   pending: boolean;
   startedAt: number;
   responseCode?: number;
@@ -32,3 +34,6 @@ export type NodeStatus =
   | "loading"
   | "access-rejected"
   | "access-granted";
+
+export type CommandStatusResponseCode =
+  (typeof COMMAND_STATUS_RESPONSE_CODE)[keyof typeof COMMAND_STATUS_RESPONSE_CODE];

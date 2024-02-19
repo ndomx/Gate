@@ -1,4 +1,8 @@
-import { CommandStatus, UserWithNodes } from "./types";
+import {
+  CommandStatusResponse,
+  CommandStatusResponseCode,
+  UserWithNodes,
+} from "./types";
 
 export async function getUserNodes(authId: string): Promise<UserWithNodes> {
   const res = await fetch(`/gates/auth-id/${authId}`);
@@ -31,7 +35,9 @@ export async function activateNode(
   }
 }
 
-export async function getCommandStatus(nodeId: string): Promise<CommandStatus> {
+export async function getCommandStatus(
+  nodeId: string
+): Promise<CommandStatusResponse> {
   const res = await fetch(`/gates/${nodeId}/status`);
 
   if (res.status != 200) {
@@ -44,7 +50,7 @@ export async function getCommandStatus(nodeId: string): Promise<CommandStatus> {
 export async function startStatusPolling(
   nodeId: string,
   delay: number
-): Promise<number> {
+): Promise<CommandStatusResponseCode> {
   return new Promise((resolve, reject) => {
     const intervalId = setInterval(async () => {
       const res = await getCommandStatus(nodeId);
@@ -57,7 +63,7 @@ export async function startStatusPolling(
         reject();
       }
 
-      resolve(res.responseCode!);
+      resolve(res.responseCode! as CommandStatusResponseCode);
     }, delay);
   });
 }
