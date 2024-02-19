@@ -39,7 +39,6 @@ export default function Nodes() {
 
       try {
         const res = await getUserNodes(authId);
-        console.log(res);
 
         setUser(res.user);
         setNodes(res.nodes);
