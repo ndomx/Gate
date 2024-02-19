@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GateNode } from "../utils/types";
+import { GateNode, NodeStatus } from "../utils/types";
 import { startStatusPolling } from "../utils/gate-client";
 import AccessIcon from "./AccessIcon";
 
@@ -9,8 +9,6 @@ type NodeCardProps = {
   onSuccess?: () => void;
   onReject?: () => void;
 };
-
-type NodeStatus = "idle" | "loading" | "access-rejected" | "access-granted";
 
 export default function NodeCard({ node, onClick }: NodeCardProps) {
   const [status, setStatus] = useState<NodeStatus>("idle");

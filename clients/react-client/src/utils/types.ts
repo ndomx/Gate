@@ -25,4 +25,10 @@ export type CommandStatus = {
   startedAt: number;
   responseCode?: number;
   timeout: number;
-}
+};
+
+export type NodeStatus =
+  | "idle"
+  | "loading"
+  | "access-rejected"
+  | "access-granted";

@@ -1,8 +1,9 @@
 import { IoIosArrowForward } from "react-icons/io";
 import { MdLock, MdLockOpen } from "react-icons/md";
+import { NodeStatus } from "../utils/types";
 
 type AccessIconProps = {
-  status: "idle" | "loading" | "access-rejected" | "access-granted";
+  status: NodeStatus;
 };
 
 export default function AccessIcon({ status }: AccessIconProps) {
