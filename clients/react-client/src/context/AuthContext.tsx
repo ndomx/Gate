@@ -11,12 +11,14 @@ import {
   onAuthStateChanged,
   User,
   UserCredential,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "../firebase";
 
 type ContextValues = {
   user: User | null;
   signIn: (email: string, password: string) => Promise<UserCredential>;
+  resetPassword: (email: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -27,6 +29,10 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
 
   const signIn = (email: string, password: string) => {
     return signInWithEmailAndPassword(auth, email, password);
+  };
+
+  const resetPassword = (email: string) => {
+    return sendPasswordResetEmail(auth, email);
   };
 
   const logout = () => {
@@ -43,7 +49,7 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, logout, signIn }}>
+    <UserContext.Provider value={{ user, logout, resetPassword, signIn }}>
       {children}
     </UserContext.Provider>
   );

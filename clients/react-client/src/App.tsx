@@ -4,6 +4,7 @@ import { AuthContextProvider } from "./context/AuthContext";
 import Nodes from "./components/Nodes";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
+import AccountRecoveryForm from "./components/AccountRecoveryForm";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             }
           />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/account-recovery" element={<AccountRecoveryForm />} />
         </Routes>
       </AuthContextProvider>
       <ToastContainer autoClose={2000} position="bottom-center" />

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { UserAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
   const auth = UserAuth();
@@ -15,9 +15,9 @@ export default function LoginForm() {
 
     try {
       await auth?.signIn(email, password);
-      navigate('/')
+      navigate("/");
     } catch {
-      console.log('unable to login')
+      console.log("unable to login");
     }
   };
 
@@ -47,6 +47,16 @@ export default function LoginForm() {
           Sign In
         </button>
       </form>
+
+      <p className="text-end py-3 px-3">
+        Forgot your password?{" "}
+        <Link
+          to="/account-recovery"
+          className="text-blue-600 hover:text-blue-800 visited:text-purple-600"
+        >
+          Click here
+        </Link>
+      </p>
     </div>
   );
 }
