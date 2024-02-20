@@ -31,6 +31,9 @@ export async function activateNode(
     {
       userId,
       action: "on",
+      actionDetails: {
+        timeout: 1000,
+      },
     },
     {
       headers,
