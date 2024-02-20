@@ -7,6 +7,7 @@ import { GatesModule } from './gates/gates.module';
 import { MqttModule } from './mqtt/mqtt.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     NodesModule,
     GatesModule,
     MqttModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

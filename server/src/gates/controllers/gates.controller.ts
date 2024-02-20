@@ -6,12 +6,15 @@ import {
   Body,
   HttpStatus,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { GatesService } from '../services/gates.service';
 import { UserNodesResponseDto } from 'src/common/dtos/responses/user-nodes-response.dto';
 import { ActivateDeviceRequestDto, CommandExecutionDto } from '../dtos';
+import { UsersApiKeyGuard } from 'src/auth/guards/users-api-key.guard';
 
 @Controller('gates')
+@UseGuards(UsersApiKeyGuard)
 export class GatesController {
   constructor(private readonly gatesService: GatesService) {}
 
