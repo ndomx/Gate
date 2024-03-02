@@ -1,10 +1,10 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { GateNode } from "@/utils/types";
-import NodeCard from "./node-card";
 import { auth } from "@clerk/nextjs";
 
-export default function Nodes() {
+export default function Gates() {
+  const { userId} = auth();
+
   const nodeOnClick = async (nodeId: string) => {
     toast.info("Activating device");
     // await activateNode(user.id, nodeId);
@@ -18,6 +18,7 @@ export default function Nodes() {
           <NodeCard key={index} node={node} onClick={nodeOnClick} />
         ))}
       </div> */}
+      <p>{userId}</p>
     </div>
   );
 }
