@@ -6,47 +6,38 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
-import { NodesService } from '../services/nodes.service';
-import { JwtAdminAuthGuard } from 'src/auth/guards/jwt-admin-auth.guard';
+import { AdminApiKeyGuard } from 'src/auth/guards/admin-api-key.guard';
+import { NodeDto } from '../dtos';
 import { CreateNodeRequestDto, UpdateNodeRequestDto } from '../dtos/requests';
-import { NodeResponseDto } from '../dtos/responses';
+import { NodesService } from '../services/nodes.service';
 
 @Controller('nodes')
-@UseGuards(JwtAdminAuthGuard)
+@UseGuards(AdminApiKeyGuard)
 export class NodesController {
   constructor(private readonly nodesService: NodesService) {}
 
   @Post()
-  create(@Body() request: CreateNodeRequestDto): Promise<NodeResponseDto> {
+  create(@Body() request: CreateNodeRequestDto): Promise<NodeDto> {
     return this.nodesService.create(request);
   }
 
-  @Get(':id/children')
-  findChildren(@Param('id') nodeId: string): Promise<NodeResponseDto[]> {
-    return this.nodesService.findChildrenById(nodeId);
-  }
-
-  @Get(':rootId/match')
-  findByPrefix(
-    @Param('rootId') rootId: string,
-    @Query('prefix') prefix: string,
-  ): Promise<NodeResponseDto[]> {
-    return this.nodesService.findByPrefix(prefix, rootId);
+  @Get(':id')
+  findById(@Param('id') id: string): Promise<NodeDto> {
+    return this.nodesService.findById(id);
   }
 
   @Patch(':id')
   update(
     @Param('id') nodeId: string,
     @Body() fields: UpdateNodeRequestDto,
-  ): Promise<NodeResponseDto> {
+  ): Promise<NodeDto> {
     return this.nodesService.update(nodeId, fields);
   }
 
   @Delete(':id')
-  delete(@Param('id') nodeId: string): Promise<NodeResponseDto> {
+  delete(@Param('id') nodeId: string): Promise<NodeDto> {
     return this.nodesService.delete(nodeId);
   }
 }

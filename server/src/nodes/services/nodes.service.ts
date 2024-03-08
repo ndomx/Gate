@@ -1,142 +1,51 @@
-import { NodesCrudService } from './nodes-crud.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { NodeResponseDto, RootResponseDto } from '../dtos/responses';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { NodeDocument, Node } from '../entities/node.entity';
 import { CreateNodeRequestDto, UpdateNodeRequestDto } from '../dtos/requests';
-import { NodeDto } from '../dtos/node.dto';
-import { RootsCrudService } from './roots-crud.service';
-import { ERROR_CODES } from 'src/common/constants';
+import { NodeActionCode } from 'src/common/types';
+import { NodeDto } from '../dtos';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class NodesService {
   constructor(
-    private readonly nodesCrudService: NodesCrudService,
-    private readonly rootsCrudService: RootsCrudService,
+    @InjectModel(Node.name) private readonly model: Model<NodeDocument>,
   ) {}
 
-  findInRoot(nodeId: string, rootId: string): Promise<NodeResponseDto> {
-    return this.nodesCrudService.findInRoot(nodeId, rootId);
+  create(node: CreateNodeRequestDto): Promise<NodeDto> {
+    return this.model.create(node).then((n) => this.#mapFromEntity(n));
   }
 
-  findRoot(rootId: string): Promise<RootResponseDto> {
-    return this.rootsCrudService.findById(rootId);
+  findById(id: string): Promise<NodeDto> {
+    return this.model.findById(id).then((n) => this.#mapFromEntity(n));
   }
 
-  async getPathById(nodeId: string): Promise<string> {
-    let node = await this.nodesCrudService.findById(nodeId);
-    const rootId = node.rootId;
+  update(id: string, fields: UpdateNodeRequestDto): Promise<NodeDto> {
+    return this.model
+      .findByIdAndUpdate(id, fields, {
+        returnDocument: 'after',
+      })
+      .then((n) => this.#mapFromEntity(n));
+  }
 
-    const nodes = [node.name];
-    while (node.parentId !== rootId) {
-      node = await this.nodesCrudService.findById(node.parentId);
-      nodes.push(node.name);
+  delete(id: string): Promise<NodeDto> {
+    return this.model.findByIdAndDelete(id).then((n) => this.#mapFromEntity(n));
+  }
+
+  #mapFromEntity(document: NodeDocument): NodeDto {
+    if (!document) {
+      throw new NotFoundException();
     }
 
-    return nodes.reverse().join('/');
-  }
+    const dto: Required<NodeDto> = {
+      id: document._id.toHexString(),
+      name: document.name,
+      displayName: document.displayName,
+      actionCode: document.actionCode as NodeActionCode,
+      deviceId: document.deviceId,
+    };
 
-  async create(request: CreateNodeRequestDto): Promise<NodeResponseDto> {
-    const root = await this.rootsCrudService.findById(request.rootId);
-
-    let parentId = root.id;
-    if (request.parentId) {
-      const parent = await this.nodesCrudService.findInRoot(
-        request.parentId,
-        root.id,
-      );
-
-      parentId = parent.id;
-    }
-
-    return this.nodesCrudService.create({ ...request, parentId });
-  }
-
-  async findByPrefix(
-    prefix: string,
-    rootId: string,
-  ): Promise<NodeResponseDto[]> {
-    if (!prefix.match(/^\/?([-\w]+\/?)*$/)) {
-      throw new BadRequestException({
-        errorCode: ERROR_CODES.INVALID_REQUEST,
-        message: 'path should match /^\\/?([-w]+\\/?)*$/',
-      });
-    }
-
-    const path = this.#processPath(prefix);
-    const startNode = await this.#findNodeFromPath(path, rootId);
-
-    return this.#findChildren(startNode);
-  }
-
-  async findChildrenById(nodeId: string): Promise<NodeResponseDto[]> {
-    const startNode = await this.nodesCrudService.findById(nodeId);
-    return this.#findChildren(startNode);
-  }
-
-  async update(
-    nodeId: string,
-    fields: UpdateNodeRequestDto,
-  ): Promise<NodeResponseDto> {
-    if (fields.parentId && fields.rootId) {
-      const _parent = await this.nodesCrudService.findInRoot(
-        fields.parentId,
-        fields.rootId,
-      );
-    }
-
-    return this.nodesCrudService.update(nodeId, fields);
-  }
-
-  delete(nodeId: string): Promise<NodeResponseDto> {
-    return this.nodesCrudService.delete(nodeId);
-  }
-
-  #processPath(path: string): string {
-    return path.trim().replace(/^\/+/, '').replace(/\/+$/, '');
-  }
-
-  async #findNodeFromPath(
-    path: string,
-    rootId: string,
-  ): Promise<NodeResponseDto> {
-    const nodeNames = this.#processPath(path).split('/');
-    if (nodeNames.length < 1) {
-      throw new BadRequestException({
-        errorCode: ERROR_CODES.PATH_ERROR,
-        message: 'invalid path',
-      });
-    }
-
-    let next: NodeResponseDto;
-    let parentId = rootId;
-
-    for (const nodeName of nodeNames) {
-      next = await this.nodesCrudService.findByNameAndParent(
-        parentId,
-        nodeName,
-      );
-
-      if (!next) {
-        throw new BadRequestException({
-          errorCode: ERROR_CODES.PATH_ERROR,
-          message: 'invalid path',
-        });
-      }
-
-      parentId = next.id;
-    }
-
-    return next;
-  }
-
-  async #findChildren(startNode: NodeDto): Promise<NodeResponseDto[]> {
-    let nodes = [startNode];
-
-    const children = await this.nodesCrudService.findChildren(startNode.id);
-    for (const child of children) {
-      const childNodes = await this.#findChildren(child);
-      nodes = nodes.concat(childNodes);
-    }
-
-    return nodes;
+    return plainToInstance(NodeDto, dto);
   }
 }

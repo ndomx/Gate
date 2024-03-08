@@ -1,9 +1,6 @@
-import { NodeResponseDto } from 'src/nodes/dtos/responses';
+import { NodeDto } from 'src/nodes/dtos';
 import { ActionableHandlerDto } from '../dtos/commons/actionable-handler.dto';
 
 export interface IActionable {
-  activateDevice(
-    node: NodeResponseDto,
-    body: ActionableHandlerDto,
-  ): Promise<void>;
+  activateDevice(node: NodeDto, body: ActionableHandlerDto): Promise<void>;
 }
