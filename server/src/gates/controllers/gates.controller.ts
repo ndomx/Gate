@@ -44,7 +44,7 @@ export class GatesController {
   @Get(':nodeId/status')
   getCommandExecutionStatus(
     @Param('nodeId') nodeId: string,
-  ): CommandExecutionDto {
+  ): Promise<CommandExecutionDto> {
     return this.gatesService.getCommandExecutionStatus(nodeId);
   }
 }

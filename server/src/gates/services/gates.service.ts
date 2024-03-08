@@ -31,21 +31,14 @@ export class GatesService {
     nodeId: string,
     request: ActivateDeviceRequestDto,
   ): Promise<void> {
-    console.log(request);
-
-    // verify user
     const user = await this.usersService.findById(request.userId);
-
-    // verify permission
     const hasAccess = user.access.find((id) => nodeId === id);
     if (!hasAccess) {
       throw new UnauthorizedException({ errorCode: ERROR_CODES.ACCESS_DENIED });
     }
 
-    // find node
     const node = await this.nodesService.findById(nodeId);
 
-    // get handler and params
     const handler = this.#mapActionToHandler(node.actionCode);
     const params: ActionableHandlerDto = {
       action: request.action,
@@ -53,7 +46,6 @@ export class GatesService {
       deviceId: node.deviceId,
     };
 
-    // grant access
     await handler.activateDevice(node, params);
     this.trackingService.create(node.id, 10000);
   }
@@ -78,7 +70,11 @@ export class GatesService {
     return plainToInstance(UserNodesResponseDto, response);
   }
 
-  getCommandExecutionStatus(deviceId: string): CommandExecutionDto {
+  async getCommandExecutionStatus(
+    nodeId: string,
+  ): Promise<CommandExecutionDto> {
+    const { deviceId } = await this.nodesService.findById(nodeId);
+
     const task = this.trackingService.get(deviceId);
     if (!task) {
       throw new BadRequestException();
