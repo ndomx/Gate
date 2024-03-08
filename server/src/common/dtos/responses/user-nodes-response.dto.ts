@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsDefined, ValidateNested } from 'class-validator';
-import { Node } from 'src/nodes/interfaces/node.interface';
+import { NodeDto } from 'src/nodes/dtos';
 import { UserDto } from 'src/users/dtos';
 
 export class UserNodesResponseDto {
@@ -10,5 +10,5 @@ export class UserNodesResponseDto {
   user: UserDto;
 
   @IsDefined()
-  nodes: Node[];
+  nodes: NodeDto[];
 }

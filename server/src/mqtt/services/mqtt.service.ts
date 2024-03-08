@@ -7,7 +7,7 @@ import { MqttClient, connect } from 'mqtt';
 import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';
 import { DeviceAckDto } from 'src/common/dtos/commons/device-ack.dto';
 import { IActionable } from 'src/common/interfaces/actionable.interface';
-import { Node } from 'src/nodes/interfaces/node.interface';
+import { NodeDto } from 'src/nodes/dtos';
 
 const ackTopic = 'gate/ack';
 
@@ -21,7 +21,7 @@ export class MqttService implements IActionable, OnModuleInit {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  activateDevice(node: Node, params: ActionableHandlerDto): Promise<void> {
+  activateDevice(node: NodeDto, params: ActionableHandlerDto): Promise<void> {
     const payload = {
       action: params.action,
       actionDetails: params.body,
