@@ -1,17 +1,13 @@
-import {
-  Injectable,
-  Logger,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { connect, MqttClient } from 'mqtt';
-import { IActionable } from 'src/common/interfaces/actionable.interface';
-import { NodeResponseDto } from 'src/nodes/dtos/responses';
-import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { plainToInstance } from 'class-transformer';
-import { DeviceAckDto } from 'src/common/dtos/commons/device-ack.dto';
 import { validateSync } from 'class-validator';
+import { MqttClient, connect } from 'mqtt';
+import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';
+import { DeviceAckDto } from 'src/common/dtos/commons/device-ack.dto';
+import { IActionable } from 'src/common/interfaces/actionable.interface';
+import { Node } from 'src/nodes/interfaces/node.interface';
 
 const ackTopic = 'gate/ack';
 
@@ -25,18 +21,14 @@ export class MqttService implements IActionable, OnModuleInit {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  activateDevice(
-    node: NodeResponseDto,
-    params: ActionableHandlerDto,
-  ): Promise<void> {
-    const topic = `${node.rootId}/${params.path}`;
+  activateDevice(node: Node, params: ActionableHandlerDto): Promise<void> {
     const payload = {
       action: params.action,
       actionDetails: params.body,
     };
 
-    this.logger.debug(`[${topic}] ${payload}`, 'MqttService');
-    return this.#publish(topic, payload);
+    this.logger.debug(`[${node.deviceId}] ${payload}`, 'MqttService');
+    return this.#publish(node.deviceId, payload);
   }
 
   onModuleInit() {

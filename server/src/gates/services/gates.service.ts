@@ -9,14 +9,14 @@ import { UsersService } from 'src/users/services/users.service';
 import { UserNodesResponseDto } from 'src/common/dtos/responses/user-nodes-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { ActivateDeviceRequestDto } from '../dtos/requests/activate-device-request.dto';
-import { NodeActionCode } from 'src/utils/types';
 import { IActionable } from 'src/common/interfaces/actionable.interface';
 import { ActionableHandlerDto } from 'src/common/dtos/commons/actionable-handler.dto';
 import { ERROR_CODES } from 'src/common/constants';
 import { OnEvent } from '@nestjs/event-emitter';
-import { CommandExecutionDto } from '../dtos/commons/command-execution.dto';
 import { DeviceAckDto } from 'src/common/dtos/commons/device-ack.dto';
 import { TrackingService } from './tracking.service';
+import { CommandExecutionDto } from '../dtos';
+import { NodeActionCode } from 'src/common/types';
 
 @Injectable()
 export class GatesService {
@@ -28,37 +28,29 @@ export class GatesService {
   ) {}
 
   async activateDevice(
-    deviceId: string,
-    userId: string,
+    nodeId: string,
     request: ActivateDeviceRequestDto,
   ): Promise<void> {
+    console.log(request);
+
     // verify user
-    const user = await this.usersService.findById(userId);
-
-    // verify node
-    const node = await this.nodesService.findInRoot(deviceId, user.rootId);
-
-    // is device node
-    if (!node.nodeInfo.isDevice) {
-      throw new BadRequestException({
-        errorCode: ERROR_CODES.NOT_DEVICE,
-        message: 'node is not a device',
-      });
-    }
+    const user = await this.usersService.findById(request.userId);
 
     // verify permission
-    const path = await this.nodesService.getPathById(deviceId);
-    const hasAccess = user.access.some((prefix) => path.startsWith(prefix));
+    const hasAccess = user.access.find((id) => nodeId === id);
     if (!hasAccess) {
       throw new UnauthorizedException({ errorCode: ERROR_CODES.ACCESS_DENIED });
     }
 
+    // find node
+    const node = await this.nodesService.findById(nodeId);
+
     // get handler and params
-    const handler = this.#mapActionToHandler(node.nodeInfo.actionCode);
+    const handler = this.#mapActionToHandler(node.actionCode);
     const params: ActionableHandlerDto = {
       action: request.action,
       body: request.actionDetails,
-      path,
+      deviceId: node.deviceId,
     };
 
     // grant access
@@ -66,25 +58,11 @@ export class GatesService {
     this.trackingService.create(node.id, 10000);
   }
 
-  async findUserNodes(
-    userId: string,
-    deviceOnly = true,
-  ): Promise<UserNodesResponseDto> {
+  async findUserNodes(userId: string): Promise<UserNodesResponseDto> {
     const user = await this.usersService.findById(userId);
-
-    const nodes = [];
-    for (const prefix of user.access) {
-      const children = await this.nodesService.findByPrefix(
-        prefix,
-        user.rootId,
-      );
-
-      const filtered = deviceOnly
-        ? children.filter((node) => node.nodeInfo.isDevice)
-        : children;
-
-      nodes.push(...filtered);
-    }
+    const nodes = await Promise.all(
+      user.access.map((nodeId) => this.nodesService.findById(nodeId)),
+    );
 
     const response: UserNodesResponseDto = { user, nodes };
     return plainToInstance(UserNodesResponseDto, response);

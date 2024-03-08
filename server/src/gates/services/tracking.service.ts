@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CommandExecutionDto } from '../dtos/commons/command-execution.dto';
 import { COMMAND_RESPONSE_CODES } from 'src/common/constants';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { CommandExecutionDto } from '../dtos';
 
 @Injectable()
 export class TrackingService {
@@ -40,7 +40,7 @@ export class TrackingService {
   delete(deviceId: string) {
     const result = this.activeTasks.delete(deviceId);
     if (!result) {
-      this.logger.warn('attempted to delete an unexisting task');
+      this.logger.warn('attempted to delete a nonexisting task');
     }
   }
 

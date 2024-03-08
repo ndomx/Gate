@@ -2,43 +2,36 @@ import {
   Controller,
   Get,
   Param,
-  UseGuards,
-  Request,
   Post,
-  Query,
   Body,
   HttpStatus,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { GatesService } from '../services/gates.service';
 import { UserNodesResponseDto } from 'src/common/dtos/responses/user-nodes-response.dto';
-import { ActivateDeviceRequestDto } from '../dtos/requests/activate-device-request.dto';
-import { CommandExecutionDto } from '../dtos/commons/command-execution.dto';
+import { ActivateDeviceRequestDto, CommandExecutionDto } from '../dtos';
+import { UsersApiKeyGuard } from 'src/auth/guards/users-api-key.guard';
 
 @Controller('gates')
+@UseGuards(UsersApiKeyGuard)
 export class GatesController {
   constructor(private readonly gatesService: GatesService) {}
 
-  @Post(':deviceId/activate')
+  @Post(':nodeId/activate')
   @HttpCode(HttpStatus.NO_CONTENT)
   activateDevice(
-    @Param('deviceId') deviceId: string,
+    @Param('nodeId') nodeId: string,
     @Body() activateDeviceRequest: ActivateDeviceRequestDto,
-    @Request() req,
   ): Promise<void> {
-    return this.gatesService.activateDevice(
-      deviceId,
-      req.user.userId,
-      activateDeviceRequest,
-    );
+    return this.gatesService.activateDevice(nodeId, activateDeviceRequest);
   }
 
-  @Get('user')
+  @Get('user/:userId/nodes')
   findUserNodes(
-    @Request() req,
-    @Query('deviceOnly') deviceOnly?: boolean,
+    @Param('userId') userId: string,
   ): Promise<UserNodesResponseDto> {
-    return this.gatesService.findUserNodes(req.user.userId, deviceOnly);
+    return this.gatesService.findUserNodes(userId);
   }
 
   @Get('auth-id/:userId')
@@ -48,10 +41,10 @@ export class GatesController {
     return this.gatesService.findNodesByAuthId(userId);
   }
 
-  @Get(':deviceId/status')
+  @Get(':nodeId/status')
   getCommandExecutionStatus(
-    @Param('deviceId') deviceId: string,
+    @Param('nodeId') nodeId: string,
   ): CommandExecutionDto {
-    return this.gatesService.getCommandExecutionStatus(deviceId);
+    return this.gatesService.getCommandExecutionStatus(nodeId);
   }
 }
