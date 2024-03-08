@@ -41,7 +41,7 @@ export class UsersService {
 
     const dto: Required<UserDto> = {
       id: document._id.toHexString(),
-      authId: document.authId,
+      externalId: document.externalId,
       access: document.access,
     };
 

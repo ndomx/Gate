@@ -5,7 +5,7 @@ export class UserDto {
   id: string;
 
   @IsString()
-  authId: string;
+  externalId: string;
 
   @IsArray()
   @IsDefined()
