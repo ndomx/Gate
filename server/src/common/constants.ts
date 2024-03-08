@@ -22,3 +22,6 @@ export const COMMAND_RESPONSE_CODES = {
   INVALID_ACTION: 4,
   UNKNOWN_ERROR: 5,
 } as const;
+
+export const NODE_ACTION_CODES = ['on/off', 'phone-call'] as const;
+export const DEVICE_ACTIONS = ['on', 'off', 'toggle', 'call'] as const;

@@ -1,53 +1,50 @@
-import { UsersCrudService } from './users-crud.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateUserRequestDto, UpdateUserRequestDto } from '../dtos/requests';
-import { UserResponseDto } from '../dtos/responses';
-import { hashPassword } from 'src/utils/crypto';
-import { NodesService } from 'src/nodes/services/nodes.service';
-import { Injectable } from '@nestjs/common';
-import { UserWithPasswordResponseDto } from 'src/common/dtos/responses/user-with-password-response.dto';
+import { UserDocument, User } from '../entities/user.entity';
+import { UserDto } from '../dtos';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly usersCrudService: UsersCrudService,
-    private readonly nodesService: NodesService,
+    @InjectModel(User.name) private readonly model: Model<UserDocument>,
   ) {}
 
-  async createUser(request: CreateUserRequestDto): Promise<UserResponseDto> {
-    const _root = await this.nodesService.findRoot(request.rootId);
-    const hashedPassword = await hashPassword(request.password);
-    return this.usersCrudService.create({
-      ...request,
-      password: hashedPassword,
-    });
+  create(user: CreateUserRequestDto): Promise<UserDto> {
+    return this.model.create(user).then((u) => this.#mapFromEntity(u));
   }
 
-  findById(userId: string): Promise<UserResponseDto> {
-    return this.usersCrudService.findById(userId);
+  findById(id: string): Promise<UserDto> {
+    return this.model.findById(id).then((u) => this.#mapFromEntity(u));
   }
 
-  findByUsername(username: string): Promise<UserResponseDto> {
-    return this.usersCrudService.findByUsername(username);
+  findByAuthId(authId: string): Promise<UserDto> {
+    return this.model.findOne({ authId }).then((u) => this.#mapFromEntity(u));
   }
 
-  findByUsernameWithPassword(
-    username: string,
-  ): Promise<UserWithPasswordResponseDto> {
-    return this.usersCrudService.findByUsernameWithPassword(username);
+  update(id: string, fields: UpdateUserRequestDto): Promise<UserDto> {
+    return this.model
+      .findByIdAndUpdate(id, fields, { returnDocument: 'after' })
+      .then((u) => this.#mapFromEntity(u));
   }
 
-  async updateUser(
-    userId: string,
-    fields: UpdateUserRequestDto,
-  ): Promise<UserResponseDto> {
-    if (fields.password) {
-      fields.password = await hashPassword(fields.password);
+  delete(id: string): Promise<UserDto> {
+    return this.model.findByIdAndDelete(id).then((u) => this.#mapFromEntity(u));
+  }
+
+  #mapFromEntity(document: UserDocument): UserDto {
+    if (!document) {
+      throw new NotFoundException();
     }
 
-    return this.usersCrudService.update(userId, fields);
-  }
+    const dto: Required<UserDto> = {
+      id: document._id.toHexString(),
+      authId: document.authId,
+      access: document.access,
+    };
 
-  deleteUser(userId: string): Promise<UserResponseDto> {
-    return this.usersCrudService.delete(userId);
+    return plainToInstance(UserDto, dto);
   }
 }

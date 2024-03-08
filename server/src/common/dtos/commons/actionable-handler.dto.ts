@@ -1,6 +1,6 @@
 import { IsIn, IsObject, IsOptional, IsString } from 'class-validator';
-import { DEVICE_ACTIONS } from 'src/utils/constants';
-import { DeviceAction } from 'src/utils/types';
+import { DEVICE_ACTIONS } from 'src/common/constants';
+import { DeviceAction } from 'src/common/types';
 
 export class ActionableHandlerDto {
   @IsString()
@@ -8,7 +8,7 @@ export class ActionableHandlerDto {
   action: DeviceAction;
 
   @IsString()
-  path: string;
+  deviceId: string;
 
   @IsObject()
   @IsOptional()
