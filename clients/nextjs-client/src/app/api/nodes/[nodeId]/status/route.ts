@@ -1,8 +1,6 @@
 import { COMMAND_STATUS_RESPONSE_CODE } from "@/utils/constants";
 import { get, throwHttpError } from "@/utils/gate-client";
-import {
-  CommandStatusResponse,
-} from "@/utils/types";
+import { CommandStatusResponse } from "@/utils/types";
 import { NextRequest, NextResponse } from "next/server";
 
 type HttpGetParams = {

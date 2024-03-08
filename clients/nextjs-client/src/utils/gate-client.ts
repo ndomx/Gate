@@ -53,7 +53,7 @@ export function throwHttpError(
 }
 
 export async function getUserNodes(authId: string): Promise<UserWithNodes> {
-  const path = `/gates/auth-id/${authId}`;
+  const path = `/gates/nodes/external/${authId}`;
   const res = await get(path);
 
   if (res.status === 200) {
