@@ -47,7 +47,7 @@ export class GatesService {
     };
 
     await handler.activateDevice(node, params);
-    this.trackingService.create(node.id, 10000);
+    this.trackingService.create(node.deviceId, 10000);
   }
 
   async findUserNodes(userId: string): Promise<UserNodesResponseDto> {
