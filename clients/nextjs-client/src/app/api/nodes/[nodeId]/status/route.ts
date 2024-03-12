@@ -22,6 +22,8 @@ async function getCommandStatus(
   const path = `/gates/${nodeId}/status`;
   const res = await get(path);
 
+  console.log("getCommandStatus:", res.status);
+
   if (res.status != 200) {
     throwHttpError("GET", path, res.status);
   }
@@ -43,8 +45,10 @@ function startStatusPolling(nodeId: string, delay: number): Promise<number> {
         return;
       }
 
+      console.log(res)
+
       clearInterval(intervalId);
-      resolve(res.responseCode || COMMAND_STATUS_RESPONSE_CODE.UNKNOWN_ERROR);
+      resolve(res.responseCode ?? COMMAND_STATUS_RESPONSE_CODE.UNKNOWN_ERROR);
     }, delay);
   });
 }
