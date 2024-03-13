@@ -60,8 +60,10 @@ export class GatesService {
     return plainToInstance(UserNodesResponseDto, response);
   }
 
-  async findNodesByAuthId(authId: string): Promise<UserNodesResponseDto> {
-    const user = await this.usersService.findByAuthId(authId);
+  async findNodesByExternalId(
+    externalId: string,
+  ): Promise<UserNodesResponseDto> {
+    const user = await this.usersService.findByExternalId(externalId);
     const nodes = await Promise.all(
       user.access.map((nodeId) => this.nodesService.findById(nodeId)),
     );

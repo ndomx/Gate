@@ -20,8 +20,10 @@ export class UsersService {
     return this.model.findById(id).then((u) => this.#mapFromEntity(u));
   }
 
-  findByAuthId(authId: string): Promise<UserDto> {
-    return this.model.findOne({ authId }).then((u) => this.#mapFromEntity(u));
+  findByExternalId(externalId: string): Promise<UserDto> {
+    return this.model
+      .findOne({ externalId })
+      .then((u) => this.#mapFromEntity(u));
   }
 
   update(id: string, fields: UpdateUserRequestDto): Promise<UserDto> {
