@@ -28,7 +28,7 @@ export class MqttService implements IActionable, OnModuleInit {
     };
 
     this.logger.debug(`[${node.deviceId}] ${payload}`, 'MqttService');
-    return this.#publish(node.deviceId, payload);
+    return this.#publish(`node/${node.deviceId}`, payload);
   }
 
   onModuleInit() {
