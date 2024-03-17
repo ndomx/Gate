@@ -52,12 +52,17 @@ export function throwHttpError(
   throw new Error(`${method} ${path} returned ${status}`);
 }
 
-export async function getUserNodes(authId: string): Promise<UserWithNodes> {
+export async function getUserNodes(
+  authId: string
+): Promise<Partial<UserWithNodes>> {
   const path = `/gates/nodes/external/${authId}`;
   const res = await get(path);
 
-  if (res.status === 200) {
-    return res.data;
+  switch (res.status) {
+    case 200:
+      return res.data;
+    case 404:
+      return {};
   }
 
   throwHttpError("GET", path, res.status);
