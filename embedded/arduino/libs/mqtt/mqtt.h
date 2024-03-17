@@ -10,7 +10,7 @@
 namespace mqtt
 {
     bool init(connection_t connection, GpioHandler* handler);
-    bool connect(const char* username, const char* password, const char* topic);
+    bool connect(const char* username, const char* password);
     void run(void);
 } // namespace mqtt
 

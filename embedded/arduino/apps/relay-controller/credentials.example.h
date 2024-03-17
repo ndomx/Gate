@@ -12,6 +12,6 @@ static const int mqtt_broker_port = 1883;
 static const char* mqtt_username;
 static const char* mqtt_password;
 
-static const char* mqtt_topic = "<root-id>/path/to/device";
+static const char* device_id;
 
 #endif //  LIB_CREDENTIALS_H

@@ -71,7 +71,7 @@ namespace mqtt
         return true;
     }
 
-    bool connect(const char* username, const char* password, const char* topic)
+    bool connect(const char* username, const char* password)
     {
         bool success;
         success = mqtt_client.connect(mqtt_client_id.c_str(), username, password);
@@ -80,7 +80,8 @@ namespace mqtt
             return false;
         }
 
-        success = mqtt_client.subscribe(topic);
+        String topic = "node/" + mqtt_client_id;
+        success = mqtt_client.subscribe(topic.c_str());
         if (!success)
         {
             return false;
