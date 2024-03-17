@@ -14,28 +14,27 @@ class MqttClient:
 
     def __init__(self, handler: DigitalIOHandler):
         self.handler = handler
+        self.device_id = os.getenv('DEVICE_ID')
 
     def connect(self):
         self.client.on_connect = lambda client, userdata, flags, rc: self.__on_connect()
         self.client.on_message = lambda client, userdata, msg: self.__on_message(msg)
 
-        url = os.getenv('MQTT_BROKER_URL')
-        port = int(os.getenv('MQTT_BROKER_PORT'))
+        self.client.username_pw_set(
+            username=os.getenv('MQTT_USERNAME'),
+            password=os.getenv('MQTT_PASSWORD')
+        )
 
-        self.client.connect(url, port)
+        self.client.connect(
+            host=os.getenv('MQTT_BROKER_URL'),
+            port=int(os.getenv('MQTT_BROKER_PORT')),
+        )
+
         self.client.loop_start()
 
     def __on_connect(self):
         print('connected to server')
-        
-        topic = os.getenv('MQTT_TOPIC', '')
-        if topic == '':
-            self.client.disconnect()
-            print('invalid topic')
-
-            return
-        
-        self.client.subscribe(topic)
+        self.client.subscribe(f'node/{self.device_id}')
 
     def __on_message(self, msg: mqtt.MQTTMessage):
         print(f'receiving msg on {msg.topic}')
@@ -56,7 +55,7 @@ class MqttClient:
 
     def __send_ack(self, result: ExecuteCommandResult):
         payload = {
-            "deviceId": os.getenv('DEVICE_ID'),
+            "deviceId": self.device_id,
             "status": int(result)
         }
 

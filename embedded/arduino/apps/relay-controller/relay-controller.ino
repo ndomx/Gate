@@ -39,7 +39,7 @@ void setup()
 
     logger::log_info(TAG, "mqtt initialized");
 
-    success = mqtt::connect(mqtt_username, mqtt_password, mqtt_topic);
+    success = mqtt::connect(mqtt_username, mqtt_password);
     if (!success)
     {
         throw_blocking(TAG, "Error connecting to mqtt server");
