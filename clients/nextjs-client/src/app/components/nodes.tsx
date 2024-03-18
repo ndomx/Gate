@@ -18,10 +18,10 @@ export default function Nodes({ nodes, userId }: NodesProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <>
       {nodes.map((node, index) => (
         <NodeCard key={index} node={node} onClick={nodeOnClick} />
       ))}
-    </div>
+    </>
   );
 }
