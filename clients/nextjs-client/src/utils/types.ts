@@ -2,11 +2,8 @@ import { COMMAND_STATUS_RESPONSE_CODE } from "./constants";
 
 export type GateUser = {
   id: string;
-  name: string;
-  last: string;
-  username: string;
   access: string[];
-  authId: string;
+  externalId: string;
 };
 
 export type GateNode = {
