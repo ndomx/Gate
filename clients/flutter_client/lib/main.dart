@@ -4,6 +4,7 @@ import 'package:flutter_client/src/gate_app.dart';
 import 'package:flutter_client/src/models/node.dart';
 import 'package:flutter_client/src/services/settings_service.dart';
 import 'package:flutter_client/src/widgets/node_card.dart';
+import 'package:flutter_client/src/widgets/node_list_widget.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future main() async {
@@ -25,15 +26,23 @@ class PreviewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-        home: Scaffold(
-          body: NodeCard(
-              node: Node(
-                  id: '123',
-                  name: 'some_name',
-                  displayName: 'Display Name',
-                  deviceId: '234',
-                  actionCode: 'on/off')),
-        )
+      home: Scaffold(
+          body: NodeListWidget(nodes: [
+        Node(
+          id: '1',
+          name: 'device_1',
+          displayName: 'Device 1',
+          actionCode: 'on/off',
+          deviceId: '23847',
+        ),
+        Node(
+          id: '2',
+          name: 'device_2',
+          displayName: 'Device 2',
+          actionCode: 'on/off',
+          deviceId: '23847',
+        ),
+      ])),
     );
   }
 }
