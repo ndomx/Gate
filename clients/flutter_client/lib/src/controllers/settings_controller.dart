@@ -61,6 +61,5 @@ class SettingsController with ChangeNotifier {
 
   Future<void> logout() async {
     await _settingsService.deletePrefs();
-    await _settingsService.deleteDevices();
   }
 }

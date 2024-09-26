@@ -1,5 +1,5 @@
-class CommandExecution {
-  const CommandExecution({
+class CommandStatus {
+  const CommandStatus({
     required this.pending,
     required this.startedAt,
     required this.responseCode,
@@ -11,8 +11,8 @@ class CommandExecution {
   final int? responseCode;
   final int timeout;
 
-  factory CommandExecution.fromJson(Map<String, dynamic> json) {
-    return CommandExecution(
+  factory CommandStatus.fromJson(Map<String, dynamic> json) {
+    return CommandStatus(
       pending: json['pending'],
       startedAt: json['startedAt'],
       responseCode: json['responseCode'],

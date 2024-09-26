@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_client/src/db/gate_database.dart';
 import 'package:flutter_client/src/services/prefs_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -33,10 +32,5 @@ class SettingsService {
 
   Future<void> deletePrefs() async {
     await PrefsService.deleteEncrypted();
-  }
-
-  Future<void> deleteDevices() async {
-    final db = GateDatabase();
-    await db.clearDatabase();
   }
 }

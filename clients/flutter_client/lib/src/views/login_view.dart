@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_client/src/controllers/login_controller.dart';
 
 class LoginView extends StatelessWidget {
   LoginView({super.key});
 
   static const routeName = '/login';
-
-  final _controller = LoginController();
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
@@ -14,8 +11,11 @@ class LoginView extends StatelessWidget {
   Future<void> _onLoginButtonClick(BuildContext context) async {
     final username = usernameController.text;
     final password = passwordController.text;
+    print(username);
+    print(password);
 
-    final res = await _controller.onLoginButtonPress(username, password);
+    // final res = await _controller.onLoginButtonPress(username, password);
+    const res = null;
 
     if (res == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid credentials')));

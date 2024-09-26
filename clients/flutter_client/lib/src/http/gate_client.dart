@@ -1,16 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_client/src/http/dtos/requests/activate_device_request_dto.dart';
-import 'package:flutter_client/src/http/dtos/response/command_status_dto.dart';
-import 'package:flutter_client/src/http/dtos/response/login_response_dto.dart';
-import 'package:flutter_client/src/http/dtos/response/user_nodes_response_dto.dart';
+import 'package:flutter_client/src/models/activate_device_request.dart';
+import 'package:flutter_client/src/models/command_status.dart';
+import 'package:flutter_client/src/models/user_with_nodes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class GateClient {
   static final GateClient _instance = GateClient._internal();
   static final String _host = dotenv.get('GATE_BASE_URL');
+  static final String _apiKey = dotenv.get('GATE_API_KEY');
 
   factory GateClient() {
     return _instance;
@@ -18,12 +18,12 @@ class GateClient {
 
   GateClient._internal();
 
-  Future<bool> requestAccess(String token, String deviceId, ActivateDeviceRequestDto request) async {
-    final url = _buildUrl('/gates/$deviceId/activate');
+  Future<bool> activateNode(String nodeId, ActivateDeviceRequest request) async {
+    final url = _buildUrl('/gates/$nodeId/activate');
 
     http.Response res;
     try {
-      res = await http.post(url, headers: _buildHeaders(token), body: request.toJson());
+      res = await http.post(url, headers: _buildHeaders(), body: request.toJson());
     } catch (e) {
       return false;
     }
@@ -31,74 +31,32 @@ class GateClient {
     return res.statusCode == 204;
   }
 
-  Future<CommandStatusDto?> getCommandStatus(String token, String deviceId) async {
-    final url = _buildUrl('/gates/$deviceId/status');
+  Future<CommandStatus?> getCommandStatus(String nodeId) async {
+    final url = _buildUrl('/gates/$nodeId/status');
 
     http.Response res;
     try {
-      res = await http.get(url, headers: _buildHeaders(token));
+      res = await http.get(url, headers: _buildHeaders());
     } catch (e) {
       return null;
     }
 
     final json = jsonDecode(res.body) as Map<String, dynamic>;
-    CommandStatusDto? commandResponse;
-    try {
-      commandResponse = CommandStatusDto.fromJson(json);
-    } catch (e) {
-      commandResponse = null;
-    }
-
-    return commandResponse;
+    return CommandStatus.fromJson(json);
   }
 
-  Future<LoginResponseDto?> login(String username, String password) async {
-    final url = _buildUrl('/auth');
+  Future<UserWithNodes?> getUserNodes(String authId) async {
+    final url = _buildUrl('/gates/nodes/external/$authId');
 
     http.Response res;
     try {
-      res = await http.post(url,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode({
-            'username': username,
-            'password': password,
-          }));
+      res = await http.get(url, headers: _buildHeaders());
     } catch (e) {
       return null;
     }
 
     final json = jsonDecode(res.body) as Map<String, dynamic>;
-    LoginResponseDto? loginResponse;
-    try {
-      loginResponse = LoginResponseDto.fromJson(json);
-    } catch (e) {
-      loginResponse = null;
-    }
-
-    return loginResponse;
-  }
-
-  Future<UserNodesResponseDto?> fetchUserNodes(String token) async {
-    final url = _buildUrl('/gates/user', {'deviceOnly': 'true'});
-
-    http.Response res;
-    try {
-      res = await http.get(url, headers: _buildHeaders(token));
-    } catch (e) {
-      return null;
-    }
-
-    final json = jsonDecode(res.body) as Map<String, dynamic>;
-    UserNodesResponseDto? userNodes;
-    try {
-      userNodes = UserNodesResponseDto.fromJson(json);
-    } catch (e) {
-      userNodes = null;
-    }
-
-    return userNodes;
+    return UserWithNodes.fromJson(json);
   }
 
   Uri _buildUrl(String path, [Map<String, dynamic>? query]) {
@@ -109,7 +67,7 @@ class GateClient {
     }
   }
 
-  Map<String, String> _buildHeaders(String token) {
-    return {'Authorization': 'Bearer $token'};
+  Map<String, String> _buildHeaders() {
+    return {'x-api-key': _apiKey};
   }
 }
