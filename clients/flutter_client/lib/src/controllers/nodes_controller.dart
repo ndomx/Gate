@@ -5,20 +5,62 @@ import 'package:flutter_client/src/models/activate_device_request.dart';
 import 'package:flutter_client/src/models/command_status.dart';
 import 'package:flutter_client/src/models/nodes/node.dart';
 import 'package:flutter_client/src/models/nodes/node_with_status.dart';
+import 'package:flutter_client/src/models/user.dart';
+import 'package:flutter_client/src/models/user_with_nodes.dart';
 
 class NodesController with ChangeNotifier {
+  List<NodeWithStatus> get nodes => _nodes;
+  bool get isLoading => _isLoading;
+
+  List<NodeWithStatus> _nodes = List.empty();
+  bool _isLoading = false;
+
   final GateClient _client = GateClient();
-  final List<NodeWithStatus> _nodes = List.empty();
 
   static const Duration _stateTransitionDelay = Duration(seconds: 1);
   static const Duration _pollingDelay = Duration(seconds: 1);
   static const int _pollingMaxRetries = 10;
 
-  Future<void> activateNode(int index) async {
-    Node node = _nodes[index];
+  Future<void> fetchNodes() async {
+    _isLoading = true;
+    notifyListeners();
 
+    // UserWithNodes? res = await _client.getUserNodes('');
+    UserWithNodes res = const UserWithNodes(
+      nodes: [
+        NodeWithStatus(
+          id: '1',
+          name: 'device_1',
+          displayName: 'Device 1',
+          actionCode: 'on/off',
+          deviceId: '23847',
+          status: AccessStatus.loading,
+        ),
+        NodeWithStatus(
+          id: '2',
+          name: 'device_2',
+          displayName: 'Device 2',
+          actionCode: 'on/off',
+          deviceId: '23847',
+          status: AccessStatus.idle,
+        )
+      ],
+      user: User(
+        id: 'id',
+        externalId: 'externalId',
+        access: ['access'],
+      ),
+    );
+    await Future.delayed(const Duration(seconds: 2));
+
+    _nodes = res?.nodes.map((e) => NodeWithStatus.fromNode(e, AccessStatus.idle)).toList() ?? [];
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> activateNode(String nodeId) async {
     bool success = await _client.activateNode(
-      node.id,
+      nodeId,
       const ActivateDeviceRequest(
         action: 'on',
         actionDetails: ActionDetails(timeout: 1000),
@@ -26,6 +68,7 @@ class NodesController with ChangeNotifier {
       ),
     );
 
+    int index = _nodes.indexWhere((element) => element.id == nodeId);
     if (!success) {
       await _handleActivateNodeFailure(index);
       return;

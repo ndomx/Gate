@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_client/src/models/nodes/node.dart';
-import 'package:flutter_client/src/widgets/node_card.dart';
+import 'package:flutter_client/src/models/nodes/node_with_status.dart';
+import 'package:flutter_client/src/widgets/nodes/node_card.dart';
 
 class NodeListWidget extends StatelessWidget {
   const NodeListWidget({super.key, required this.nodes});
 
-  final List<Node> nodes;
+  final List<NodeWithStatus> nodes;
 
   @override
   Widget build(BuildContext context) {
