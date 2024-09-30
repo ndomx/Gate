@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_client/src/models/access_status.dart';
-import 'package:flutter_client/src/models/node.dart';
+import 'package:flutter_client/src/models/nodes/node.dart';
 import 'package:flutter_client/src/widgets/icons/access_icon.dart';
 
 class NodeCard extends StatefulWidget {

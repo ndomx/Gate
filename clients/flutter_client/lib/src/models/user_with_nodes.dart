@@ -1,4 +1,4 @@
-import 'package:flutter_client/src/models/node.dart';
+import 'package:flutter_client/src/models/nodes/node.dart';
 import 'package:flutter_client/src/models/user.dart';
 
 class UserWithNodes {

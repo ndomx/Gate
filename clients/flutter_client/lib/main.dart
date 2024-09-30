@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_client/src/controllers/settings_controller.dart';
 import 'package:flutter_client/src/gate_app.dart';
-import 'package:flutter_client/src/models/node.dart';
+import 'package:flutter_client/src/models/nodes/node.dart';
 import 'package:flutter_client/src/services/settings_service.dart';
 import 'package:flutter_client/src/widgets/node_card.dart';
 import 'package:flutter_client/src/widgets/node_list_widget.dart';

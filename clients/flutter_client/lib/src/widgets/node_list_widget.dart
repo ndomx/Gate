@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_client/src/models/node.dart';
+import 'package:flutter_client/src/models/nodes/node.dart';
 import 'package:flutter_client/src/widgets/node_card.dart';
 
 class NodeListWidget extends StatelessWidget {
