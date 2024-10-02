@@ -31,14 +31,21 @@ class NodesScreen extends StatelessWidget implements BaseScreen {
         // builder: (context, provider, child) => NodeListWidget(nodes: provider.nodes),
         builder: ((context, value, child) {
           if (value.isLoading) {
-            return const Center(child: CircularProgressIndicator(value: null,),);
+            return const Center(
+              child: CircularProgressIndicator(
+                value: null,
+              ),
+            );
           }
 
           if (value.nodes.isEmpty) {
             return const HomeEmptyView(title: 'Empty', secondary: 'secondary');
           }
 
-          return NodeListWidget(nodes: value.nodes);
+          return NodeListWidget(
+            nodes: value.nodes,
+            onNodeTap: (index) => value.activateNode(index),
+          );
         }),
       ),
     );

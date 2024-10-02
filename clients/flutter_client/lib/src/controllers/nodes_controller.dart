@@ -58,9 +58,12 @@ class NodesController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> activateNode(String nodeId) async {
+  Future<void> activateNode(int index) async {
+    _setNodeStatus(index, AccessStatus.loading);
+    Node node = _nodes[index];
+
     bool success = await _client.activateNode(
-      nodeId,
+      node.id,
       const ActivateDeviceRequest(
         action: 'on',
         actionDetails: ActionDetails(timeout: 1000),
@@ -68,7 +71,6 @@ class NodesController with ChangeNotifier {
       ),
     );
 
-    int index = _nodes.indexWhere((element) => element.id == nodeId);
     if (!success) {
       await _handleActivateNodeFailure(index);
       return;
@@ -100,10 +102,10 @@ class NodesController with ChangeNotifier {
   Future<int> _executeStatusPolling(int index) async {
     Node node = _nodes[index];
 
-    int retires = 0;
+    int retries = 0;
     int responseCode = -1;
 
-    while (retires++ < _pollingMaxRetries && responseCode < 0) {
+    while (retries++ < _pollingMaxRetries && responseCode < 0) {
       CommandStatus? response = await _client.getCommandStatus(node.id);
       responseCode = response?.responseCode ?? -1;
 
@@ -115,7 +117,7 @@ class NodesController with ChangeNotifier {
 
   void _setNodeStatus(int index, AccessStatus status) {
     Node current = _nodes[index];
-    _nodes[index] = NodeWithStatus.fromNode(current, AccessStatus.accessRejected);
+    _nodes[index] = NodeWithStatus.fromNode(current, status);
     notifyListeners();
   }
 }
