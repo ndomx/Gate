@@ -5,7 +5,6 @@ import 'package:flutter_client/src/models/activate_device_request.dart';
 import 'package:flutter_client/src/models/command_status.dart';
 import 'package:flutter_client/src/models/nodes/node.dart';
 import 'package:flutter_client/src/models/nodes/node_with_status.dart';
-import 'package:flutter_client/src/models/user.dart';
 import 'package:flutter_client/src/models/user_with_nodes.dart';
 
 class NodesController with ChangeNotifier {
@@ -25,33 +24,7 @@ class NodesController with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // UserWithNodes? res = await _client.getUserNodes('');
-    UserWithNodes res = const UserWithNodes(
-      nodes: [
-        NodeWithStatus(
-          id: '1',
-          name: 'device_1',
-          displayName: 'Device 1',
-          actionCode: 'on/off',
-          deviceId: '23847',
-          status: AccessStatus.loading,
-        ),
-        NodeWithStatus(
-          id: '2',
-          name: 'device_2',
-          displayName: 'Device 2',
-          actionCode: 'on/off',
-          deviceId: '23847',
-          status: AccessStatus.idle,
-        )
-      ],
-      user: User(
-        id: 'id',
-        externalId: 'externalId',
-        access: ['access'],
-      ),
-    );
-    await Future.delayed(const Duration(seconds: 2));
+    UserWithNodes? res = await _client.getUserNodes('');
 
     _nodes = res?.nodes.map((e) => NodeWithStatus.fromNode(e, AccessStatus.idle)).toList() ?? [];
     _isLoading = false;

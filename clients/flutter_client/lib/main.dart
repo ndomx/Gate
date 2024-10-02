@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 Future main() async {
   // WidgetsFlutterBinding.ensureInitialized();
   //
-  // await dotenv.load();
+  await dotenv.load();
   //
   // final settingsController = SettingsController(SettingsService());
   // await settingsController.loadSettings();
