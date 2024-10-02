@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_client/src/controllers/nodes_controller.dart';
 import 'package:flutter_client/src/controllers/settings_controller.dart';
-import 'package:flutter_client/src/views/login_view.dart';
+import 'package:flutter_client/src/screens/nodes_screen.dart';
 import 'package:flutter_client/src/views/settings_view.dart';
 
 class GateApp extends StatelessWidget {
-  const GateApp({super.key, required this.settingsController});
+  const GateApp(
+    this.settingsController,
+    this.nodesController, {
+    super.key,
+  });
 
   final SettingsController settingsController;
+  final NodesController nodesController;
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +29,10 @@ class GateApp extends StatelessWidget {
             switch (routeSettings.name) {
               case SettingsView.routeName:
                 return SettingsView(controller: settingsController);
-              case LoginView.routeName:
-                return LoginView();
               default:
-                return LoginView();
+                return NodesScreen(
+                  controller: nodesController,
+                );
             }
           },
         ),

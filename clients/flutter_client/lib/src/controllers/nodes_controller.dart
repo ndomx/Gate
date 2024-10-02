@@ -16,7 +16,7 @@ class NodesController with ChangeNotifier {
 
   final GateClient _client = GateClient();
 
-  static const Duration _stateTransitionDelay = Duration(seconds: 1);
+  static const Duration _stateTransitionDelay = Duration(seconds: 2);
   static const Duration _pollingDelay = Duration(seconds: 1);
   static const int _pollingMaxRetries = 10;
 

@@ -9,44 +9,49 @@ import 'package:provider/provider.dart';
 enum MenuItem { login, settings }
 
 class NodesScreen extends StatelessWidget implements BaseScreen {
-  const NodesScreen({super.key});
+  const NodesScreen({super.key, required this.controller});
+
+  final NodesController controller;
 
   @override
   String get path => '/';
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Gate'),
-        actions: [
-          IconButton(
-            onPressed: () => print('refresh'),
-            icon: const Icon(Icons.refresh),
-          ),
-          const MainMenuButton(),
-        ],
-      ),
-      body: Consumer<NodesController>(
-        // builder: (context, provider, child) => NodeListWidget(nodes: provider.nodes),
-        builder: ((context, value, child) {
-          if (value.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                value: null,
-              ),
+    return ChangeNotifierProvider(
+      create: (context) => controller..fetchNodes(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Gate'),
+          actions: [
+            IconButton(
+              onPressed: () => print('refresh'),
+              icon: const Icon(Icons.refresh),
+            ),
+            const MainMenuButton(),
+          ],
+        ),
+        body: Consumer<NodesController>(
+          // builder: (context, provider, child) => NodeListWidget(nodes: provider.nodes),
+          builder: ((context, value, child) {
+            if (value.isLoading) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  value: null,
+                ),
+              );
+            }
+
+            if (value.nodes.isEmpty) {
+              return const HomeEmptyView(title: 'Empty', secondary: 'secondary');
+            }
+
+            return NodeListWidget(
+              nodes: value.nodes,
+              onNodeTap: (index) => value.activateNode(index),
             );
-          }
-
-          if (value.nodes.isEmpty) {
-            return const HomeEmptyView(title: 'Empty', secondary: 'secondary');
-          }
-
-          return NodeListWidget(
-            nodes: value.nodes,
-            onNodeTap: (index) => value.activateNode(index),
-          );
-        }),
+          }),
+        ),
       ),
     );
   }
