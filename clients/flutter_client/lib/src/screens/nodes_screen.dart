@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_client/src/controllers/nodes_controller.dart';
-import 'package:flutter_client/src/screens/base_screen.dart';
-import 'package:flutter_client/src/widgets/common/main_menu_button.dart';
+import 'package:flutter_client/src/widgets/menus/main_menu.dart';
 import 'package:flutter_client/src/widgets/home_empty_view.dart';
 import 'package:flutter_client/src/widgets/nodes/node_list_widget.dart';
 import 'package:provider/provider.dart';
 
-enum MenuItem { login, settings }
-
-class NodesScreen extends StatelessWidget implements BaseScreen {
+class NodesScreen extends StatelessWidget {
+  final NodesController controller;
   const NodesScreen({super.key, required this.controller});
 
-  final NodesController controller;
-
-  @override
-  String get path => '/';
+  static const route = '/';
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +23,10 @@ class NodesScreen extends StatelessWidget implements BaseScreen {
               onPressed: () => print('refresh'),
               icon: const Icon(Icons.refresh),
             ),
-            const MainMenuButton(),
+            const MainMenu(),
           ],
         ),
         body: Consumer<NodesController>(
-          // builder: (context, provider, child) => NodeListWidget(nodes: provider.nodes),
           builder: ((context, value, child) {
             if (value.isLoading) {
               return const Center(

@@ -2,13 +2,17 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefsService {
-  static const String accessTokenKey = 'key_access_token';
-  static const String themeKey = 'key_theme';
-  static const String requireAuthKey = 'key_require_auth';
+  static final PrefsService _instance = PrefsService._internal();
 
-  static const _secureStorage = FlutterSecureStorage();
+  final _secureStorage = FlutterSecureStorage();
 
-  static Future<void> save<T>(String key, T value,
+  factory PrefsService() {
+    return _instance;
+  }
+
+  PrefsService._internal();
+
+   Future<void> save<T>(String key, T value,
       {bool encrypt = false}) async {
     switch (T) {
       case String:
@@ -25,7 +29,7 @@ class PrefsService {
     }
   }
 
-  static Future<T?> load<T>(String key, {bool encrypted = false}) async {
+   Future<T?> load<T>(String key, {bool encrypted = false}) async {
     dynamic result;
 
     switch (T) {
@@ -45,11 +49,11 @@ class PrefsService {
     return result;
   }
 
-  static Future<void> deleteEncrypted() async {
+   Future<void> deleteEncrypted() async {
     await _secureStorage.deleteAll();
   }
 
-  static Future<void> _putString(String key, String value, bool encrypt) async {
+   Future<void> _putString(String key, String value, bool encrypt) async {
     if (encrypt) {
       await _secureStorage.write(key: key, value: value);
     } else {
@@ -58,7 +62,7 @@ class PrefsService {
     }
   }
 
-  static Future<void> _putInt(String key, int value, bool encrypt) async {
+   Future<void> _putInt(String key, int value, bool encrypt) async {
     if (encrypt) {
       await _secureStorage.write(key: key, value: value.toString());
     } else {
@@ -67,7 +71,7 @@ class PrefsService {
     }
   }
 
-  static Future<void> _putBool(String key, bool value, bool encrypt) async {
+   Future<void> _putBool(String key, bool value, bool encrypt) async {
     if (encrypt) {
       await _secureStorage.write(key: key, value: value.toString());
     } else {
@@ -76,7 +80,7 @@ class PrefsService {
     }
   }
 
-  static Future<String?> _getString(String key, bool encrypted) async {
+   Future<String?> _getString(String key, bool encrypted) async {
     if (encrypted) {
       return await _secureStorage.read(key: key);
     } else {
@@ -85,7 +89,7 @@ class PrefsService {
     }
   }
 
-  static Future<int?> _getInt(String key, bool encrypted) async {
+   Future<int?> _getInt(String key, bool encrypted) async {
     if (encrypted) {
       final str = await _secureStorage.read(key: key);
       return (str == null) ? null : int.parse(str);
@@ -95,7 +99,7 @@ class PrefsService {
     }
   }
 
-  static Future<bool?> _getBool(String key, bool encrypted) async {
+   Future<bool?> _getBool(String key, bool encrypted) async {
     if (encrypted) {
       final str = await _secureStorage.read(key: key);
       return (str == null) ? null : (str == 'true');

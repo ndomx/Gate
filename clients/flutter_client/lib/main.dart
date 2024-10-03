@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_client/src/controllers/nodes_controller.dart';
 import 'package:flutter_client/src/controllers/settings_controller.dart';
 import 'package:flutter_client/src/gate_app.dart';
-import 'package:flutter_client/src/services/settings_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future main() async {
@@ -10,7 +9,7 @@ Future main() async {
 
   await dotenv.load();
 
-  final settingsController = SettingsController(SettingsService());
+  final settingsController = SettingsController();
   await settingsController.loadSettings();
 
   final nodesController = NodesController();
