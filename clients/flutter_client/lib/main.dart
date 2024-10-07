@@ -1,9 +1,8 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_client/firebase_options.dart';
 import 'package:flutter_client/src/controllers/nodes_controller.dart';
 import 'package:flutter_client/src/controllers/settings_controller.dart';
 import 'package:flutter_client/src/gate_app.dart';
+import 'package:flutter_client/src/services/auth_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future main() async {
@@ -11,9 +10,7 @@ Future main() async {
 
   await dotenv.load();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await AuthService.initialize();
 
   final settingsController = SettingsController();
   await settingsController.loadSettings();

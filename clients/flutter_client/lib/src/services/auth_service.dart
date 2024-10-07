@@ -1,43 +1,32 @@
-import 'package:flutter/services.dart';
-import 'package:local_auth/local_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_client/firebase_options.dart';
 
 class AuthService {
-  static final _instance = AuthService._internal();
-
-  factory AuthService() {
-    return _instance;
-  }
-
   AuthService._internal();
 
-  final _auth = LocalAuthentication();
+  static Future<void> initialize() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
-  Future<bool> _canAuthenticate() async {
-    final canCheckBiometrics = await _auth.canCheckBiometrics;
-    final isDeviceSupported = await _auth.isDeviceSupported();
-    return (canCheckBiometrics || isDeviceSupported);
+    await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   }
 
-  // TODO: if user does not have any auth enrolled, should use internal auth
-  Future<bool> authenticate() async {
-    final canAuthenticate = await _canAuthenticate();
-    if (!canAuthenticate) {
-      return true;
-    }
+  static bool isLoggedIn() {
+    // FirebaseAuth.instance.
+    // final user = FirebaseAuth.instance.currentUser;
 
-    final availableBiometrics = await _auth.getAvailableBiometrics();
-    if (availableBiometrics.isEmpty) {
-      return true;
-    }
+    return FirebaseAuth.instance.currentUser != null;
+  }
 
-    bool authResult = false;
-    try {
-      authResult = await _auth.authenticate(
-          localizedReason: 'Please authenticate to request access');
-    } on PlatformException {
-      authResult = false;
-    }
-
-    return authResult;
+  static Future<bool> signIn(String email, String password) {
+    return FirebaseAuth.instance
+        .signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        )
+        .then((value) => true)
+        .catchError((err) => false);
   }
 }
