@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PrefsService {
   static final PrefsService _instance = PrefsService._internal();
 
-  final _secureStorage = FlutterSecureStorage();
+  final _secureStorage = const FlutterSecureStorage();
 
   factory PrefsService() {
     return _instance;
