@@ -7,7 +7,7 @@ class LoginController with ChangeNotifier {
   bool _isLoading = false;
 
   Future<bool> login(String email, String password) async {
-    if (isLoading) {
+    if (_isLoading) {
       return false;
     }
 

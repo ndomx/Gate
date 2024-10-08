@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_client/src/controllers/nodes_controller.dart';
+import 'package:flutter_client/src/screens/login_screen.dart';
 import 'package:flutter_client/src/widgets/menus/main_menu.dart';
 import 'package:flutter_client/src/widgets/home_empty_view.dart';
 import 'package:flutter_client/src/widgets/nodes/node_list_widget.dart';
@@ -20,7 +21,7 @@ class NodesScreen extends StatelessWidget {
           title: const Text('Gate'),
           actions: [
             IconButton(
-              onPressed: () => print('refresh'),
+              onPressed: () => Navigator.pushNamed(context, LoginScreen.route),
               icon: const Icon(Icons.refresh),
             ),
             const MainMenu(),

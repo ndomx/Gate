@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_client/src/controllers/login_controller.dart';
 import 'package:flutter_client/src/controllers/nodes_controller.dart';
 import 'package:flutter_client/src/controllers/settings_controller.dart';
 import 'package:flutter_client/src/gate_app.dart';
@@ -15,9 +16,10 @@ Future main() async {
   final settingsController = SettingsController();
   await settingsController.loadSettings();
 
+  final loginController = LoginController();
   final nodesController = NodesController();
 
   runApp(
-    GateApp(settingsController, nodesController),
+    GateApp(settingsController, nodesController, loginController),
   );
 }
