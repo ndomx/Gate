@@ -69,14 +69,38 @@ class LoginScreenBody extends StatelessWidget {
             LoadingButton(
               isLoading: controller.isLoading,
               onPressed: () {
-                controller.login(
+                controller
+                    .login(
                   _emailController.text,
                   _passwordController.text,
-                );
+                )
+                    .then((value) {
+                  if (value) {
+                    _onLoginFailed(context);
+                  } else {
+                    _onLoginSuccess(context);
+                  }
+                });
               },
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _onLoginFailed(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Unable to sign in'),
+      ),
+    );
+  }
+
+  void _onLoginSuccess(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Successfully logged in'),
       ),
     );
   }
