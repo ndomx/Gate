@@ -10,23 +10,30 @@ class AuthService {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+    // await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   }
 
   static bool isLoggedIn() {
-    // FirebaseAuth.instance.
-    // final user = FirebaseAuth.instance.currentUser;
-
     return FirebaseAuth.instance.currentUser != null;
+    // return true;
   }
 
-  static Future<bool> signIn(String email, String password) {
-    return FirebaseAuth.instance
-        .signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        )
-        .then((value) => true)
-        .catchError((err) => false);
+  static Future<bool> signIn(String email, String password) async {
+    bool success = true;
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      success = false;
+    }
+
+    return success;
+  }
+
+  static Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
   }
 }

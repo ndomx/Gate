@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_client/src/services/auth_service.dart';
 import 'package:flutter_client/src/services/prefs_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -63,6 +64,7 @@ class SettingsController with ChangeNotifier {
 
   Future<void> logout() async {
     await _prefsService.deleteEncrypted();
+    await AuthService.signOut();
   }
 
   Future<void> _loadThemeModeSetting() async {

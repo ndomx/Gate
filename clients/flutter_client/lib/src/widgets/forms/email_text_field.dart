@@ -18,8 +18,8 @@ class EmailTextField extends StatelessWidget {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        hintText: "sample@email.com",
-        labelText: "Email",
+        hintText: 'sample@email.com',
+        labelText: 'Email',
         prefixIcon: const Icon(Icons.email),
       ),
       autocorrect: false,

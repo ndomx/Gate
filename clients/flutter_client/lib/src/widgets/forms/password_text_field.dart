@@ -27,8 +27,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          hintText: "type your password here",
-          labelText: "Password",
+          hintText: 'type your password here',
+          labelText: 'Password',
           prefixIcon: const Icon(Icons.lock),
           suffixIcon: IconButton(
             icon: Icon(_visibilityIcon),

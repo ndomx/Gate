@@ -5,6 +5,7 @@ import 'package:flutter_client/src/controllers/settings_controller.dart';
 import 'package:flutter_client/src/screens/login_screen.dart';
 import 'package:flutter_client/src/screens/nodes_screen.dart';
 import 'package:flutter_client/src/screens/settings_screen.dart';
+import 'package:flutter_client/src/services/auth_service.dart';
 
 class GateApp extends StatelessWidget {
   const GateApp(
@@ -30,6 +31,10 @@ class GateApp extends StatelessWidget {
         onGenerateRoute: (routeSettings) => MaterialPageRoute<void>(
           settings: routeSettings,
           builder: (context) {
+            if (!AuthService.isLoggedIn()) {
+              return LoginScreen(controller: loginController);
+            }
+
             switch (routeSettings.name) {
               case SettingsScreen.route:
                 return SettingsScreen(controller: settingsController);

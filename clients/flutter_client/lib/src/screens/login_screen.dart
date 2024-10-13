@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_client/src/controllers/login_controller.dart';
+import 'package:flutter_client/src/screens/nodes_screen.dart';
 import 'package:flutter_client/src/widgets/forms/email_text_field.dart';
 import 'package:flutter_client/src/widgets/forms/password_text_field.dart';
 import 'package:flutter_client/src/widgets/menus/main_menu.dart';
@@ -69,16 +70,11 @@ class LoginScreenBody extends StatelessWidget {
             LoadingButton(
               isLoading: controller.isLoading,
               onPressed: () {
-                controller
-                    .login(
-                  _emailController.text,
-                  _passwordController.text,
-                )
-                    .then((value) {
+                controller.login(_emailController.text, _passwordController.text).then((value) {
                   if (value) {
-                    _onLoginFailed(context);
-                  } else {
                     _onLoginSuccess(context);
+                  } else {
+                    _onLoginFailed(context);
                   }
                 });
               },
@@ -103,6 +99,8 @@ class LoginScreenBody extends StatelessWidget {
         content: Text('Successfully logged in'),
       ),
     );
+
+    Navigator.pushNamed(context, NodesScreen.route);
   }
 }
 

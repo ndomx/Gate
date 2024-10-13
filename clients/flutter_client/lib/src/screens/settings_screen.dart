@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_client/src/common/constants.dart';
 import 'package:flutter_client/src/common/utils.dart';
 import 'package:flutter_client/src/controllers/settings_controller.dart';
+import 'package:flutter_client/src/screens/login_screen.dart';
 import 'package:flutter_client/src/widgets/dialogs/logout_dialog.dart';
 import 'package:flutter_client/src/widgets/menus/theme_menu.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   final SettingsController controller;
+
   const SettingsScreen({super.key, required this.controller});
 
   static const route = '/settings';
@@ -101,12 +103,20 @@ class LogoutButton extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => LogoutDialog(
-        onConfirm: _onConfirm,
+        onConfirm: () => _onConfirm(context),
       ),
     );
   }
 
-  Future<void> _onConfirm() async {}
+  Future<void> _onConfirm(BuildContext context) async {
+    final localContext = context;
+
+    await controller.logout();
+
+    if (localContext.mounted) {
+      Navigator.pushNamed(localContext, LoginScreen.route);
+    }
+  }
 }
 
 class AboutWidget extends StatelessWidget {
