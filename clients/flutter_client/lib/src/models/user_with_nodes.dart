@@ -9,7 +9,7 @@ class UserWithNodes {
 
   factory UserWithNodes.fromJson(Map<String, dynamic> json) {
     return UserWithNodes(
-      user: json['user'],
+      user: User.fromJson(json['user']),
       nodes: List<Node>.from(json['nodes']!.map((node) => Node.fromJson(node))),
     );
   }

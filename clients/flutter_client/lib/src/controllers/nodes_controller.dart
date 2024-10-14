@@ -6,6 +6,7 @@ import 'package:flutter_client/src/models/command_status.dart';
 import 'package:flutter_client/src/models/nodes/node.dart';
 import 'package:flutter_client/src/models/nodes/node_with_status.dart';
 import 'package:flutter_client/src/models/user_with_nodes.dart';
+import 'package:flutter_client/src/services/auth_service.dart';
 
 class NodesController with ChangeNotifier {
   List<NodeWithStatus> get nodes => _nodes;
@@ -13,6 +14,8 @@ class NodesController with ChangeNotifier {
 
   List<NodeWithStatus> _nodes = List.empty();
   bool _isLoading = false;
+
+  String _serverId = '';
 
   final GateClient _client = GateClient();
 
@@ -24,9 +27,10 @@ class NodesController with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    UserWithNodes? res = await _client.getUserNodes('');
+    UserWithNodes? res = await _client.getUserNodes(AuthService.authId);
 
     _nodes = res?.nodes.map((e) => NodeWithStatus.fromNode(e, AccessStatus.idle)).toList() ?? [];
+    _serverId = res?.user.id ?? '';
     _isLoading = false;
     notifyListeners();
   }
@@ -37,10 +41,10 @@ class NodesController with ChangeNotifier {
 
     bool success = await _client.activateNode(
       node.id,
-      const ActivateDeviceRequest(
+      ActivateDeviceRequest(
         action: 'on',
-        actionDetails: ActionDetails(timeout: 1000),
-        userId: '234',
+        actionDetails: const ActionDetails(timeout: 1000),
+        userId: _serverId,
       ),
     );
 

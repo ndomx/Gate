@@ -5,12 +5,12 @@ import 'package:flutter_client/firebase_options.dart';
 class AuthService {
   AuthService._internal();
 
+  static String get authId => FirebaseAuth.instance.currentUser?.uid ?? '';
+
   static Future<void> initialize() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-
-    // await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   }
 
   static bool isLoggedIn() {
