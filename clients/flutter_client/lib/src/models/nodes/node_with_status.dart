@@ -5,19 +5,13 @@ class NodeWithStatus extends Node {
   final AccessStatus status;
 
   const NodeWithStatus({
-    required String id,
-    required String name,
-    required String displayName,
-    required String actionCode,
-    required String deviceId,
+    required super.id,
+    required super.name,
+    required super.displayName,
+    required super.actionCode,
+    required super.deviceId,
     required this.status,
-  }) : super(
-          id: id,
-          name: name,
-          displayName: displayName,
-          actionCode: actionCode,
-          deviceId: deviceId,
-        );
+  });
 
   factory NodeWithStatus.fromJson(Map<String, dynamic> json) {
     return NodeWithStatus(
