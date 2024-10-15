@@ -12,8 +12,7 @@ class PrefsService {
 
   PrefsService._internal();
 
-   Future<void> save<T>(String key, T value,
-      {bool encrypt = false}) async {
+  Future<void> save<T>(String key, T value, {bool encrypt = false}) async {
     switch (T) {
       case String:
         await _putString(key, value as String, encrypt);
@@ -29,7 +28,7 @@ class PrefsService {
     }
   }
 
-   Future<T?> load<T>(String key, {bool encrypted = false}) async {
+  Future<T?> load<T>(String key, {bool encrypted = false}) async {
     dynamic result;
 
     switch (T) {
@@ -49,11 +48,11 @@ class PrefsService {
     return result;
   }
 
-   Future<void> deleteEncrypted() async {
+  Future<void> deleteEncrypted() async {
     await _secureStorage.deleteAll();
   }
 
-   Future<void> _putString(String key, String value, bool encrypt) async {
+  Future<void> _putString(String key, String value, bool encrypt) async {
     if (encrypt) {
       await _secureStorage.write(key: key, value: value);
     } else {
@@ -62,7 +61,7 @@ class PrefsService {
     }
   }
 
-   Future<void> _putInt(String key, int value, bool encrypt) async {
+  Future<void> _putInt(String key, int value, bool encrypt) async {
     if (encrypt) {
       await _secureStorage.write(key: key, value: value.toString());
     } else {
@@ -71,7 +70,7 @@ class PrefsService {
     }
   }
 
-   Future<void> _putBool(String key, bool value, bool encrypt) async {
+  Future<void> _putBool(String key, bool value, bool encrypt) async {
     if (encrypt) {
       await _secureStorage.write(key: key, value: value.toString());
     } else {
@@ -80,7 +79,7 @@ class PrefsService {
     }
   }
 
-   Future<String?> _getString(String key, bool encrypted) async {
+  Future<String?> _getString(String key, bool encrypted) async {
     if (encrypted) {
       return await _secureStorage.read(key: key);
     } else {
@@ -89,7 +88,7 @@ class PrefsService {
     }
   }
 
-   Future<int?> _getInt(String key, bool encrypted) async {
+  Future<int?> _getInt(String key, bool encrypted) async {
     if (encrypted) {
       final str = await _secureStorage.read(key: key);
       return (str == null) ? null : int.parse(str);
@@ -99,7 +98,7 @@ class PrefsService {
     }
   }
 
-   Future<bool?> _getBool(String key, bool encrypted) async {
+  Future<bool?> _getBool(String key, bool encrypted) async {
     if (encrypted) {
       final str = await _secureStorage.read(key: key);
       return (str == null) ? null : (str == 'true');

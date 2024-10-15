@@ -100,7 +100,7 @@ class LoginScreenBody extends StatelessWidget {
       ),
     );
 
-    Navigator.pushNamed(context, NodesScreen.route);
+    Navigator.pushReplacementNamed(context, NodesScreen.route);
   }
 }
 

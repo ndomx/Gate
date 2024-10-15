@@ -31,21 +31,34 @@ class GateApp extends StatelessWidget {
         onGenerateRoute: (routeSettings) => MaterialPageRoute<void>(
           settings: routeSettings,
           builder: (context) {
-            if (!AuthService.isLoggedIn()) {
-              return LoginScreen(controller: loginController);
+            if (AuthService.isLoggedIn()) {
+              return _unrestrictedRouteSettings(context, routeSettings.name);
             }
 
-            switch (routeSettings.name) {
-              case SettingsScreen.route:
-                return SettingsScreen(controller: settingsController);
-              case LoginScreen.route:
-                return LoginScreen(controller: loginController);
-              default:
-                return NodesScreen(controller: nodesController);
-            }
+            return _restrictedRouteSettings(context, routeSettings.name);
           },
         ),
       ),
     );
+  }
+
+  Widget _restrictedRouteSettings(BuildContext context, String? routeName) {
+    switch (routeName) {
+      case SettingsScreen.route:
+        return SettingsScreen(controller: settingsController);
+      default:
+        return LoginScreen(controller: loginController);
+    }
+  }
+
+  Widget _unrestrictedRouteSettings(BuildContext context, String? routeName) {
+    switch (routeName) {
+      case SettingsScreen.route:
+        return SettingsScreen(controller: settingsController);
+      case LoginScreen.route:
+        return LoginScreen(controller: loginController);
+      default:
+        return NodesScreen(controller: nodesController);
+    }
   }
 }
