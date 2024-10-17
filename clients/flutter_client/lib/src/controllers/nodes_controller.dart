@@ -9,11 +9,19 @@ import 'package:flutter_client/src/models/user_with_nodes.dart';
 import 'package:flutter_client/src/services/auth_service.dart';
 
 class NodesController with ChangeNotifier {
+  static final _instance = NodesController._internal();
+
+  factory NodesController() {
+    return _instance;
+  }
+
+  NodesController._internal();
+
   List<NodeWithStatus> get nodes => _nodes;
   bool get isLoading => _isLoading;
 
   List<NodeWithStatus> _nodes = List.empty();
-  bool _isLoading = false;
+  bool _isLoading = true;
 
   String _serverId = '';
 

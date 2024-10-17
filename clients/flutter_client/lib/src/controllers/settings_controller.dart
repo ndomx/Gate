@@ -16,6 +16,9 @@ class SettingsController with ChangeNotifier {
   late String _appVersion;
   String get appVersion => _appVersion;
 
+  bool _isInitialized = false;
+  bool get isInitialized => _isInitialized;
+
   final _prefsService = PrefsService();
 
   final _themeKey = 'key_theme';
@@ -29,7 +32,7 @@ class SettingsController with ChangeNotifier {
     _appName = packageInfo.appName;
     _appVersion = packageInfo.version;
 
-    notifyListeners();
+    _isInitialized = true;
   }
 
   Future<void> updateThemeMode(ThemeMode? newThemeMode) async {

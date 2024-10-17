@@ -6,25 +6,18 @@ import 'package:flutter_client/src/widgets/settings/signed_out_settings_view.dar
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
-  final SettingsController controller;
-
-  const SettingsScreen({super.key, required this.controller});
+  const SettingsScreen({super.key});
 
   static const route = '/settings';
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => controller,
-      child: Consumer<SettingsController>(
-        builder: (context, value, child) {
-          if (AuthService.isLoggedIn()) {
-            return SignedInSettingsView(settingsController: value);
-          }
+    final SettingsController controller = Provider.of(context);
 
-          return SignedOutSettingsView(settingsController: value);
-        },
-      ),
-    );
+    if (AuthService.isLoggedIn()) {
+      return SignedInSettingsView(settingsController: controller);
+    }
+
+    return SignedOutSettingsView(settingsController: controller);
   }
 }

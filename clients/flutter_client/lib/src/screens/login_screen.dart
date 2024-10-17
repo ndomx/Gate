@@ -7,43 +7,39 @@ import 'package:flutter_client/src/widgets/menus/main_menu.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
-  final LoginController controller;
-  const LoginScreen({super.key, required this.controller});
+  const LoginScreen({super.key});
 
   static const route = '/login';
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => controller,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Login'),
-          actions: const [
-            MainMenu(),
-          ],
-        ),
-        body: Consumer<LoginController>(
-          builder: ((context, value, child) => LoginScreenBody(controller)),
-        ),
+    final LoginController controller = Provider.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+        actions: const [
+          MainMenu(),
+        ],
       ),
+      body: LoginScreenBody(controller),
     );
   }
 }
 
 class LoginScreenBody extends StatelessWidget {
-  LoginScreenBody(
+  const LoginScreenBody(
     this.controller, {
     super.key,
   });
 
   final LoginController controller;
 
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Form(
@@ -58,19 +54,19 @@ class LoginScreenBody extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             EmailTextField(
-              controller: _emailController,
+              controller: emailController,
               enabled: !controller.isLoading,
             ),
             const SizedBox(height: 20),
             PasswordTextField(
-              controller: _passwordController,
+              controller: passwordController,
               enabled: !controller.isLoading,
             ),
             const SizedBox(height: 30),
             LoadingButton(
               isLoading: controller.isLoading,
               onPressed: () {
-                controller.login(_emailController.text, _passwordController.text).then((value) {
+                controller.login(emailController.text, passwordController.text).then((value) {
                   if (value) {
                     _onLoginSuccess(context);
                   } else {

@@ -6,13 +6,14 @@ import 'package:flutter_client/src/widgets/nodes/node_list_widget.dart';
 import 'package:provider/provider.dart';
 
 class NodesScreen extends StatelessWidget {
-  final NodesController controller;
-  const NodesScreen({super.key, required this.controller});
+  const NodesScreen({super.key});
 
   static const route = '/';
 
   @override
   Widget build(BuildContext context) {
+    final controller = NodesController();
+
     return ChangeNotifierProvider(
       create: (context) => controller..fetchNodes(),
       child: Scaffold(
