@@ -40,7 +40,7 @@ export class MqttService implements IActionable, OnModuleInit {
       username: this.configService.get('MQTT_USER'),
       password: this.configService.get('MQTT_PASS'),
       port: +this.configService.get('MQTT_PORT'),
-      protocol: 'tcp',
+      protocol: 'mqtts',
     });
 
     this.client.on('connect', () => {
@@ -51,6 +51,8 @@ export class MqttService implements IActionable, OnModuleInit {
         }
       });
     });
+
+    this.client.on('error', (e) => this.logger.error(e.message));
 
     this.client.on('message', (topic, payload) => {
       if (topic !== ackTopic) {
