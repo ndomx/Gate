@@ -1,6 +1,8 @@
 import json
 import os
 
+from pathlib import Path
+
 import paho.mqtt.client as mqtt
 
 from libs.common.command import Command
@@ -19,10 +21,13 @@ class MqttClient:
     def connect(self):
         self.client.on_connect = lambda client, userdata, flags, rc: self.__on_connect()
         self.client.on_message = lambda client, userdata, msg: self.__on_message(msg)
+        self.client.on_connect_fail = lambda client, userdata: self.__on_connect_error()
+
+        self.client.tls_set(ca_certs=self.__load_certificate())
 
         self.client.username_pw_set(
             username=os.getenv('MQTT_USERNAME'),
-            password=os.getenv('MQTT_PASSWORD')
+            password=os.getenv('MQTT_PASSWORD'),
         )
 
         self.client.connect(
@@ -53,6 +58,9 @@ class MqttClient:
         result = self.handler.execute_command(command)
         self.__send_ack(result)
 
+    def __on_connect_error(self):
+        print('unable to connect')
+
     def __send_ack(self, result: ExecuteCommandResult):
         payload = {
             "deviceId": self.device_id,
@@ -60,3 +68,9 @@ class MqttClient:
         }
 
         self.client.publish(ACK_TOPIC, json.dumps(payload))
+
+    def __load_certificate(self)->str:
+        base = os.path.relpath(__file__, os.getcwd())
+        path = Path(os.path.dirname(base)) / 'mqtt-ca.crt'
+
+        return str(path)
