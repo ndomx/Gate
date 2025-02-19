@@ -12,7 +12,7 @@ import com.ndomx.phonecontroller.ui.HomeScreen
 import com.ndomx.phonecontroller.ui.PhoneInput
 import com.ndomx.phonecontroller.ui.theme.PhoneControllerTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), StateHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -21,12 +21,20 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     HomeScreen(
                         phoneNumber = loadPhoneNumber(),
-                        onSave = { phoneNumber -> savePhoneNumber(phoneNumber) },
+                        stateHandler = this,
                         modifier = Modifier.padding(innerPadding),
                     )
                 }
             }
         }
+    }
+
+    override fun onSaveClick(phoneNumber: String) {
+        savePhoneNumber(phoneNumber)
+    }
+
+    override fun onConnectClick() {
+        CallsService.makePhoneCall(this, loadPhoneNumber())
     }
 
     private fun loadPhoneNumber(): String {

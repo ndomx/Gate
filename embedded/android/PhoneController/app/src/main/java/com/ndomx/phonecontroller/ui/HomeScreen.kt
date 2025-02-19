@@ -9,12 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.ndomx.phonecontroller.StateHandler
 import com.ndomx.phonecontroller.ui.theme.PhoneControllerTheme
 
 @Composable
 fun HomeScreen(
     phoneNumber: String,
-    onSave: (String) -> Unit,
+    stateHandler: StateHandler,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -22,8 +23,8 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxSize()
     ) {
-        PhoneInput(phoneNumber, onSave)
-        Button(onClick = {}) {
+        PhoneInput(phoneNumber, stateHandler::onSaveClick)
+        Button(onClick = stateHandler::onConnectClick) {
             Text("Connect")
         }
     }
@@ -33,6 +34,9 @@ fun HomeScreen(
 @Preview(showBackground = true)
 private fun HomeScreenPreview() {
     PhoneControllerTheme {
-        HomeScreen("+56912345678", onSave = {})
+        HomeScreen("+56912345678", object : StateHandler {
+            override fun onSaveClick(phoneNumber: String) {}
+            override fun onConnectClick() {}
+        })
     }
 }
