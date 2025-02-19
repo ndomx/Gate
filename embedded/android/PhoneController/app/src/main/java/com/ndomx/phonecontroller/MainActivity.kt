@@ -6,11 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.ndomx.phonecontroller.ui.HomeScreen
+import com.ndomx.phonecontroller.ui.PhoneInput
 import com.ndomx.phonecontroller.ui.theme.PhoneControllerTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,28 +19,23 @@ class MainActivity : ComponentActivity() {
         setContent {
             PhoneControllerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                    HomeScreen(
+                        phoneNumber = loadPhoneNumber(),
+                        onSave = { phoneNumber -> savePhoneNumber(phoneNumber) },
+                        modifier = Modifier.padding(innerPadding),
                     )
                 }
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    private fun loadPhoneNumber(): String {
+        val prefs = getPreferences(MODE_PRIVATE)
+        return prefs.getString("phone_number", "") ?: ""
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PhoneControllerTheme {
-        Greeting("Android")
+    private fun savePhoneNumber(phoneNumber: String) {
+        val prefs = getPreferences(MODE_PRIVATE)
+        prefs.edit().putString("phone_number", phoneNumber).apply()
     }
 }
