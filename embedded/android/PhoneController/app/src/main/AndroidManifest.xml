@@ -7,11 +7,10 @@
         android:required="true" />
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <application
         android:allowBackup="true"
@@ -23,10 +22,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PhoneController"
         tools:targetApi="31">
+        <service
+            android:name=".mqtt.MqttForegroundService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.PhoneController">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +43,6 @@
             android:name="org.eclipse.paho.android.service.MqttService"
             android:enabled="true"
             android:exported="false" />
-
     </application>
 
 </manifest>
