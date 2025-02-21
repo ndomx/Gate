@@ -1,3 +1,10 @@
+import java.util.Properties
+import java.util.UUID
+
+fun generateDeviceId(): String {
+    return UUID.randomUUID().toString()
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +13,11 @@ plugins {
 android {
     namespace = "com.ndomx.phonecontroller"
     compileSdk = 34
+
+    val file = rootProject.file("key.properties")
+    val properties = Properties().apply {
+        load(file.inputStream())
+    }
 
     defaultConfig {
         applicationId = "com.ndomx.phonecontroller"
@@ -18,6 +30,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "MQTT_BROKER_URL", properties.getProperty("MQTT_BROKER_URL"))
+        buildConfigField("String", "MQTT_BROKER_PORT", properties.getProperty("MQTT_BROKER_PORT"))
+        buildConfigField("String", "MQTT_USERNAME", properties.getProperty("MQTT_USERNAME"))
+        buildConfigField("String", "MQTT_PASSWORD", properties.getProperty("MQTT_PASSWORD"))
+        buildConfigField("String", "DEVICE_ID", generateDeviceId())
     }
 
     buildTypes {
