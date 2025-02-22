@@ -31,11 +31,11 @@ android {
             useSupportLibrary = true
         }
 
-        buildConfigField("String", "MQTT_BROKER_URL", properties.getProperty("MQTT_BROKER_URL"))
-        buildConfigField("String", "MQTT_BROKER_PORT", properties.getProperty("MQTT_BROKER_PORT"))
-        buildConfigField("String", "MQTT_USERNAME", properties.getProperty("MQTT_USERNAME"))
-        buildConfigField("String", "MQTT_PASSWORD", properties.getProperty("MQTT_PASSWORD"))
-        buildConfigField("String", "DEVICE_ID", generateDeviceId())
+        buildConfigField("String", "MQTT_BROKER_URL", "\"${properties.getProperty("MQTT_BROKER_URL")}\"")
+        buildConfigField("int", "MQTT_BROKER_PORT", properties.getProperty("MQTT_BROKER_PORT"))
+        buildConfigField("String", "MQTT_USERNAME", "\"${properties.getProperty("MQTT_USERNAME")}\"")
+        buildConfigField("String", "MQTT_PASSWORD", "\"${properties.getProperty("MQTT_PASSWORD")}\"")
+        buildConfigField("String", "DEVICE_ID", "\"${generateDeviceId()}\"")
     }
 
     buildTypes {
@@ -56,6 +56,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
