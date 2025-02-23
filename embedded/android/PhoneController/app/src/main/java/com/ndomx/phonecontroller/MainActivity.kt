@@ -20,20 +20,12 @@ class MainActivity : ComponentActivity(), StateHandler {
         enableEdgeToEdge()
         setContent {
             PhoneControllerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeScreen(
-                        phoneNumber = loadPhoneNumber(),
-                        stateHandler = this,
-                        modifier = Modifier.padding(innerPadding),
-                    )
-                }
+                HomeScreen(
+                    phoneNumber = loadPhoneNumber(),
+                    stateHandler = this,
+                )
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        validateData()
     }
 
     override fun onSaveClick(phoneNumber: String) {
@@ -52,15 +44,5 @@ class MainActivity : ComponentActivity(), StateHandler {
     private fun savePhoneNumber(phoneNumber: String) {
         val prefs = getPreferences(MODE_PRIVATE)
         prefs.edit().putString("phone_number", phoneNumber).apply()
-    }
-
-    private fun validateData() {
-        val serialized = "{" +
-                // "\"action\": \"call\"," +
-                "\"actionDetails\": {\"phone\": \"+56989362081\"}" +
-                "}"
-        println("serialized: $serialized")
-        val deserialized = Json.decodeFromString<Command>(serialized)
-        println("deserialized: $deserialized")
     }
 }

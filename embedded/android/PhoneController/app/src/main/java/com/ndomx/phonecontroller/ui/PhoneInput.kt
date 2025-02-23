@@ -1,7 +1,11 @@
 package com.ndomx.phonecontroller.ui
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -21,25 +25,31 @@ import androidx.compose.ui.unit.dp
 import com.ndomx.phonecontroller.ui.theme.PhoneControllerTheme
 
 @Composable
-fun PhoneInput(phoneNumber: String, onSave: (String) -> Unit, modifier: Modifier = Modifier) {
+fun PhoneInput(phoneNumber: String, onSave: (String) -> Unit) {
     var phone by remember { mutableStateOf(phoneNumber) }
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Column(
+        modifier = Modifier.fillMaxWidth(0.8f),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
         OutlinedTextField(
             value = phone,
             onValueChange = { phone = it },
             label = { Text("Phone Number") },
-            modifier = modifier,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Phone,
                 imeAction = ImeAction.Done
-            )
+            ),
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        Button(onClick = { onSave(phone) }) {
-            Text("Save")
+        Button(
+            onClick = { onSave(phone) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Save Number")
         }
     }
 }
