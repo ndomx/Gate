@@ -20,11 +20,7 @@ class MqttForegroundService : Service() {
         createNotificationChannel()
         startForeground(1, createNotification())
 
-        MqttManager.connect(this, {
-            println("MQTT Connected")
-        }, {
-            println("MQTT Connection failed: ${it.message}")
-        })
+        MqttManager.connect(this)
     }
 
     override fun onDestroy() {
