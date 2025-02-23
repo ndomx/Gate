@@ -8,6 +8,8 @@ fun generateDeviceId(): String {
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -89,4 +91,7 @@ dependencies {
     // MQTT
     implementation(libs.org.eclipse.paho.client.mqttv3)
     implementation(libs.org.eclipse.paho.android.service)
+
+    // Serialization
+    implementation(libs.kotlinx.serialization.json)
 }
