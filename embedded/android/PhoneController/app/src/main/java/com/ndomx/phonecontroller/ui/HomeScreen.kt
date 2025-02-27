@@ -3,9 +3,8 @@ package com.ndomx.phonecontroller.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -17,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ndomx.phonecontroller.BuildConfig
 import com.ndomx.phonecontroller.StateHandler
 import com.ndomx.phonecontroller.mqtt.ConnectionStatus
 import com.ndomx.phonecontroller.mqtt.MqttManager
@@ -60,13 +60,9 @@ fun HomeScreen(
 
             PhoneInput(phoneNumber, onSave = {})
 
-            Button(
-                onClick = {},
-                enabled = mqttStatus == ConnectionStatus.DISCONNECTED,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Connect")
-            }
+            SensitiveText(BuildConfig.DEVICE_ID, true)
+
+            ConnectButton(mqttStatus, stateHandler::onConnectClick)
         }
     }
 }
