@@ -1,11 +1,11 @@
 package com.ndomx.phonecontroller.mqtt
 
 import android.content.Context
+import android.util.Log
 import com.ndomx.phonecontroller.BuildConfig
 import com.ndomx.phonecontroller.contracts.Command
 import com.ndomx.phonecontroller.contracts.ExecuteCommandResult
 import com.ndomx.phonecontroller.contracts.CommandResponse
-import com.ndomx.phonecontroller.mqtt.MqttManager.publish
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -20,6 +20,8 @@ import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManagerFactory
 
 object MqttManager : MqttCallbackExtended {
+    private const val LOG_TAG = "MqttManager"
+
     private const val SUB_TOPIC = "node/${BuildConfig.DEVICE_ID}"
     private const val PUB_TOPIC = "gate/ack"
 
@@ -33,21 +35,13 @@ object MqttManager : MqttCallbackExtended {
     private val sendingStateFlow = MutableStateFlow(false)
     val sending = sendingStateFlow.asStateFlow()
 
-    fun connect(context: Context) {
+    fun start(context: Context) {
         if (mqttClient?.isConnected == true) {
             return
         }
 
         createClient()
-        val options = MqttConnectOptions().apply {
-            isCleanSession = true
-            userName = BuildConfig.MQTT_USERNAME
-            password = BuildConfig.MQTT_PASSWORD.toCharArray()
-            socketFactory = getSSLSocketFactory(context)
-        }
-
-        statusStateFlow.value = ConnectionStatus.CONNECTING
-        mqttClient?.connect(options)
+        connect(context)
     }
 
     fun disconnect() {
@@ -56,25 +50,48 @@ object MqttManager : MqttCallbackExtended {
     }
 
     override fun connectComplete(reconnect: Boolean, serverURI: String?) {
+        Log.i(LOG_TAG, "MQTT Connected to $serverURI")
+        statusStateFlow.value = ConnectionStatus.CONNECTED
         subscribe()
     }
 
     override fun connectionLost(cause: Throwable?) {
-        println("MQTT Connection lost: ${cause?.message}")
+        Log.e(LOG_TAG, "MQTT Connection lost: ${cause?.message}", cause)
         statusStateFlow.value = ConnectionStatus.DISCONNECTED
     }
 
     override fun messageArrived(topic: String?, message: MqttMessage?) {
-        println("MQTT Message received on $topic: ${message.toString()}")
+        Log.i(LOG_TAG, "MQTT Message received on $topic: ${message.toString()}")
     }
 
     override fun deliveryComplete(token: IMqttDeliveryToken?) {
         sendingStateFlow.value = false
     }
 
+    private fun connect(context: Context) {
+        statusStateFlow.value = ConnectionStatus.CONNECTING
+
+        val options = MqttConnectOptions().apply {
+            isCleanSession = true
+            userName = BuildConfig.MQTT_USERNAME
+            password = BuildConfig.MQTT_PASSWORD.toCharArray()
+            // socketFactory = getSSLSocketFactory(context)
+        }
+
+        try {
+            mqttClient?.connect(options)
+        } catch (e: Exception) {
+            Log.e(LOG_TAG, "MQTT Connection error: ${e.message}", e)
+            statusStateFlow.value = ConnectionStatus.ERROR
+            mqttClient = null
+        }
+    }
+
     private fun subscribe() {
+        Log.i(LOG_TAG, "MQTT Subscribing to $SUB_TOPIC")
+
         mqttClient?.subscribe(SUB_TOPIC) { _, message ->
-            onMessage(message.payload.toString())
+            onMessage(String(message.payload))
         }
     }
 
@@ -137,10 +154,10 @@ object MqttManager : MqttCallbackExtended {
                 ExecuteCommandResult.INVALID_ACTION
             }
         } catch (e: IllegalArgumentException) {
-            println("MQTT Message is not a valid command: $message")
+            Log.e(LOG_TAG, "invalid payload: $message", e)
             ExecuteCommandResult.INVALID_PAYLOAD
         } catch (e: MissingFieldException) {
-            println("MQTT Message is not a valid command: $message")
+            Log.e(LOG_TAG, "invalid command: $message", e)
             ExecuteCommandResult.INVALID_COMMAND
         }
 

@@ -8,7 +8,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import com.ndomx.phonecontroller.CallsService
 
 class MqttForegroundService : Service() {
     companion object {
@@ -20,7 +19,7 @@ class MqttForegroundService : Service() {
         createNotificationChannel()
         startForeground(1, createNotification())
 
-        MqttManager.connect(this)
+        MqttManager.start(this)
     }
 
     override fun onDestroy() {

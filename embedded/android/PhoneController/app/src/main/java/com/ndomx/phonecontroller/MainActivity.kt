@@ -4,15 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
-import androidx.compose.ui.Modifier
-import com.ndomx.phonecontroller.contracts.Command
+import com.ndomx.phonecontroller.mqtt.MqttManager
 import com.ndomx.phonecontroller.ui.HomeScreen
-import com.ndomx.phonecontroller.ui.PhoneInput
 import com.ndomx.phonecontroller.ui.theme.PhoneControllerTheme
-import kotlinx.serialization.json.Json
 
 class MainActivity : ComponentActivity(), StateHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +27,7 @@ class MainActivity : ComponentActivity(), StateHandler {
     }
 
     override fun onConnectClick() {
-        CallsService.makePhoneCall(this, loadPhoneNumber())
+        MqttManager.start(this)
     }
 
     private fun loadPhoneNumber(): String {
