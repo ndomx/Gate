@@ -1,4 +1,4 @@
-package com.ndomx.phonecontroller.contracts
+package com.ndomx.phonecontroller.api
 
 import kotlinx.serialization.Serializable
 

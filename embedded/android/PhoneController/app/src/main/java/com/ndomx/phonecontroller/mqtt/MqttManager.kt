@@ -3,9 +3,9 @@ package com.ndomx.phonecontroller.mqtt
 import android.content.Context
 import android.util.Log
 import com.ndomx.phonecontroller.BuildConfig
-import com.ndomx.phonecontroller.contracts.Command
-import com.ndomx.phonecontroller.contracts.ExecuteCommandResult
-import com.ndomx.phonecontroller.contracts.CommandResponse
+import com.ndomx.phonecontroller.api.Command
+import com.ndomx.phonecontroller.api.ExecuteCommandResult
+import com.ndomx.phonecontroller.api.CommandResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,12 +15,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.json.Json
 import org.eclipse.paho.client.mqttv3.*
-import java.io.BufferedInputStream
-import java.security.KeyStore
-import java.security.cert.CertificateFactory
-import javax.net.ssl.SSLContext
-import javax.net.ssl.SSLSocketFactory
-import javax.net.ssl.TrustManagerFactory
 
 object MqttManager : MqttCallbackExtended {
     private const val LOG_TAG = "MqttManager"
