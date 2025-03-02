@@ -6,8 +6,11 @@ import com.ndomx.phonecontroller.BuildConfig
 import com.ndomx.phonecontroller.contracts.Command
 import com.ndomx.phonecontroller.contracts.ExecuteCommandResult
 import com.ndomx.phonecontroller.contracts.CommandResponse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.json.Json
@@ -68,7 +71,7 @@ object MqttManager : MqttCallbackExtended {
         sendingStateFlow.value = false
     }
 
-    private fun connect(context: Context) {
+    private fun connect(context: Context) = CoroutineScope(Dispatchers.IO).launch {
         statusStateFlow.value = ConnectionStatus.CONNECTING
 
         val options = MqttConnectOptions().apply {
