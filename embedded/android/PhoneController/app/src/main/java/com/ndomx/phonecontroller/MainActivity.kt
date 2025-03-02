@@ -4,11 +4,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.ndomx.phonecontroller.api.Command
+import com.ndomx.phonecontroller.mqtt.MessageSubscriber
 import com.ndomx.phonecontroller.mqtt.MqttManager
 import com.ndomx.phonecontroller.ui.HomeScreen
 import com.ndomx.phonecontroller.ui.theme.PhoneControllerTheme
 
-class MainActivity : ComponentActivity(), StateHandler {
+class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
+    override val subscriberId = "MainActivity"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -27,7 +31,13 @@ class MainActivity : ComponentActivity(), StateHandler {
     }
 
     override fun onConnectClick() {
+        MqttManager.addSubscriber(this)
         MqttManager.start(this)
+    }
+
+    override fun onCommand(command: Command) {
+        val phoneNumber = loadPhoneNumber()
+        CallsService.makePhoneCall(this, phoneNumber)
     }
 
     private fun loadPhoneNumber(): String {

@@ -32,6 +32,8 @@ object MqttManager : MqttCallbackExtended {
     private val sendingStateFlow = MutableStateFlow(false)
     val sending = sendingStateFlow.asStateFlow()
 
+    private val subscribers = mutableListOf<MessageSubscriber>()
+
     fun start(context: Context) {
         if (mqttClient?.isConnected == true) {
             return
@@ -44,6 +46,14 @@ object MqttManager : MqttCallbackExtended {
     fun disconnect() {
         mqttClient?.disconnect()
         statusStateFlow.value = ConnectionStatus.DISCONNECTED
+    }
+
+    fun addSubscriber(subscriber: MessageSubscriber) {
+        this.subscribers.add(subscriber)
+    }
+
+    fun removeSubscriber(subscriber: MessageSubscriber) {
+        this.subscribers.removeIf { s -> s.subscriberId == subscriber.subscriberId }
     }
 
     override fun connectComplete(reconnect: Boolean, serverURI: String?) {
@@ -109,19 +119,48 @@ object MqttManager : MqttCallbackExtended {
         return "ssl://$host:$port"
     }
 
-    private fun publish(message: String) {
+    private fun publish(message: String) = CoroutineScope(Dispatchers.IO).launch {
         if (mqttClient?.isConnected != true) {
-            return
+            Log.w(LOG_TAG, "MQTT not connected")
+            return@launch
         }
 
         sendingStateFlow.value = true
         mqttClient?.publish(PUB_TOPIC, MqttMessage(message.toByteArray()))
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     private fun onMessage(message: String) {
+        val (result, command) = parseMessage(message)
+        sendAck(result)
+
+        if (result == ExecuteCommandResult.OK) {
+            notifySubscribers(command!!)
+        }
+    }
+
+    private fun sendAck(result: ExecuteCommandResult) {
+        val message = CommandResponse(
+            deviceId = BuildConfig.DEVICE_ID,
+            status = result.value
+        )
+
+        publish(
+            Json.encodeToString(message)
+        )
+    }
+
+    private fun notifySubscribers(command: Command) {
+        subscribers.forEach { subscriber ->
+            Log.i(LOG_TAG, "Notifying subscriber ${subscriber.subscriberId}")
+            subscriber.onCommand(command)
+        }
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    private fun parseMessage(message: String): Pair<ExecuteCommandResult, Command?> {
+        var command: Command? = null
         val result = try {
-            val command = Json.decodeFromString<Command>(message)
+            command = Json.decodeFromString<Command>(message)
             if (supportedActions.contains(command.action)) {
                 ExecuteCommandResult.OK
             } else {
@@ -135,17 +174,6 @@ object MqttManager : MqttCallbackExtended {
             ExecuteCommandResult.INVALID_COMMAND
         }
 
-        sendAck(result)
-    }
-
-    private fun sendAck(result: ExecuteCommandResult) {
-        val message = CommandResponse(
-            deviceId = BuildConfig.DEVICE_ID,
-            status = result.value
-        )
-
-        publish(
-            Json.encodeToString(message)
-        )
+        return Pair(result, command)
     }
 }
