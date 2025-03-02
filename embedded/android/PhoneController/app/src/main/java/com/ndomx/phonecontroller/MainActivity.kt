@@ -1,5 +1,6 @@
 package com.ndomx.phonecontroller
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,6 +10,7 @@ import com.ndomx.phonecontroller.controllers.CallsController
 import com.ndomx.phonecontroller.controllers.PreferenceController
 import com.ndomx.phonecontroller.mqtt.MessageSubscriber
 import com.ndomx.phonecontroller.mqtt.MqttManager
+import com.ndomx.phonecontroller.services.MqttService
 import com.ndomx.phonecontroller.ui.HomeScreen
 import com.ndomx.phonecontroller.ui.theme.PhoneControllerTheme
 
@@ -42,6 +44,13 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
     override fun onConnectClick() {
         MqttManager.addSubscriber(this)
         MqttManager.start(this)
+    }
+
+    override fun onStartServiceClick() {
+        MqttManager.removeSubscriber(this)
+        startService(
+            Intent(this, MqttService::class.java)
+        )
     }
 
     override fun onCommand(command: Command) {

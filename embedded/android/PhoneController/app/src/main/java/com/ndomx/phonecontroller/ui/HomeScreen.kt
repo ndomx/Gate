@@ -99,6 +99,7 @@ private fun HomeScreenPreview() {
         HomeScreen("+56912345678", object : StateHandler {
             override fun onSaveClick(phoneNumber: String) {}
             override fun onConnectClick() {}
+            override fun onStartServiceClick() {}
         })
     }
 }
