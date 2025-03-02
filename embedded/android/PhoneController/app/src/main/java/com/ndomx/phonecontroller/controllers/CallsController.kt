@@ -1,4 +1,4 @@
-package com.ndomx.phonecontroller
+package com.ndomx.phonecontroller.controllers
 
 import android.content.Context
 import android.content.Intent
@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 
-object CallsService {
+object CallsController {
     fun makePhoneCall(context: Context, phoneNumber: String) {
         if (phoneNumber.isBlank()) {
             Toast.makeText(context, "Phone number is empty!", Toast.LENGTH_SHORT).show()

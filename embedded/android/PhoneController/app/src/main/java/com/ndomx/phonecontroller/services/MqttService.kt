@@ -4,14 +4,13 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.ndomx.phonecontroller.CallsService
-import com.ndomx.phonecontroller.PreferenceManager
+import com.ndomx.phonecontroller.controllers.CallsService
+import com.ndomx.phonecontroller.controllers.PreferenceController
 import com.ndomx.phonecontroller.R
 import com.ndomx.phonecontroller.api.Command
 import com.ndomx.phonecontroller.mqtt.MessageSubscriber
@@ -74,7 +73,7 @@ class MqttService : Service(), MessageSubscriber {
             return loadedPhoneNumber!!
         }
 
-        val stored = PreferenceManager.loadKey(
+        val stored = PreferenceController.loadKey(
             this, getString(R.string.pref_phone_number_key)
         )
 

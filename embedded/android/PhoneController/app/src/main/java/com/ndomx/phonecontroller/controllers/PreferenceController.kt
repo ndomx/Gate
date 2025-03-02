@@ -1,9 +1,10 @@
-package com.ndomx.phonecontroller
+package com.ndomx.phonecontroller.controllers
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.ndomx.phonecontroller.R
 
-object PreferenceManager {
+object PreferenceController {
     fun loadKey(context: Context, key: String): String {
         val prefs = sharedPrefs(context)
 

@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.ndomx.phonecontroller.api.Command
+import com.ndomx.phonecontroller.controllers.CallsController
+import com.ndomx.phonecontroller.controllers.PreferenceController
 import com.ndomx.phonecontroller.mqtt.MessageSubscriber
 import com.ndomx.phonecontroller.mqtt.MqttManager
 import com.ndomx.phonecontroller.ui.HomeScreen
@@ -19,7 +21,7 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
         setContent {
             PhoneControllerTheme {
                 HomeScreen(
-                    phoneNumber = PreferenceManager.loadKey(
+                    phoneNumber = PreferenceController.loadKey(
                         this,
                         getString(R.string.pref_phone_number_key)
                     ),
@@ -30,7 +32,7 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
     }
 
     override fun onSaveClick(phoneNumber: String) {
-        PreferenceManager.saveKey(
+        PreferenceController.saveKey(
             this,
             getString(R.string.pref_phone_number_key),
             phoneNumber
@@ -43,11 +45,11 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
     }
 
     override fun onCommand(command: Command) {
-        val phoneNumber = PreferenceManager.loadKey(
+        val phoneNumber = PreferenceController.loadKey(
             this,
             getString(R.string.pref_phone_number_key)
         )
 
-        CallsService.makePhoneCall(this, phoneNumber)
+        CallsController.makePhoneCall(this, phoneNumber)
     }
 }
