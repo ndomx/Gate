@@ -22,7 +22,7 @@ private data class ButtonStatus(
 )
 
 @Composable
-fun ConnectButton(status: ConnectionStatus, onClick: () -> Unit) {
+fun ConnectButton(status: ConnectionStatus, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val buttonStatusMap = mapOf(
         ConnectionStatus.CONNECTING to ButtonStatus(
             false, "Connecting...", true
@@ -40,12 +40,13 @@ fun ConnectButton(status: ConnectionStatus, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         enabled = buttonStatus!!.enabled,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
+        shape = MaterialTheme.shapes.small
     ) {
         Text(buttonStatus.text)
 
         if (buttonStatus.showProgressIndicator) {
-            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+            Spacer(modifier.size(ButtonDefaults.IconSpacing))
 
             CircularProgressIndicator(
                 modifier = Modifier.size(20.dp),

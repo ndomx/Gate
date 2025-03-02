@@ -9,10 +9,10 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.ndomx.phonecontroller.controllers.CallsService
 import com.ndomx.phonecontroller.controllers.PreferenceController
 import com.ndomx.phonecontroller.R
 import com.ndomx.phonecontroller.api.Command
+import com.ndomx.phonecontroller.controllers.CallsController
 import com.ndomx.phonecontroller.mqtt.MessageSubscriber
 import com.ndomx.phonecontroller.mqtt.MqttManager
 
@@ -41,7 +41,7 @@ class MqttService : Service(), MessageSubscriber {
 
     override fun onCommand(command: Command) {
         val phoneNumber = loadPhoneNumber()
-        CallsService.makePhoneCall(this, phoneNumber)
+        CallsController.makePhoneCall(this, phoneNumber)
     }
 
     override fun onBind(intent: Intent): IBinder? = null

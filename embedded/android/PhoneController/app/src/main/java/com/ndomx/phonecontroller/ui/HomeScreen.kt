@@ -1,18 +1,11 @@
 package com.ndomx.phonecontroller.ui
 
-import android.bluetooth.BluetoothClass.Device
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -25,12 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.ndomx.phonecontroller.BuildConfig
-import com.ndomx.phonecontroller.StateHandler
+import com.ndomx.phonecontroller.interfaces.StateHandler
 import com.ndomx.phonecontroller.mqtt.ConnectionStatus
 import com.ndomx.phonecontroller.mqtt.MqttManager
 import com.ndomx.phonecontroller.ui.theme.PhoneControllerTheme
@@ -87,7 +77,7 @@ fun HomeScreen(
                 }
             }
 
-            ConnectButton(mqttStatus, stateHandler::onConnectClick)
+            BottomPanel(stateHandler)
         }
     }
 }

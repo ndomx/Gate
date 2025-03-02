@@ -1,4 +1,4 @@
-package com.ndomx.phonecontroller
+package com.ndomx.phonecontroller.interfaces
 
 interface StateHandler {
     fun onSaveClick(phoneNumber: String)
