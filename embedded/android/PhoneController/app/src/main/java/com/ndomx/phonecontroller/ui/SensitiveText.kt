@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -43,7 +45,7 @@ private fun HiddenText(text: String, onClick: () -> Unit) {
         visualTransformation = PasswordVisualTransformation(),
         trailingIcon = {
             IconButton(onClick = onClick) {
-                Icon(Icons.Default.ThumbUp, contentDescription = "Toggle password visibility")
+                Icon(Icons.Default.Visibility, contentDescription = "Toggle password visibility")
             }
         },
         enabled = false,
@@ -57,7 +59,7 @@ private fun VisibleText(text: String, onClick: () -> Unit) {
         onValueChange = {},
         trailingIcon = {
             IconButton(onClick = onClick) {
-                Icon(Icons.Default.Lock, contentDescription = "Toggle password visibility")
+                Icon(Icons.Default.VisibilityOff, contentDescription = "Toggle password visibility")
             }
         },
         enabled = false,

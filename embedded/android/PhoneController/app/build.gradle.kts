@@ -94,4 +94,7 @@ dependencies {
 
     // Serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // Icons
+    implementation(libs.androidx.material.icons.extended)
 }
