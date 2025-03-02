@@ -78,7 +78,6 @@ object MqttManager : MqttCallbackExtended {
             isCleanSession = true
             userName = BuildConfig.MQTT_USERNAME
             password = BuildConfig.MQTT_PASSWORD.toCharArray()
-            // socketFactory = getSSLSocketFactory(context)
         }
 
         try {
@@ -114,28 +113,6 @@ object MqttManager : MqttCallbackExtended {
         val host = BuildConfig.MQTT_BROKER_URL
         val port = BuildConfig.MQTT_BROKER_PORT
         return "ssl://$host:$port"
-    }
-
-    private fun getSSLSocketFactory(context: Context): SSLSocketFactory {
-        val caInput = context.assets.open("ca.crt")
-        val caBuffer = BufferedInputStream(caInput)
-
-        val certificateFactory = CertificateFactory.getInstance("X.509")
-        val ca = certificateFactory.generateCertificate(caBuffer)
-
-        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType()).apply {
-            load(null, null)
-            setCertificateEntry("ca", ca)
-        }
-
-        val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()).apply {
-            init(keyStore)
-        }
-
-        return SSLContext.getInstance("TLS").run {
-            init(null, tmf.trustManagers, null)
-            socketFactory
-        }
     }
 
     private fun publish(message: String) {
