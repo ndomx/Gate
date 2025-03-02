@@ -5,16 +5,26 @@ import android.content.SharedPreferences
 import com.ndomx.phonecontroller.R
 
 object PreferenceController {
-    fun loadKey(context: Context, key: String): String {
+    fun loadString(context: Context, key: String): String {
         val prefs = sharedPrefs(context)
-
         val stored = prefs.getString(key, "")
+
         return stored!!
+    }
+
+    fun loadBoolean(context: Context, key: String): Boolean {
+        val prefs = sharedPrefs(context)
+        return prefs.getBoolean(key, false)
     }
 
     fun saveKey(context: Context, key: String, value: String) {
         val prefs = sharedPrefs(context)
         prefs.edit().putString(key, value).apply()
+    }
+
+    fun saveKey(context: Context, key: String, value: Boolean) {
+        val prefs = sharedPrefs(context)
+        prefs.edit().putBoolean(key, value).apply()
     }
 
     private fun sharedPrefs(context: Context): SharedPreferences {

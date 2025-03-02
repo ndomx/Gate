@@ -26,7 +26,11 @@ fun BottomPanel(stateHandler: StateHandler) {
             shape = MaterialTheme.shapes.small,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Start Service")
+            Text(if (stateHandler.serviceStatus()) {
+                "Stop Service"
+            } else {
+                "Start Service"
+            })
         }
     }
 }
@@ -38,5 +42,6 @@ private fun BottomPanelPreview() {
         override fun onSaveClick(phoneNumber: String) {}
         override fun onConnectClick() {}
         override fun onStartServiceClick() {}
+        override fun serviceStatus(): Boolean = true
     })
 }

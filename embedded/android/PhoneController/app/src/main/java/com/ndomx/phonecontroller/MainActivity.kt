@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
         setContent {
             PhoneControllerTheme {
                 HomeScreen(
-                    phoneNumber = PreferenceController.loadKey(
+                    phoneNumber = PreferenceController.loadString(
                         this,
                         getString(R.string.pref_phone_number_key)
                     ),
@@ -55,11 +55,18 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
     }
 
     override fun onCommand(command: Command) {
-        val phoneNumber = PreferenceController.loadKey(
+        val phoneNumber = PreferenceController.loadString(
             this,
             getString(R.string.pref_phone_number_key)
         )
 
         CallsController.makePhoneCall(this, phoneNumber)
+    }
+
+    override fun serviceStatus(): Boolean {
+        return PreferenceController.loadBoolean(
+            this,
+            getString(R.string.pref_service_status_key)
+        )
     }
 }

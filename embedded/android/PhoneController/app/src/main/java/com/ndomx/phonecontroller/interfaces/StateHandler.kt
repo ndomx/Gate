@@ -4,4 +4,5 @@ interface StateHandler {
     fun onSaveClick(phoneNumber: String)
     fun onConnectClick()
     fun onStartServiceClick()
+    fun serviceStatus(): Boolean
 }

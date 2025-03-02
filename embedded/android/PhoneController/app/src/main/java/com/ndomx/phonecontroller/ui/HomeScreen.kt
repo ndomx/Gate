@@ -88,6 +88,7 @@ private fun HomeScreenPreview() {
             override fun onSaveClick(phoneNumber: String) {}
             override fun onConnectClick() {}
             override fun onStartServiceClick() {}
+            override fun serviceStatus(): Boolean = true
         })
     }
 }

@@ -28,12 +28,18 @@ class MqttService : Service(), MessageSubscriber {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        startForeground(1, createNotification())
 
         Log.i(LOG_TAG, "MQTT Service Started")
 
         MqttManager.addSubscriber(this)
         MqttManager.start(this)
+
+        startForeground(1, createNotification())
+        PreferenceController.saveKey(
+            this,
+            getString(R.string.pref_service_status_key),
+            true
+        )
     }
 
     override fun onDestroy() {
@@ -43,6 +49,12 @@ class MqttService : Service(), MessageSubscriber {
         MqttManager.removeSubscriber(this)
 
         Log.i(LOG_TAG, "MQTT Service Stopped")
+
+        PreferenceController.saveKey(
+            this,
+            getString(R.string.pref_service_status_key),
+            false
+        )
     }
 
     override fun onCommand(command: Command) {
@@ -79,7 +91,7 @@ class MqttService : Service(), MessageSubscriber {
             return loadedPhoneNumber!!
         }
 
-        val stored = PreferenceController.loadKey(
+        val stored = PreferenceController.loadString(
             this, getString(R.string.pref_phone_number_key)
         )
 
