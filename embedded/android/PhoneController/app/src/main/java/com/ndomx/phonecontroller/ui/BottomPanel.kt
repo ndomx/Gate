@@ -22,7 +22,7 @@ fun BottomPanel(stateHandler: StateHandler) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         ConnectButton(mqttStatus, Modifier.fillMaxWidth(0.5f), stateHandler::onConnectClick)
         Button(
-            stateHandler::onStartServiceClick,
+            stateHandler::onServiceClick,
             shape = MaterialTheme.shapes.small,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -41,7 +41,7 @@ private fun BottomPanelPreview() {
     BottomPanel(object : StateHandler {
         override fun onSaveClick(phoneNumber: String) {}
         override fun onConnectClick() {}
-        override fun onStartServiceClick() {}
+        override fun onServiceClick() {}
         override fun serviceStatus(): Boolean = true
     })
 }

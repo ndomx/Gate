@@ -47,11 +47,12 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
         MqttManager.start(this)
     }
 
-    override fun onStartServiceClick() {
-        MqttManager.removeSubscriber(this)
-        startService(
-            Intent(this, MqttService::class.java)
-        )
+    override fun onServiceClick() {
+        if (serviceStatus()) {
+            stopMqttService()
+        } else {
+            startMqttService()
+        }
     }
 
     override fun onCommand(command: Command) {
@@ -67,6 +68,19 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
         return PreferenceController.loadBoolean(
             this,
             getString(R.string.pref_service_status_key)
+        )
+    }
+
+    private fun startMqttService() {
+        MqttManager.removeSubscriber(this)
+        startService(
+            Intent(this, MqttService::class.java)
+        )
+    }
+
+    private fun stopMqttService() {
+        stopService(
+            Intent(this, MqttService::class.java)
         )
     }
 }
