@@ -30,12 +30,18 @@ class MqttService : Service(), MessageSubscriber {
         createNotificationChannel()
         startForeground(1, createNotification())
 
+        Log.i(LOG_TAG, "MQTT Service Started")
+
+        MqttManager.addSubscriber(this)
         MqttManager.start(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+
         MqttManager.disconnect()
+        MqttManager.removeSubscriber(this)
+
         Log.i(LOG_TAG, "MQTT Service Stopped")
     }
 
