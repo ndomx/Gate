@@ -1,5 +1,6 @@
 package com.ndomx.phonecontroller.ui
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -26,7 +27,7 @@ fun ConnectButton(status: ConnectionStatus, onClick: () -> Unit) {
         ConnectionStatus.CONNECTING to ButtonStatus(
             false, "Connecting...", true
         ),
-        ConnectionStatus.CONNECTED to ButtonStatus(true, "Connected"),
+        ConnectionStatus.CONNECTED to ButtonStatus(true, "Disconnect"),
         ConnectionStatus.DISCONNECTED to ButtonStatus(true, "Connect"),
         ConnectionStatus.ERROR to ButtonStatus(true, "Error"),
         ConnectionStatus.DISCONNECTING to ButtonStatus(
@@ -58,5 +59,8 @@ fun ConnectButton(status: ConnectionStatus, onClick: () -> Unit) {
 @Composable
 @Preview(showBackground = true)
 private fun ConnectButtonPreview() {
-    ConnectButton(ConnectionStatus.CONNECTING) {}
+    Column {
+        ConnectButton(ConnectionStatus.CONNECTING) {}
+        ConnectButton(ConnectionStatus.CONNECTED) {}
+    }
 }
