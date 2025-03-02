@@ -1,18 +1,30 @@
-package com.ndomx.phonecontroller.mqtt
+package com.ndomx.phonecontroller.services
 
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.ndomx.phonecontroller.CallsService
+import com.ndomx.phonecontroller.PreferenceManager
+import com.ndomx.phonecontroller.R
+import com.ndomx.phonecontroller.api.Command
+import com.ndomx.phonecontroller.mqtt.MessageSubscriber
+import com.ndomx.phonecontroller.mqtt.MqttManager
 
-class MqttForegroundService : Service() {
+class MqttService : Service(), MessageSubscriber {
     companion object {
         private const val CHANNEL_ID = "MqttServiceChannel"
+        private const val LOG_TAG = "MqttService"
     }
+
+    override val subscriberId = "MqttService"
+    private var loadedPhoneNumber: String? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -25,7 +37,12 @@ class MqttForegroundService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         MqttManager.disconnect()
-        println("MQTT Service Stopped")
+        Log.i(LOG_TAG, "MQTT Service Stopped")
+    }
+
+    override fun onCommand(command: Command) {
+        val phoneNumber = loadPhoneNumber()
+        CallsService.makePhoneCall(this, phoneNumber)
     }
 
     override fun onBind(intent: Intent): IBinder? = null
@@ -50,5 +67,18 @@ class MqttForegroundService : Service() {
             .setContentTitle("MQTT Running in Background")
             .setSmallIcon(android.R.drawable.stat_notify_sync)
             .build()
+    }
+
+    private fun loadPhoneNumber(): String {
+        if (loadedPhoneNumber != null) {
+            return loadedPhoneNumber!!
+        }
+
+        val stored = PreferenceManager.loadKey(
+            this, getString(R.string.pref_phone_number_key)
+        )
+
+        loadedPhoneNumber = stored
+        return stored
     }
 }

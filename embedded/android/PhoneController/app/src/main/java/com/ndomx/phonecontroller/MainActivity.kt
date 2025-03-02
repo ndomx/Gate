@@ -19,7 +19,10 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
         setContent {
             PhoneControllerTheme {
                 HomeScreen(
-                    phoneNumber = loadPhoneNumber(),
+                    phoneNumber = PreferenceManager.loadKey(
+                        this,
+                        getString(R.string.pref_phone_number_key)
+                    ),
                     stateHandler = this,
                 )
             }
@@ -27,7 +30,11 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
     }
 
     override fun onSaveClick(phoneNumber: String) {
-        savePhoneNumber(phoneNumber)
+        PreferenceManager.saveKey(
+            this,
+            getString(R.string.pref_phone_number_key),
+            phoneNumber
+        )
     }
 
     override fun onConnectClick() {
@@ -36,17 +43,11 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
     }
 
     override fun onCommand(command: Command) {
-        val phoneNumber = loadPhoneNumber()
+        val phoneNumber = PreferenceManager.loadKey(
+            this,
+            getString(R.string.pref_phone_number_key)
+        )
+
         CallsService.makePhoneCall(this, phoneNumber)
-    }
-
-    private fun loadPhoneNumber(): String {
-        val prefs = getPreferences(MODE_PRIVATE)
-        return prefs.getString("phone_number", "") ?: ""
-    }
-
-    private fun savePhoneNumber(phoneNumber: String) {
-        val prefs = getPreferences(MODE_PRIVATE)
-        prefs.edit().putString("phone_number", phoneNumber).apply()
     }
 }

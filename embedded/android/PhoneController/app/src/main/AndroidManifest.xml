@@ -23,7 +23,7 @@
         android:theme="@style/Theme.PhoneController"
         tools:targetApi="31">
         <service
-            android:name=".mqtt.MqttForegroundService"
+            android:name=".services.MqttService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />

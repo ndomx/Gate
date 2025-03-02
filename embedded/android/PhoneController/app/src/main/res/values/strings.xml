@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PhoneController</string>
+    <string name="preference_file_key">prefs</string>
+    <string name="pref_phone_number_key">phone_number</string>
 </resources>
