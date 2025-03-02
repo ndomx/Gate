@@ -1,5 +1,6 @@
 package com.ndomx.phonecontroller.ui
 
+import android.bluetooth.BluetoothClass.Device
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,8 +48,6 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val clipboardManager = LocalClipboardManager.current
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = {
@@ -82,22 +81,9 @@ fun HomeScreen(
 
             PhoneInput(phoneNumber, onSave = {})
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth(0.8f)
-            ) {
-                SensitiveText(BuildConfig.DEVICE_ID, true)
-                Button(onClick = {
-                    clipboardManager.setText(AnnotatedString(BuildConfig.DEVICE_ID))
-                    scope.launch {
-                        snackbarHostState.showSnackbar("Device ID copied to clipboard")
-                    }
-                }, colors = ButtonDefaults.outlinedButtonColors()) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("Copy to clipboard")
-                        Icon(Icons.Default.ContentCopy, contentDescription = "Copy to clipboard")
-                    }
+            DeviceIdView {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Device ID copied to clipboard")
                 }
             }
 
