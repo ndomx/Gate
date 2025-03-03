@@ -46,6 +46,7 @@ object MqttManager : MqttCallbackExtended {
     fun disconnect() {
         mqttClient?.disconnect()
         statusStateFlow.value = ConnectionStatus.DISCONNECTED
+        mqttClient = null
     }
 
     fun addSubscriber(subscriber: MessageSubscriber) {

@@ -3,6 +3,8 @@ package com.ndomx.phonecontroller.controllers
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
@@ -10,12 +12,12 @@ import androidx.core.content.PermissionChecker
 object CallsController {
     fun makePhoneCall(context: Context, phoneNumber: String) {
         if (phoneNumber.isBlank()) {
-            Toast.makeText(context, "Phone number is empty!", Toast.LENGTH_SHORT).show()
+            showToast(context, "Phone number is empty!")
             return
         }
 
         if (!checkPermission(context)) {
-            Toast.makeText(context, "Call permission required!", Toast.LENGTH_LONG).show()
+            showToast(context, "Call permission required!")
             return
         }
 
@@ -31,5 +33,11 @@ object CallsController {
         val permission = android.Manifest.permission.CALL_PHONE
         val res = ContextCompat.checkSelfPermission(context, permission)
         return res == PermissionChecker.PERMISSION_GRANTED
+    }
+
+    private fun showToast(context: Context, message: String) {
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
     }
 }
