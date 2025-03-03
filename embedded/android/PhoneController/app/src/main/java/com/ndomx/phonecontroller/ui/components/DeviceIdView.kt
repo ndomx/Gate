@@ -1,4 +1,4 @@
-package com.ndomx.phonecontroller.ui
+package com.ndomx.phonecontroller.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

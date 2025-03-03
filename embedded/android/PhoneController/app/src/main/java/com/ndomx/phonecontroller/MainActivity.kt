@@ -12,7 +12,7 @@ import com.ndomx.phonecontroller.interfaces.StateHandler
 import com.ndomx.phonecontroller.mqtt.MessageSubscriber
 import com.ndomx.phonecontroller.mqtt.MqttManager
 import com.ndomx.phonecontroller.services.MqttService
-import com.ndomx.phonecontroller.ui.HomeScreen
+import com.ndomx.phonecontroller.ui.screens.HomeScreen
 import com.ndomx.phonecontroller.ui.theme.PhoneControllerTheme
 
 class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {

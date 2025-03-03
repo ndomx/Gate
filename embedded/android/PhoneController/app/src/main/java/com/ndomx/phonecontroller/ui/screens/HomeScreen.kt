@@ -1,4 +1,4 @@
-package com.ndomx.phonecontroller.ui
+package com.ndomx.phonecontroller.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +22,10 @@ import androidx.compose.ui.unit.dp
 import com.ndomx.phonecontroller.interfaces.StateHandler
 import com.ndomx.phonecontroller.mqtt.ConnectionStatus
 import com.ndomx.phonecontroller.mqtt.MqttManager
+import com.ndomx.phonecontroller.ui.components.BottomPanel
+import com.ndomx.phonecontroller.ui.components.ConnectionStatusIndicator
+import com.ndomx.phonecontroller.ui.components.DeviceIdView
+import com.ndomx.phonecontroller.ui.components.PhoneInput
 import com.ndomx.phonecontroller.ui.theme.PhoneControllerTheme
 import kotlinx.coroutines.launch
 
