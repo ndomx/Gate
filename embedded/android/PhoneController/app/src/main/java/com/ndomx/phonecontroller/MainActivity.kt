@@ -2,6 +2,8 @@ package com.ndomx.phonecontroller
 
 import android.content.Intent
 import android.os.Bundle
+import android.telecom.TelecomManager
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -32,6 +34,8 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
                 )
             }
         }
+
+        requestDefaultDialer()
     }
 
     override fun onSaveClick(phoneNumber: String) {
@@ -82,5 +86,27 @@ class MainActivity : ComponentActivity(), StateHandler, MessageSubscriber {
         stopService(
             Intent(this, MqttService::class.java)
         )
+    }
+
+    private fun requestDefaultDialer() {
+        if (isDefaultDialer()) {
+            Log.d("MainActivity", "App is already the default dialer")
+            return
+        }
+
+        showDialerPrompt()
+    }
+
+    private fun isDefaultDialer(): Boolean {
+        val telecomManager = getSystemService(TELECOM_SERVICE) as TelecomManager
+        return telecomManager.defaultDialerPackage == packageName
+    }
+
+    private fun showDialerPrompt() {
+        val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER).apply {
+            putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+        }
+
+        startActivity(intent)
     }
 }
