@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "790868390085",
+    "project_id": "gate-17bf0",
+    "storage_bucket": "gate-17bf0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790868390085:android:a28e9ff2513b18cf1840ac",
+        "android_client_info": {
+          "package_name": "com.ndomx.gate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRYuO-66ALqFyxhjBR-uYZtO84CFSIhxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

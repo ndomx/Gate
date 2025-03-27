@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_client/src/services/login_service.dart';
+import 'package:flutter_client/src/services/auth_service.dart';
 
-class LoginController {
-  final loginService = LoginService();
+class LoginController with ChangeNotifier {
+  bool get isLoading => _isLoading;
 
-  Future<String?> onLoginButtonPress(String username, String password) async {
-    FocusManager.instance.primaryFocus?.unfocus();
+  bool _isLoading = false;
 
-    final loginResponse = await loginService.loginAndSaveCredentials(username, password);
-    if (loginResponse == null) {
-      return null;
+  Future<bool> login(String email, String password) async {
+    if (_isLoading) {
+      return false;
     }
 
-    return loginResponse.token;
+    _setLoading(true);
+    final success = await AuthService.signIn(email, password);
+
+    _setLoading(false);
+    return success;
+  }
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
   }
 }
