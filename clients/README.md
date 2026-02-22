@@ -4,6 +4,6 @@ This directory contains all the apps the user interacts with. That is, mobile ap
 ## Folder Structure
 ~~~
 /clients/
-|- android: Native android Gate Client implementation
+|- nestjs-client: NextJS web client for browsers
 |- flutter_client: Flutter implementation. This app is compatible with both Android, and iOS devices.
 ~~~
